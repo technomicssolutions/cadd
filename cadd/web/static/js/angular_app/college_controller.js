@@ -294,7 +294,7 @@ function EditBatchController($scope, $http, $element, $location, $timeout) {
                 } else {
                     $scope.error_flag=false;
                     $scope.message = '';
-                    document.location.href = '/college/list_batch/';
+                    $scope.batches.push(data.batch);
                 }
             }).error(function(data, status){
                 $scope.error_flag=true;
@@ -310,6 +310,7 @@ function BatchController($scope, $element, $http, $timeout, share, $location)
     $scope.init = function(csrf_token)
     {
         $scope.popup = '';
+        $scope.softwares = [];
         $scope.error_flag = false;
         $scope.csrf_token = csrf_token;
         $scope.batch = {
@@ -321,6 +322,7 @@ function BatchController($scope, $element, $http, $timeout, share, $location)
         }
         get_software_list($scope, $http);
         get_batches($scope, $http);
+        console.log($scope.softwares);
     }
 
     validate_new_batch = function($scope) {
@@ -406,7 +408,8 @@ function BatchController($scope, $element, $http, $timeout, share, $location)
                     $scope.message = data.message;
                 } else {
                     $scope.popup.hide_popup();
-                    //document.location.href ='/college/batches/';
+                    $scope.batches.push(data.batch);
+
                 }
             }).error(function(data, success){
                 $scope.error_flag=true;

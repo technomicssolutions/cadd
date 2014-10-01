@@ -25,4 +25,4 @@ class Batch(models.Model):
 	allowed_students = models.IntegerField('Allowed No of Students', null=True, blank=True)
 
 	def __unicode__(self):
-		return (self.course.name + ' ' + self.start_time + '-' + self.end_time)
+		return (self.name + ' ' + str(self.start_time) + '-' + str(self.end_time))

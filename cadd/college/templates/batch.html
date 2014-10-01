@@ -26,28 +26,23 @@
 
 					<table id="list" class="table table-hover" >
 						<tr>
-						  <th>Course</th>
-						  <th>Branch</th>
+						  <th>Name</th>
+						  <th>Software</th>
 						  <th>Start</th>
 						  <th>End</th>
+						  <th>Allowed Students</th>
 						  <th>Edit </th>
-						  <th>Delete</th>
-						  
+						  <th>Delete</th>						  
 						</tr>
-						<tr>
-						{% for batch in batches %} 
-						<td>{{batch.course.course}}</td>
-						<td>{{batch.branch.branch}}</td>
-						<td>{{batch.start_date}}</td>
-						<td>{{batch.end_date}}</td>
-						
-						 
-						<td> <a href="{% url 'edit_batch' batch.id %}" >Edit </td>
-						<td><a href="{% url 'delete_batch' batch.id %}" >Delete</td>
+						<tr ng-repeat="batch in batches">
+							<td>[[batch.name]]</td>
+							<td>[[batch.software]]</td>
+							<td>[[batch.start]]</td>
+							<td>[[batch.end]]</td>
+							<td>[[batch.allowed_students]]</td>
+							<td> <a href="/college/edit_batch/[[batch.id]]/" >Edit </td>
+							<td><a href="/college/delete_batch/[[batch.id]]/" >Delete</td>
 						</tr>
-						{% endfor %}				
-						</tr>
-
 					</table> 
 				</div>
 			</div>	

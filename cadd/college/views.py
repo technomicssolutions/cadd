@@ -144,10 +144,11 @@ class ListBatch(View):
             for batch in batches:
                 batch_list.append({
                     'software':batch.software.name,
-                    'batch_start':batch.start_date,
-                    'batch_end':batch.end_date,
+                    'start':batch.start_time.strftime('%H:%M.%p'),
+                    'end':batch.end_time.strftime('%H:%M.%p'),
                     'allowed_students':batch.allowed_students,                                        
                     'name': batch.name,
+                    'id': batch.id
                 })
             res = {
                 'result': 'ok',
@@ -174,8 +175,8 @@ class EditBatch(View):
                 batch = Batch.objects.get(id = batch_id)
                 ctx_data.append({
                     'software':batch.software.name,
-                    'batch_start':batch.start_date,
-                    'batch_end':batch.end_date,
+                    'batch_start':batch.start_time,
+                    'batch_end':batch.end_time,
                     'allowed_students':batch.allowed_students,                                        
                     'name': batch.name,
                 })
@@ -238,8 +239,8 @@ class AddNewBatch(View):
                         'result': 'ok',
                         'batch': {
                             'software':batch.software.name,
-                            'batch_start':batch.start_date,
-                            'batch_end':batch.end_date,
+                            'batch_start':batch.start_time,
+                            'batch_end':batch.end_time,
                             'allowed_students':batch.allowed_students,                                        
                             'name': batch.name,
                         }
@@ -251,3 +252,12 @@ class AddNewBatch(View):
                     }
             response = simplejson.dumps(res)
             return HttpResponse(response, status = status_code, mimetype="application/json")
+
+
+class DeleteBatch(View):
+    def get(self, request, *args, **kwargs):
+
+        batch_id = kwargs['batch_id']       
+        batch = Batch.objects.filter(id=batch_id)                          
+        batch.delete()
+        return HttpResponseRedirect(reverse('list_batch'))
