@@ -339,3 +339,42 @@ class DeleteStudentDetails(View):
         student = Student.objects.filter(id=student_id)                          
         student.delete()
         return HttpResponseRedirect(reverse('list_student'))
+
+class Enquiry(View):
+
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            res = {
+                'result': 'ok',
+            }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'enquiry.html', {})
+
+    def post(self, request, *args, **kwargs):
+
+        
+        if request.is_ajax():
+            enquiry_details = ast.literal_eval(request.POST['enquiry'])
+            if enquiry_details:
+                enquiry = Enquiry()
+                enquiry.student_name = enquiry_details['student_name']
+                enquiry.address = enquiry_details['address']
+                enquiry.mobile_number = enquiry_details['mobile_number']
+                enquiry.email = enquiry_details['email']
+                enquiry.details_about_clients_enquiry = enquiry_details['details_about_clients_enquiry']
+                enquiry.educational_qualification = enquiry_details['educational_qualification']
+                enquiry.land_mark = enquiry_details['land_mark']
+                enquiry.course = enquiry_details['course']
+                enquiry.remarks = enquiry_details['remarks']
+                enquiry.follow_up_date = enquiry_details['follow_up_date']
+                enquiry.remarks_for_follow_up_date = enquiry_details['remarks_for_follow_up_date']
+                enquiry.discount = enquiry_details['discount']
+                # enquiry.auto_generated_num = 
+                enquiry.save()
+            res = {
+                'result': 'ok',
+                
+            }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
