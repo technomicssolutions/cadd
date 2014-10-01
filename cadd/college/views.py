@@ -23,8 +23,59 @@ class ListSoftwares(View):
             res = {
                 'softwares': software_list,
             }
+            status = 200
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')
         return render(request, 'list_softwares.html', {})
 
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            software_details = ast.literal_eval(request.POST['software_details'])
+            try:
+                if software_details.get('id'):
+                    software = Software.objects.get(id=software_details['id'])
+                else:
+                    software = Software()
+                software.name = software_details['name']
+                software.save()
+                res = {
+                    'result': 'ok',
+                    }
+            except Exception as ex:
+                print str(ex)
+                res = {
+                    'result': 'error',
+                    'message': 'Software Already Exists',
+                }
+            status_code = 200
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status = status_code, mimetype="application/json")
 
+
+class DeleteSoftware(View):
+
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            try:
+                software = Software.objects.get(id=kwargs['software_id'])
+                if software.course_set.all().count() > 0 or software.batch_set.all().count() > 0:
+                    res = {
+                        'result': 'ok',
+                        'message': 'This software is currently being used, So cannot delete.'
+                    }
+                else:
+                    name = software.name
+                    software.delete()
+                    res = {
+                        'result': 'ok',
+                        'message': name + ' Deleted Successfully',
+                    }
+            except:
+                res = {
+                    'result': 'error',
+                    'message': 'failed',
+                }
+
+            status_code = 200
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status = status_code, mimetype="application/json")

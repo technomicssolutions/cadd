@@ -2,10 +2,11 @@
 from django.conf.urls import patterns, url
 from django.contrib.auth.decorators import login_required
 
-from college.views import ListSoftwares
+from college.views import ListSoftwares,DeleteSoftware
 
 urlpatterns = patterns('',
-	url(r'^list_softwares/$',login_required (ListSoftwares.as_view()), name='list_softwares'),
+	url(r'^softwares/$',login_required (ListSoftwares.as_view()), name='softwares'),
+	url(r'^delete_software/(?P<software_id>\d+)/$',login_required (DeleteSoftware.as_view()), name='delete_software'),
 	
 
 )
