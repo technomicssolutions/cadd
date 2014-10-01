@@ -13,76 +13,44 @@ from datetime import datetime
 class AddStaff(View):    
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
-            status = 200            
             staff_details = ast.literal_eval(request.POST['staff'])
-            try:
-                staff = Staff.objects.get(staff_id=staff_details['staff_id'])
-                res = {
-                    'result': 'error',
-                    'message': 'Staff already exists',
-                }                
-            except:
+            if staff_details.get('id', ''):
+                staff = Staff.objects.get(id=staff_details['id'])
+                user = staff.user
+            else:
                 try:
                     user = User.objects.get(username=staff_details['username'])
                     res = {
                         'result': 'error',
                         'message': 'Username already exists',
                     }
-                    staff.delete()
-                    response = simplejson.dumps(res)
-                    return HttpResponse(response, status = status, mimetype="application/json")
-                except Exception:
+                except Exception as ex:
                     user = User.objects.create(username=staff_details['username'])
-                    user.email = staff_details['email']
-                    user.first_name = staff_details['first_name']
-                    user.last_name = staff_details['last_name']
                     user.set_password(staff_details['password'])
-                    user.save()
-                staff = Staff.objects.create(staff_id=staff_details['staff_id'])                
-                staff.user = user
-                staff.dob = datetime.strptime(staff_details['dob'], '%d/%m/%Y')
-                staff.address = staff_details['address']
-                staff.mobile_number = staff_details['mobile_number']
-                staff.land_number = staff_details['land_number']                
-                staff.blood_group = staff_details['blood_group']
-                staff.doj = datetime.strptime(staff_details['doj'], '%d/%m/%Y')
-                designation = Designation.objects.get(id=staff_details['designation'])
-                staff.designation=designation
-                
-                staff.qualifications = staff_details['qualifications']
-                staff.photo = request.FILES.get('photo_img', '')
-                staff.experiance = staff_details['experiance']
-                staff.role = staff_details['role']
-                if staff_details['role'] == 'admin':
-                    user.is_superuser = True
-                elif staff_details['role'] == 'office_staff' or staff_details['role'] == 'teacher':
                     user.is_staff = True
-                user.save()
-                staff.certificates_submitted = staff_details['certificates_submitted']
-                staff.certificates_remarks = staff_details['certificates_remarks']
-                staff.certificates_file = staff_details['certificates_file']
-                staff.id_proofs_submitted = staff_details['id_proof']
-                staff.id_proofs_remarks = staff_details['id_proof_remarks']
-                staff.id_proofs_file = staff_details['id_proof_file']
-                staff.guardian_name = staff_details['guardian_name']
-                staff.guardian_address = staff_details['guardian_address']
-                staff.relationship = staff_details['relationship']
-                staff.guardian_mobile_number = staff_details['guardian_mobile_number']
-                staff.guardian_land_number = staff_details['guardian_land_number']
-                staff.guardian_email = staff_details['guardian_email']
-                staff.reference_name = staff_details['reference_name']
-                staff.reference_address = staff_details['reference_address']
-                staff.reference_mobile_number = staff_details['reference_mobile_number']
-                staff.reference_land_number = staff_details['reference_land_number']
-                staff.reference_email = staff_details['reference_email']                   
-               
-                staff.save()
-                res = {
-                    'result': 'ok',
-                }  
+                    user.save()
+                    staff = Staff.objects.create(user=user)
+            user.first_name = staff_details['first_name']
+            user.last_name = staff_details['last_name']
+            user.email = staff_details['email']
+            user.save()
+            staff.dob = datetime.strptime(staff_details['dob'], '%d/%m/%Y')
+            staff.address = staff_details['address']
+            staff.mobile_number = staff_details['mobile_number']
+            staff.land_number = staff_details['land_number']                
+            staff.blood_group = staff_details['blood_group']
+            staff.doj = datetime.strptime(staff_details['doj'], '%d/%m/%Y')
+            staff.qualifications = staff_details['qualifications']
+            staff.photo = request.FILES.get('photo_img', '')
+            staff.experience = staff_details['experience']
+            staff.role = staff_details['role']
+            staff.save()
+            res = {
+                'result': 'ok',
+            }  
 
             response = simplejson.dumps(res)
-            return HttpResponse(response, status = status, mimetype="application/json")
+            return HttpResponse(response, status=200, mimetype="application/json")
 
 class EditStaffDetails(View):
    
@@ -221,15 +189,28 @@ class EditStaffDetails(View):
 class ListStaff(View):
 
     def get(self, request, *args, **kwargs):
-
+        $scope.staff = {
+        
+        'experience':'',
+        'role': '',
+    }
         staffs = Staff.objects.all()
         if request.is_ajax():
             staff_list = []
             for staff in staffs:
                 staff_list.append({
                     'id': staff.id,
-                    'name': staff.user.first_name+ ' '+staff.user.last_name if staff.user else '',
-                    'designation': staff.designation.designation if staff.designation else '',
+                    'first_name': staff.user.first_name,
+                    'last_name': staff.user.last_name,
+                    'username': staff.user.username,
+                    'dob': staff.dob.strftime('%d/%m/%Y'),
+                    'address': staff.address,
+                    'mobile_number' : staff.mobile_number,
+                    'land_number' : staff.land_number,
+                    'email': staff.user.username,
+                    'blood_group': staff.blood_group,
+                    'doj': staff.doj.strftime('%d/%m/%Y'),
+                    'qualifications': staff.qualifications,
                     'role': staff.role,
                     'staff_id': staff.staff_id
                 })
@@ -240,11 +221,7 @@ class ListStaff(View):
             status = 200
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')
-
-        ctx = {
-            'staffs': staffs
-        }
-        return render(request, 'staff/list_staff.html',ctx)
+        return render(request, 'list_staff.html',{})
 
 class ViewStaffDetails(View):
 

@@ -27,13 +27,13 @@ class Staff(models.Model):
 	blood_group = models.CharField('Blood Group',null=True, blank=True, max_length=200)
 	doj = models.DateField('Date of Join',null=True, blank=True)
 	qualifications = models.TextField('Qualifications',null=True, blank=True, max_length=200)
-	experiance = models.CharField('Experiance',null=True, blank=True, max_length=200)
+	experience = models.CharField('Experiance',null=True, blank=True, max_length=200)
 	photo = models.ImageField(upload_to = "uploads/photos/", null=True, blank=True)
 	
 	role = models.CharField('Role',null=True, blank=True, max_length=200, choices=ROLE)
 
 	def __unicode__(self):
-		return (self.staff.user.first_name + str(' ') + self.staff.user.last_name)
+		return (self.user.first_name + str(' ') + self.user.last_name)
 
 	class Meta:
 		verbose_name = 'Staff'
