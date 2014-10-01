@@ -111,6 +111,29 @@ class Courses(View):
             return HttpResponse(response, status=status, mimetype='application/json')
         return render(request, 'list_courses.html', {})        
 
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            course_details = ast.literal_eval(request.POST['course_details'])
+            try:
+                if course_details.get('id'):
+                    course = Course.objects.get(id=course_details['id'])
+                else:
+                    course = Course()
+                course.name = course_details['name']
+                course.save()
+                res = {
+                    'result': 'ok',
+                    }
+            except Exception as ex:
+                print str(ex)
+                res = {
+                    'result': 'error',
+                    'message': 'Course Already Exists',
+                }
+            status_code = 200
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status = status_code, mimetype="application/json")
+
 
 class ListBatch(View):
     def get(self, request, *args, **kwargs):

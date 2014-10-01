@@ -40,6 +40,7 @@ function CollegeController($scope, $element, $http, $timeout, share, $location)
                 'id': '',
                 'name': '',
                 'duration': '',
+                'duration_unit': '',
                 'amount': '',
                 'softwares': [],
             };
