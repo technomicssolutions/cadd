@@ -21,7 +21,8 @@
 						
 					</ul>
 				</li>
-				<li class="menu"> <a href=""> Institution </a> 
+
+				<li class="menu"> <a href=""> Masters </a> 
 					<ul> 
 						<li> <a href=""> Software </a> </li>
 						<li> <a href=""> Course </a> </li>
@@ -38,45 +39,22 @@
 				<li class="menu"> <a href=""> Student </a>
 					
 				</li>
-				<li class="menu"> <a href=""> Exam </a>
-					<ul>
-<<<<<<< HEAD
-						<li> <a href=""> Schedule Exam</a> </li>
-						<li> <a href=""> Marks</a> </li>
-=======
-						
->>>>>>> a7cef3e98c9f76f0e4a2dea285a9879e1978fa8b
-					</ul>
-				</li>
 				<li class="menu"> <a href=""> Fees </a>
 					<ul>
-						<li> <a href="">Fees Head</a> </li>
-						<li> <a href="">Fees Structure</a> </li>
-						<li> <a href="">Course Fees Payment</a> </li>
-						<li> <a href="">Common Fees Payment</a> </li>
-						<li> <a href="">Outstanding Fees</a> </li>
+						<li> <a href="">Fees Payment</a> </li>
+						<li> <a href="">Outstanding Fees </a> </li>
 					</ul>
 				</li>
-				<li class="menu"> <a href=""> Attendance </a>
+				<li class="menu last"> <a href=""> Attendance </a>
 					<ul>
 						<li> <a href="" >Attendance</a>
 						</li>
-						<li> <a href="" >View Attendance</a>
-						</li>
-						<li> <a href="" >Holiday Calendar</a>
-						</li>
-						<li> <a href="" >Clear Batch Details</a>
-						</li>
-						<li> <a href="" >Clear Holiday Calendar </a>
-						</li>
+						<li> <a href="{% url 'attendance_details' %}" >View Attendance</a>
+						</li>	
+						<li> <a href="" >Job Card</a>
+						</li>					
 					</ul>
-				</li>
-				<li class="menu last"> <a href=""> Report </a>
-					<ul>
-						<li> <a href="" >Outstanding Fees</a>
-						</li>
-					</ul>
-				</li>
+				</li>				
 			</ul>
 		{% endif %}
 	</div>

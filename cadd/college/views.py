@@ -8,6 +8,7 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 
 from college.models import Software
 
+
 class ListSoftwares(View):
 
     def get(self, request, *args, **kwargs):
