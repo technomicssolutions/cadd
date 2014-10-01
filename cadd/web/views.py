@@ -11,7 +11,7 @@ class Home(View):
     def get(self, request, *args, **kwargs):
 
         context = {
-            'college_name': College.objects.latest('id').name if College.objects.all().count() > 0 else ''
+            # 'college_name': College.objects.latest('id').name if College.objects.all().count() > 0 else ''
         }
         return render(request, 'home.html',context)# Create your views here.
 class Login(View):
