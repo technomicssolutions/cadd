@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}Edit Exam Schedule{% endblock title %}
+{% block body_id %}edit_exam_schedule{% endblock %}
+
+{% block controller %}
+	ng-controller="EditExamController" ng-init="init('{{csrf_token}}', {{exam_schedule_id}})"
+{% endblock controller %}
+
+{% block content %}
+	<div id='exam_schedule_details_view' style='padding:10px; background:#fff;'>
+	    <div class="sign_box">
+	        <div class="row-fluid">
+	            <div class="span12 sign_mid">
+	                <div id="main-title">
+						<div class="alert alert-info" align="Center">
+							<h4>Exam Schedule</h4>
+						</div>
+					</div>
+					<div class="section_1">						
+						<div class="control">
+							<table class="table stripped">
+								<tr>
+									<th> Exam Name </th>
+									<th> Course </th>
+									<th> Batch </th>
+									<th> Branch </th>
+									<th> Start Date </th>
+									<th> End Date </th>
+									<th> Exam Total </th>
+									<th> No of Subjects </th>
+									
+								<tr>
+								<tr> 
+									<td> <input type="text" ng-model="exam_schedule.exam_name" /> </td>
+									<td> [[exam_schedule.course]] </td>
+									<td> [[exam_schedule.batch]] </td>
+									<td> [[exam_schedule.branch]] </td>
+									<td> <input type="text" ng-model="exam_schedule.start_date" id="start_date"/> </td>
+									<td> <input type="text" ng-model="exam_schedule.end_date" id="end_date"/> </td>
+									<td> <input type="text" ng-model="exam_schedule.exam_total" /> </td>
+									<td> <input type="text" ng-model="exam_schedule.no_subjects" /> </td>
+									
+								</tr>
+							</table>					
+						</div>
+						<div class="control">
+							<table class="table stripped">
+								<tr>
+									<th>Subject</th>
+									<th>Date</th>
+									<th>Start time</th>
+									<th>End Time</th>
+									<th>Total Mark</th>
+									<th>Pass Mark</th>
+									<th> <input type="button" value="Add Subject" ng-click="add_subject()" /> </th>								
+								</tr>
+								<tr ng-repeat="subject in exam_schedule.subjects">
+									<td> <input type="text" ng-model="subject.subject_name" /> </td>
+									<td> <input type="text" ng-model="subject.date" id="subject_date_[[$index]]" ng-click="attach_date_picker()" /> </td>
+									<td> <input type="text" ng-model="subject.start_time" /> </td>
+									<td> <input type="text" ng-model="subject.end_time" /> </td>
+									<td> <input type="text" ng-model="subject.total_mark" ng-change="calculate_total_marks()" /> </td>
+									<td> <input type="text" ng-model="subject.pass_mark" /> </td>
+									<td> <input type="button" value="Remove Subject" ng-click="remove_subject(subject)" /> </td>			
+								</tr>
+							</table>
+						</div>						
+					</div>			
+					<div  align="Center">		
+						<div class="buttons">
+							<p class="error_message"> [[validation_error]] </p>
+							<p ng-show="error_flag" class="error_message">[[message]]</p>
+							<input type="button" class="btn btn-info" value="Submit" ng-click="save_exam_schedule()">
+							<a href="{% url 'home' %}"><input type="button" class="btn btn-info" value="Cancel"> </a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock content%}

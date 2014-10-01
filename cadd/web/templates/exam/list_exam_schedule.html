@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Exam Schedule{% endblock title %}
+{% block body_id %}list_exam_schedule{% endblock %}
+
+{% block controller %}
+	ng-controller="ExamController" ng-init="init('{{csrf_token}}')"
+{% endblock controller %}
+
+{% block dialogue_popup %}	
+	{% include 'exam/add_exam_schedule_details.html' %}
+	{% include 'exam/exam_schedule_details_view.html' %}
+{% endblock %}
+
+{% block content %}
+	<div class="main-title">
+		<div class="alert alert-info" align="Center">
+			Exam Schedule 
+		</div>
+		<div class="search_students">
+			<label> Course</label> 
+			<select name="course" ng-model="course" ng-change="get_batch()">
+				<option value="">Select</option>
+				<option ng-repeat="course in courses" value="[[course.id]]">[[course.course]]
+				</option>
+			</select>
+			<label> Batch</label> 
+			<select name="batch" ng-model="batch" ng-change="get_exam_schedules()">
+				<option value="">Select</option>
+				<option ng-repeat="bat in batches" value="[[bat.id]]"  >[[bat.name]]
+				</option>
+			</select>
+			<p class="error_message"> [[message]] </p>
+		</div>
+		<div class="new_button">		
+			<input type="button" class="btn btn-info" value="New Schedule" ng-click="add_new_exam_schedule()">
+		</div>
+	</div>
+	<div class="section_3_student">
+		<div class="search_student">
+			<table id="list" class="table table-hover" ng-show="exams.length > 0" >
+				<tr class="success" style="font-size: 12px" style="width:auto">
+					<th>Exam Name</th>
+					<th>Course</th>
+					<th>Batch</th>
+					<th>Start Date</th>
+					<th>End Date</th>
+					<th>View</th>
+					<th>Edit</th>
+					<th>Delete</th>				  
+				</tr>				
+				<tr ng-repeat="exam in visible_list">		
+					<td>[[exam.name]]</td>
+					<td>[[exam.course]]</td>
+					<td>[[exam.batch]]</td>
+					<td>[[exam.start_date]]</td>
+					<td>[[exam.end_date]]</td>				
+					<td><a href="" ng-click="display_exam_schedule(exam)" >View</a></td>
+					<td><a href="/exam/edit_exam_schedule/[[exam.id]]/" >Edit</a></td>	
+					<td><a href="/exam/delete_exam_schedule/[[exam.id]]/" >Delete</a></td>
+				</tr>
+			</table> 
+		</div>
+		{% include 'pagination_div.html' %}
+	</div>
+{% endblock content %}

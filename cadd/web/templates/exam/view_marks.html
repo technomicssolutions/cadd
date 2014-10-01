@@ -1,0 +1,107 @@
+<div style='display:none' id="view_marks">
+    <div id='view_marks' style='padding:10px; background:#fff;'>
+        <div class="sign_box">
+            <div class="row-fluid">
+                <div class="span12 sign_mid">
+	                <div id="main-title">
+						<div class="alert alert-info" align="Center">
+							<h4>View Marks</h4>
+						</div>
+					</div>
+					<div class="section_1">
+						<div class="form_text">
+							<label> Course</label>  
+						</div>
+						<div class="form_input">							
+							<select name="course" ng-model="course" ng-change="get_batch()">
+								<option value="">Select</option>
+								<option ng-repeat="course in courses" value="[[course.id]]" >[[course.course]]
+								</option>
+							</select>
+						</div>
+						<div class="form_text">
+							<label> Batch</label>  
+						</div>
+						<div class="form_input">							
+							<select name="batch" ng-model="batch" ng-change="get_student()">
+								<option value="">Select</option>
+								<option ng-repeat="batch in batches" value="[[batch.id]]"  >[[batch.name]]
+								</option>
+							</select>
+						</div>
+						<div class="form_text">
+							<label> Semester</label>  
+						</div>
+						<div class="form_input">		
+							<select name="semester" ng-model="semester" ng-change="get_exams()">
+								<option value="">Select</option>
+								<option ng-repeat="semester in semesters" value="[[semester.id]]"  >[[semester.semester]]
+								</option>
+							</select>
+						</div>
+						<div class="control" ng-show="visible_list.length">
+							<table class="table stripped">
+								<tr>
+									<th class="no_border_top">
+										<label class="block bold_font">Roll No:</label>
+									</th>
+									<th class="no_border_top">
+										<label class="block bold_font">Student Name</label>
+									</th>
+								</tr>								
+								<tr ng-repeat="student in visible_list">
+									<td class="nowrap">[[ student.roll_no ]]</td>					
+									<td class="nowrap">[[ student.student_name ]]</td>	
+									<td>
+										<table class="table stripped inner_table" ng-repeat="exam in student.exam_marks">
+											<tr>
+												<th class="exam_tab" colspan="8">[[ exam.exam_name ]]</th>
+											</tr>
+											<tr>
+												<td class="allign_center" ng-repeat="subject in exam.subjects">[[ subject.subject]]</td>
+											</tr>
+											<tr >
+												<td class="mark_add" ng-repeat="subject in exam.subjects"><span  class="red_font" ng-hide="subject.status == 'PASS'">[[ subject.mark ]]</span>
+												<span ng-show="subject.status == 'PASS'">[[ subject.mark ]]</span>							
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</div>
+						<div class="clear"></div>
+					</div>					
+					<div align="Center">	
+						<div class="buttons">
+							{% include 'pagination_div.html' %}
+							<p class="error_message"> [[validation_error]] </p>
+							<input type="button" class="btn btn-info" value="Cancel" ng-click="close_popup()">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,88 @@
+<div style='display:none' id="exam_schedule_details_view">
+    <div id='exam_schedule_details_view' style='padding:10px; background:#fff;'>
+        <div class="sign_box">
+            <div class="row-fluid">
+                <div class="span12 sign_mid">
+	                <div id="main-title">
+						<div class="alert alert-info" align="Center">
+							<h4>Exam Schedule</h4>
+						</div>
+					</div>
+					<div class="section_1">						
+						<div class="control">
+							<table class="table stripped">
+								<tr>
+									<th> Exam Name </th>
+									<th> Course </th>
+									<th> Batch </th>
+									<th> Branch </th>
+									<th> Start Date </th>
+									<th> End Date </th>
+									<th> Exam Total </th>
+									<th> No of Subjects </th>
+								<tr>
+								<tr> 
+									<td> [[exam_schedule.exam_name]] </td>
+									<td> [[exam_schedule.course]] </td>
+									<td> [[exam_schedule.batch]] </td>
+									<td> [[exam_schedule.branch]] </td>
+									<td> [[exam_schedule.start_date]] </td>
+									<td> [[exam_schedule.end_date]] </td>
+									<td> [[exam_schedule.exam_total]] </td>
+									<td> [[exam_schedule.no_subjects]] </td>
+								</tr>
+							</table>					
+						</div>
+						<div class="control">
+							<table class="table stripped">
+								<tr>
+									<th>Subject</th>
+									<th>Date</th>
+									<th>Start time</th>
+									<th>End Time</th>
+									<th>Total Mark</th>
+									<th>Pass Mark</th>								
+								</tr>
+								<tr ng-repeat="subject in exam_schedule.subjects">
+									<td> [[subject.subject_name]] </td>
+									<td> [[subject.date]] </td>
+									<td> [[subject.start_time]] </td>
+									<td> [[subject.end_time]] </td>
+									<td> [[subject.total_mark]] </td>
+									<td> [[subject.pass_mark]] </td>						
+								</tr>
+							</table>
+						</div>						
+					</div>			
+					<div  align="Center">		
+						<div class="buttons">
+							<p class="error_message"> [[validation_error]] </p>
+							<p ng-show="error_flag" class="error_message">[[message]]</p>
+							<input type="button" class="btn btn-info" value="Cancel" ng-click="close_popup()">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
