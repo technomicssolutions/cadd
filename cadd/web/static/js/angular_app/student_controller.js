@@ -479,6 +479,13 @@ function EnquiryController($scope, $http) {
         'remarks_for_follow_up_date' : '',
         'discount' : '',
     }
+    new Picker.Date($$('#follow_up_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+    });
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
         // get_course_list($scope, $http);

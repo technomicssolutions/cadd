@@ -370,7 +370,7 @@ class Enquiry(View):
                 enquiry.follow_up_date = enquiry_details['follow_up_date']
                 enquiry.remarks_for_follow_up_date = enquiry_details['remarks_for_follow_up_date']
                 enquiry.discount = enquiry_details['discount']
-                # enquiry.auto_generated_num = 
+                enquiry.auto_generated_num = 'ENQ' + str(enquiry.id)
                 enquiry.save()
             res = {
                 'result': 'ok',
