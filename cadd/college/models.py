@@ -17,9 +17,10 @@ class Course(models.Model):
 
 class Batch(models.Model):
 	software = models.ForeignKey(Software)
-	start_date = models.DateField('Start Date', null=True, blank=True)
-	end_date = models.DateField('End Date', null=True, blank=True)
+	start_time = models.TimeField('Start Date', null=True, blank=True)
+	end_time = models.TimeField('End Date', null=True, blank=True)
 	no_of_students = models.IntegerField('No of Students', null=True,blank=True)
+	allowed_students = models.IntegerField('Allowed No of Students', null=True,blank=True)
 
 	def __unicode__(self):
 		return (self.course.name + ' ' + self.start_date + '-' + self.end_date)
