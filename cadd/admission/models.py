@@ -38,6 +38,7 @@ class Student(models.Model):
 	class Meta:
 		verbose_name = 'Student'
 		verbose_name_plural = 'Student'
+
 class Enquiry(models.Model):
 
 	student_name = models.CharField('Student Name', null=True, blank=True, max_length=200)
@@ -52,3 +53,11 @@ class Enquiry(models.Model):
 	follow_up_date = models.DateField('Next follow up date',null=True, blank=True)
 	remarks_for_follow_up_date =   models.TextField('Remark for Next follow up date',null=True, blank=True)
 	auto_generated_num = models.CharField('Auto generated number',null=True, blank=True, max_length=200)
+	discount = models.IntegerField('Discount', null=True, blank=True)
+
+	def __unicode__(self):
+		return str(self.student_name)
+
+	class Meta:
+		verbose_name = 'Enquiry'
+		verbose_name_plural = 'Enquiry'
