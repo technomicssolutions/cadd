@@ -5,15 +5,14 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.core.urlresolvers import reverse
 
-from college.models import College
 
 class Home(View):
     def get(self, request, *args, **kwargs):
+        
+        return render(request, 'home.html',{})# Create your views here.
 
-        context = {
-            'college_name': College.objects.latest('id').name if College.objects.all().count() > 0 else ''
-        }
-        return render(request, 'home.html',context)# Create your views here.
+
+
 class Login(View):
     def get(self,request,*args,**kwargs):
         if request.user.is_authenticated():

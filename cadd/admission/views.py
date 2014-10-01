@@ -10,7 +10,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from admission.models import Student
 from datetime import datetime
 
-from college.models import Course, Branch, Batch, Semester, QualifiedExam, TechnicalQualification
+
 
 
 class AddStudent(View):
