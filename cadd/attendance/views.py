@@ -8,9 +8,10 @@ from django.core.urlresolvers import reverse
 from django.views.generic.base import View
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
+
 from attendance.models import Attendance, HolidayCalendar
 from college.models import Batch
-from academic.models import Student
+from admission.models import Student
 
 class AddAttendance(View):
 
