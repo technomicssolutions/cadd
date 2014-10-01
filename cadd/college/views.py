@@ -10,7 +10,7 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 class ListSoftwares(View):
 
 	def get(self, request, *args, **kwargs):
-
-        return render(request, 'college/list_softwares.html', {})
+    
+    		return render(request, 'college/list_softwares.html', {})
 
 
