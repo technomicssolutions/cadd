@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Courses{% endblock title %}
+{% block body_id %}Courses{% endblock %}
+
+{% block controller %}
+	ng-controller="CollegeController" ng-init="init('{{csrf_token}}', 'courses')"
+{% endblock controller %}
+
+{% block dialogue_popup %}
+	{% include 'add_course.html' %} 	              	
+{% endblock %}
+
+{% block content %}
+	<div class="main-title">
+		<div class="alert alert-info" align="Center">Courses </div>
+		<div  class="new_button">		
+			<input type="button" class="btn btn-info" value="New Course" ng-click="add_new_course()">
+		</div>
+	</div>
+	<div class="course_list">
+		<table id="list" class="table table-hover" >
+			<tr class="success" style="font-size: 12px" style="width:auto">
+			  <th>Course</th>
+			  <th>Duration</th>
+			  <th>Amount</th>
+			  <th>Edit </th>
+			  <th>Delete</th>
+			</tr>
+			<tr ng-repeat="course in courses">
+				<td>[[course.name]]</td> 
+				<td>[[course.duration]]</td> 
+				<td>[[course.amount]]</td> 
+				<td> <a href="" ng-click="edit_course(course)">Edit </td>
+				<td><a href="" ng-click="delete_course(course)">Delete</td>
+			</tr>
+		</table> 
+		  <div class="form_text">
+            <p class="error_message"> [[message]] </p>
+        </div>
+	</div>	
+{% endblock content %}

@@ -3,7 +3,7 @@
 {% block body_id %}Softwares{% endblock %}
 
 {% block controller %}
-	ng-controller="CollegeController" ng-init="init('{{csrf_token}}')"
+	ng-controller="CollegeController" ng-init="init('{{csrf_token}}', 'softwares')"
 {% endblock controller %}
 
 {% block dialogue_popup %}
@@ -12,7 +12,7 @@
 
 {% block content %}
 	<div class="main-title">
-		<div class="alert alert-info" align="Center">Software </div>
+		<div class="alert alert-info" align="Center">Softwares </div>
 		<div  class="new_button">		
 			<input type="button" class="btn btn-info" value="New Software" ng-click="add_new_software()">
 		</div>

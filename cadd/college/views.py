@@ -6,10 +6,10 @@ from django.views.generic.base import View
 from django.shortcuts import get_object_or_404, render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 
-from college.models import Software
+from college.models import Software, Course
 
 
-class ListSoftwares(View):
+class Softwares(View):
 
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
@@ -79,3 +79,34 @@ class DeleteSoftware(View):
             status_code = 200
             response = simplejson.dumps(res)
             return HttpResponse(response, status = status_code, mimetype="application/json")
+
+
+class Courses(View):
+
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            course_list = []
+            software_list = []
+            courses = Course.objects.all()
+            for course in courses:
+                softwares = course.software.all()
+                for software in softwares:
+                    software_list.append({
+                        'id': software.id,
+                        'name': software.name,
+                    })
+                course_list.append({
+                    'id': course.id,
+                    'name': course.name,
+                    'duration': course.duration,
+                    'amount': course.amount,
+                    'softwares': software_list,
+                })
+                software_list = []
+            res = {
+                'courses': course_list,
+            }
+            status = 200
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=status, mimetype='application/json')
+        return render(request, 'list_courses.html', {})        
