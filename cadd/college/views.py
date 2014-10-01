@@ -13,3 +13,4 @@ class ListSoftwares(View):
 
         return render(request, 'college/list_softwares.html', {})
 
+

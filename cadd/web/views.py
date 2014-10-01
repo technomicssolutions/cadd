@@ -8,7 +8,11 @@ from django.core.urlresolvers import reverse
 
 class Home(View):
     def get(self, request, *args, **kwargs):
+        
         return render(request, 'home.html',{})# Create your views here.
+
+
+
 class Login(View):
     def get(self,request,*args,**kwargs):
         if request.user.is_authenticated():

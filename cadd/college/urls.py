@@ -7,4 +7,5 @@ from college.views import ListSoftwares
 urlpatterns = patterns('',
 	url(r'^list_softwares/$',login_required (ListSoftwares.as_view()), name='list_softwares'),
 	
+
 )

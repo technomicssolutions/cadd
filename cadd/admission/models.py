@@ -37,3 +37,25 @@ class Student(models.Model):
 		verbose_name = 'Student'
 		verbose_name_plural = 'Student'
 
+class Enquiry(models.Model):
+
+	student_name = models.CharField('Student Name', null=True, blank=True, max_length=200)
+	address = address= models.CharField('Student Address',null=True, blank=True, max_length=600)
+	mobile_number= models.CharField('Mobile Number',null=True, blank=True, max_length=200)
+	email = models.CharField('Email',null=True, blank=True, max_length=200)
+	details_about_clients_enquiry =  models.TextField('Details ', null=True, blank=True)
+	educational_qualification = models.CharField('Educational Qualification', null=True, blank=True, max_length=200)
+	land_mark = models.CharField('Nearest land mark',null=True, blank=True, max_length=200)
+	course = models.ForeignKey(Course)
+	remarks = models.TextField('Remark',null=True, blank=True)
+	follow_up_date = models.DateField('Next follow up date',null=True, blank=True)
+	remarks_for_follow_up_date =   models.TextField('Remark for Next follow up date',null=True, blank=True)
+	auto_generated_num = models.CharField('Auto generated number',null=True, blank=True, max_length=200)
+	discount = models.IntegerField('Discount', null=True, blank=True)
+
+	def __unicode__(self):
+		return str(self.student_name)
+
+	class Meta:
+		verbose_name = 'Enquiry'
+		verbose_name_plural = 'Enquiry'
