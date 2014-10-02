@@ -15,7 +15,6 @@ class AddStaff(View):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             staff_details = ast.literal_eval(request.POST['staff'])
-            print staff_details
             if staff_details.get('id', ''):
                 staff = Staff.objects.get(id=staff_details['id'])
                 user = staff.user
@@ -47,8 +46,32 @@ class AddStaff(View):
             staff.experience = staff_details['experience']
             staff.role = staff_details['role']
             staff.save()
+            permission_details = {
+                'attendance_module': 'true' if staff.permission and staff.permission.attendance_module  else 'false',
+                'student_module': 'true' if staff.permission and staff.permission.student_module else 'false',
+                'master_module': 'true' if staff.permission and staff.permission.master_module else 'false',
+                'fees_module': 'true' if staff.permission and staff.permission.fees_module else 'false',
+            }
             res = {
                 'result': 'ok',
+                'staff': {
+                    'id': staff.id,
+                    'first_name': staff.user.first_name,
+                    'last_name': staff.user.last_name,
+                    'username': staff.user.username,
+                    'dob': staff.dob.strftime('%d/%m/%Y'),
+                    'address': staff.address,
+                    'mobile_number' : staff.mobile_number,
+                    'land_number' : staff.land_number,
+                    'email': staff.user.email,
+                    'blood_group': staff.blood_group,
+                    'doj': staff.doj.strftime('%d/%m/%Y'),
+                    'qualifications': staff.qualifications,
+                    'role': staff.role,
+                    'experience': staff.experience,
+                    'photo': staff.photo.name,
+                    'permission': permission_details,
+                }
             }  
             response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype="application/json")
