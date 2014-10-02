@@ -3,7 +3,8 @@ from django.conf.urls import patterns, include, url
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
-from admission.views import *
+from admission.views import GetStudent,AddStudent,ListStudent,ViewStudentDetails,EditStudentDetails,\
+DeleteStudentDetails, EnquiryView, SearchEnquiry
 
 urlpatterns = patterns('',
 	url(r'^get_student/(?P<course_id>\d+)/(?P<batch_id>\d+)/$',login_required (GetStudent.as_view()), name="get_student"),

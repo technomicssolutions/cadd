@@ -204,15 +204,6 @@ function StaffController($scope, $element, $http, $timeout, share, $location) {
 }
 
 function PermissionController($scope, $http) {
-    app.directive('keyTrap', function() {
-        console.log('hioii');
-        return function( scope, elem ) {
-        elem.bind('keydown', function( event ) {
-          scope.$broadcast('keydown', event.keyCode );
-
-        });
-      };
-    });
     $scope.focusIndex = 0;
     $scope.keys = [];
     $scope.keys.push({ code: 13, action: function() { $scope.select_list_item( $scope.focusIndex ); }});        
@@ -235,25 +226,59 @@ function PermissionController($scope, $http) {
           $scope.$apply();
         });
     });
+    $scope.no_staff = false;
     $scope.permission = {
         'staff': '',
-        'attendance_module': '',
-        'admission_module': '',
-        'college_module': '',
-        'fees_module': '',
+        'attendance_module': false,
+        'student_module': false,
+        'master_module': false,
+        'fees_module': false,
     }
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
     }
     $scope.search_staff = function() {
-        $http.get('/staff/staffs/?staff_name='+$scope.staff_name).success(function(data){
-            $scope.staffs = data.staffs;
-        }).error(function(data, status){
-            console.log('Request failed' || data);
-        })
+        $scope.staff_selected = true;
+        $scope.no_staff = false;
+        $scope.staffs = [];
+        if ($scope.staff_name.length > 0) {
+            $http.get('/staff/staffs/?staff_name='+$scope.staff_name).success(function(data){
+                $scope.staffs = data.staffs;
+            }).error(function(data, status){
+                console.log('Request failed' || data);
+            })
+        }
+        if ($scope.staffs.length == 0) {
+            $scope.no_staff_message = 'No such staff';
+            $scope.no_staff = true;
+        }
     }
     $scope.select_staff = function(staff) {
-        $scope.staff_name = staff.name;
+        $scope.staff_selected = false;
+        $scope.staff_name = staff.first_name + ' ' + staff.last_name;
         $scope.permission.staff = staff.id;
+        $scope.staffs = [];
+    }
+    $scope.select_list_item = function(index){
+        staff = $scope.staffs[index];
+        $scope.select_staff(staff);
+    }
+    $scope.validate_staff_permission_setting = function() {
+
+    }
+    $scope.new_staff = function() {
+        $scope.staff_selected = false;
+        $scope.new_staff = true;
+        $scope.popup = new DialogueModelWindow({   
+            'dialogue_popup_width': '79%',
+            'message_padding': '0px',
+            'left': '28%',
+            'top': '182px',
+            'height': 'auto',
+            'content_div': '#add_staff_details'
+        });
+        var height = $(document).height();
+        $scope.popup.set_overlay_height(height);
+        $scope.popup.show_content();
     }
 }

@@ -3,9 +3,17 @@
 {% block body_id %}enquiry_search{% endblock body_id %}
 
 {% block controller %}ng-controller="AdmissionController" ng-init="init('{{csrf_token}}')"{% endblock controller %}
+{% block dialogue_popup %}
+    {% include 'add_student.html' %}
+    
+                
+{% endblock %}
 {% block content %}
 
 <div class="col-sm-11">
+    <div  class="new_button">       
+        <input type="button" class="btn btn-info" value="New Admission" ng-click="add_new_student()">
+    </div>
 	<div class="separation">
     <h2> Search Enquiry </h2>
         <div class="formtext">
@@ -48,6 +56,13 @@
                     <h2><a href="">Add details to admission form </a></h2>
                     
                     <p>Name: [[enquiry.student_name]]</p>
+                    <p>Course : [[enquiry.course]]</p>
+                    <p>Address : [[enquiry.address]]</p>
+                    <p>Education : [[enquiry.educational_qualification]]</p>
+                    <p>Mobile : [[enquiry.mobile_number]]</p>
+                    <p>Email : [[enquiry.email]]</p>
+                    <p>Follow Up Date :[[enquiry.follow_up_date]] </p>
+                    <p>Discount : [[enquiry.discount]]</p>
                     <br>            
                     <br>        
                 </div>

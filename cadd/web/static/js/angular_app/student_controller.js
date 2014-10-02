@@ -488,7 +488,7 @@ function EnquiryController($scope, $http) {
     });
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
-        // get_course_list($scope, $http);
+        get_course_list($scope, $http);
     }
     $scope.validate_enquiry = function() {
     $scope.validation_error = '';
@@ -536,7 +536,7 @@ function EnquiryController($scope, $http) {
             }).success(function(data){
                
                 if (data.result == 'ok') {
-                    document.location.href = '/admission/list_student/'    
+                    document.location.href = '/admission/enquiry/'    
                 } 
             }).error(function(data, status){
                 console.log('Request failed'||data);
@@ -570,4 +570,16 @@ function AdmissionController($scope, $http) {
             console.log(data || "Request failed");
         });
     }
+    $scope.add_new_student  = function(){
+        add_new_student($http, $scope);
+    }
+    $scope.save_new_student = function(){
+        save_new_student($http, $scope);
+    }
+    $scope.hide_popup_windows = function(){
+        $('#add_student_details')[0].setStyle('display', 'none');
+    }  
+    $scope.close_popup = function(){
+        $scope.popup.hide_popup();
+    } 
 }

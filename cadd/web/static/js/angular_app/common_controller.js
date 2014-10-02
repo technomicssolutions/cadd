@@ -1,6 +1,5 @@
 /************************** Common JS F************/
 app.directive('keyTrap', function() {
-    console.log('hioii');
     return function( scope, elem ) {
     elem.bind('keydown', function( event ) {
       scope.$broadcast('keydown', event.keyCode );
@@ -105,7 +104,7 @@ function get_fee_structure_details($scope, $http, fees_structure_id) {
     })
 }
 function get_course_list($scope, $http) {
-    $http.get('/college/list_course/').success(function(data)
+    $http.get('/college/course_details/').success(function(data)
     {
         $scope.courses = data.courses;
     }).error(function(data, status)
