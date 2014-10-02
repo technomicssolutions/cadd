@@ -791,6 +791,9 @@ label.block{
 	width: 40%;
 }
 
+.no_border_top{
+	border-top: none;
+}
 .search_list {
 	background-color: #FFFFFF;
     border: 1px solid #C3C3C3;
