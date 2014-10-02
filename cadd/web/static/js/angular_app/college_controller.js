@@ -44,6 +44,7 @@ function CollegeController($scope, $element, $http, $timeout, share, $location)
                 'amount': '',
                 'softwares': [],
             };
+            $scope.softwares = [];
             get_course_list($scope, $http);
         }
     }
@@ -126,7 +127,8 @@ function CollegeController($scope, $element, $http, $timeout, share, $location)
         var height = $(document).height();
         $scope.popup.set_overlay_height(height);
         $scope.popup.show_content();
-        get_software_list($scope, $http);
+        if($scope.course.id == '')
+            get_software_list($scope, $http);
     }
     $scope.validate_course = function(){
         $scope.validation_error = "";
@@ -155,15 +157,51 @@ function CollegeController($scope, $element, $http, $timeout, share, $location)
         } else if($scope.course.amount !== '' && !Number($scope.course.amount)){
             $scope.validation_error = 'Please enter a valid amount';
             return false;
-        }
+        } return true;
+    }
+    $scope.edit_course = function(course){
+        $scope.course.id = course.id;
+        $scope.course.name = course.name;
+        $scope.course.duration = course.duration;
+        $scope.course.amount = course.amount;
+        $scope.course.duration_unit = course.duration_unit;
+        $scope.url = '/college/softwares/';
+        $http.get($scope.url).success(function(data)
+        {        
+            $scope.softwares = data.softwares;  
+            for(var i = 0; i < $scope.softwares.length; i++){
+                for(var j = 0; j < course.softwares.length; j++){
+                    if($scope.softwares[i].id == course.softwares[j].id){
+                        $scope.softwares[i].selected = 'true';
+                        $scope.course.softwares.push($scope.softwares[i].id);
+                    }
+                }
+            }
+            console.log($scope.softwares);
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+        $scope.add_new_course();
+    }
+    $scope.delete_course = function(course){
+        $scope.url = '/college/delete_course/'+course.id;
+        $http.get($scope.url).success(function(data)
+        {        
+            $scope.message = data.message;
+            document.location.href ='/college/courses/';
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
     }
     $scope.save_new_course = function(){
         if($scope.validate_course()) {
-            $scope.course.duration = $scope.course.duration + $scope.unit;
             params = { 
                 'course_details': angular.toJson($scope.course),
                 "csrfmiddlewaretoken" : $scope.csrf_token
             }
+            console.log($scope.course);
             $http({
                 method: 'post',
                 url: "/college/courses/",

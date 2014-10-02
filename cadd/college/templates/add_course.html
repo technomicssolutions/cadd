@@ -21,7 +21,7 @@
                         </div>
                         <div class="form_input"> 
                             <select size="5" name="semester_list" ng-model="course.softwares" multiple>
-                            <option ng-repeat="software in softwares" value="[[software.id]]">[[software.name]]</option>
+                            <option ng-repeat="software in softwares" value="[[software.id]]" ng-selected="software.selected=='true'">[[software.name]]</option>
                             </select>   
                         </div>
                         <div class="form_text">

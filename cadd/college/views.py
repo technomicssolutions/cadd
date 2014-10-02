@@ -99,6 +99,7 @@ class Courses(View):
                     'id': course.id,
                     'name': course.name,
                     'duration': course.duration,
+                    'duration_unit': course.duration_unit,
                     'amount': course.amount,
                     'softwares': software_list,
                 })
@@ -114,12 +115,24 @@ class Courses(View):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             course_details = ast.literal_eval(request.POST['course_details'])
+            print course_details
             try:
                 if course_details.get('id'):
                     course = Course.objects.get(id=course_details['id'])
                 else:
                     course = Course()
                 course.name = course_details['name']
+                course.amount = course_details['amount']
+                course.duration = course_details['duration']
+                course.duration_unit = course_details['duration_unit']
+                course.save()
+                if course.software:
+                    course.software.clear()
+                print course_details['softwares']
+                softwares = course_details['softwares']
+                for software_id in softwares:
+                    software = Software.objects.get(id=software_id)
+                    course.software.add(software)
                 course.save()
                 res = {
                     'result': 'ok',
@@ -130,6 +143,29 @@ class Courses(View):
                     'result': 'error',
                     'message': 'Course Already Exists',
                 }
+            status_code = 200
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status = status_code, mimetype="application/json")
+
+
+class DeleteCourse(View):
+
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            try:
+                course = Course.objects.get(id=kwargs['course_id'])
+                name = course.name
+                course.delete()
+                res = {
+                    'result': 'ok',
+                    'message': name + ' Deleted Successfully',
+                }
+            except:
+                res = {
+                    'result': 'error',
+                    'message': 'failed',
+                }
+
             status_code = 200
             response = simplejson.dumps(res)
             return HttpResponse(response, status = status_code, mimetype="application/json")
