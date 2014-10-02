@@ -74,12 +74,12 @@ function validate_staff($scope) {
 }
 function save_staff($scope, $http, from) {
     if(validate_staff($scope)) {
+        show_spinner();
         params = { 
             'staff': angular.toJson($scope.staff),
             "csrfmiddlewaretoken" : $scope.csrf_token
         }
         var fd = new FormData();
-        console.log($scope.photo_img);
         if ($scope.photo_img != undefined)
             fd.append('photo_img', $scope.photo_img.src)
         for(var key in params){
@@ -91,11 +91,16 @@ function save_staff($scope, $http, from) {
             headers: {'Content-Type': undefined
             }
         }).success(function(data, status){
+            hide_spinner();
             if (data.result == 'error'){
-                $scope.error_flag=true;
+                $scope.error_flag = true;
                 $scope.message = data.message;
             } else {
-                document.location.href ="/staff/staffs/";
+                if (from == 'permission') {
+                    $scope.close_popup();
+                    $scope.select_staff(data.staff);
+                } else 
+                    document.location.href ="/staff/staffs/";
             }
 
         }).error(function(data, status){
@@ -254,7 +259,6 @@ function PermissionController($scope, $http) {
                 console.log('Request failed' || data);
             })
         }
-        
     }
     $scope.select_staff = function(staff) {
         $scope.staff_selected = false;
@@ -262,12 +266,20 @@ function PermissionController($scope, $http) {
         $scope.permission.staff = staff.id;
         if (staff.permission.attendance_module == 'true')
             $scope.permission.attendance_module = true;
+        else
+            $scope.permission.attendance_module = false;
         if (staff.permission.student_module == 'true')
             $scope.permission.student_module = true;
+        else
+            $scope.permission.student_module = false;
         if (staff.permission.master_module == 'true')
             $scope.permission.master_module = true;
+        else
+            $scope.permission.master_module = false;
         if (staff.permission.fees_module == 'true')
             $scope.permission.fees_module = true;
+        else
+            $scope.permission.fees_module = false;
         $scope.staffs = [];
     }
     $scope.select_list_item = function(index){
@@ -302,7 +314,6 @@ function PermissionController($scope, $http) {
             } else {
                 $scope.permission.fees_module = 'false';
             }
-            
             params = {
                 'permission_details': angular.toJson($scope.permission),
                 'csrfmiddlewaretoken': $scope.csrf_token,
@@ -323,6 +334,36 @@ function PermissionController($scope, $http) {
         }
     }
     $scope.new_staff = function() {
+        $scope.staff = {
+            'first_name': '',
+            'last_name': '',
+            'username': '',
+            'password': '',
+            'dob': '',
+            'address': '',
+            'mobile_number': '',
+            'land_number': '',
+            'email':'',
+            'blood_group': '',
+            'doj': '',
+            'qualifications': '',
+            'experience':'',
+            'role': '',
+        }
+        var date_pick = new Picker.Date($$('#dob'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
+        new Picker.Date($$('#doj'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
         $scope.staff_selected = false;
         $scope.new_staff = true;
         $scope.popup = new DialogueModelWindow({   
@@ -337,4 +378,10 @@ function PermissionController($scope, $http) {
         $scope.popup.set_overlay_height(height);
         $scope.popup.show_content();
     }
+    $scope.save_new_staff = function() {
+        save_staff($scope, $http, 'permission');
+    }
+    $scope.close_popup = function(){
+        $scope.popup.hide_popup();
+    } 
 }
