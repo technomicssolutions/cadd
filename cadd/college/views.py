@@ -210,9 +210,11 @@ class EditBatch(View):
             try:
                 batch = Batch.objects.get(id = batch_id)
                 ctx_data.append({
+                    'id': batch.id,
                     'software':batch.software.name,
-                    'batch_start':batch.start_time,
-                    'batch_end':batch.end_time,
+                    'software_id':batch.software.id,
+                    'start':batch.start_time.strftime('%H:%M.%p'),
+                    'end':batch.end_time.strftime('%H:%M.%p'),
                     'allowed_students':batch.allowed_students,                                        
                     'name': batch.name,
                 })

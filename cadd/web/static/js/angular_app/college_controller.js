@@ -3,7 +3,7 @@ function get_software_list($scope, $http){
     $scope.url = '/college/softwares/';
     $http.get($scope.url).success(function(data)
     {        
-        $scope.softwares = data.softwares;  
+        $scope.softwares = data.softwares; 
     }).error(function(data, status)
     {
         console.log(data || "Request failed");
@@ -24,12 +24,65 @@ function get_course_list($scope, $http){
     $http.get($scope.url).success(function(data)
     {        
         $scope.courses = data.courses;  
+        console.log($scope.courses) ;
     }).error(function(data, status)
     {
         console.log(data || "Request failed");
     });
 }
+function validate_batch($scope, $http){
+    $scope.validation_error = '';
+    if($scope.batch.name == ''){
+        $scope.validation_error = "Please Enter name" ;
+        return false;
+    } else if($scope.batch.software == ''){
+        $scope.validation_error = "Please Enter software" ;
+        return false;
+    } else if($scope.batch.start == '') {
+        $scope.validation_error = "Please Enter Start time" ;
+        return false;
+    } else if($scope.batch.end == '') {
+        $scope.validation_error = "Please Enter End time" ;
+        return false;
+    } else if($scope.batch.allowed_students == '') {
+        $scope.validation_error = "Please Enter No of allowed students" ;
+        return false;
+    }  
+    else {
+        return true;
+    } 
+}
+function save_batch($scope, $http){
+    $scope.batch.start = $$('#batch_start')[0].get('value');
+    $scope.batch.end = $$('#batch_end')[0].get('value');
+    if(validate_batch($scope, $http)) {
+        params = { 
+            'batch': angular.toJson($scope.batch),
+            "csrfmiddlewaretoken" : $scope.csrf_token
+        }
+        $http({
+            method: 'post',
+            url: "/college/add_new_batch/",
+            data: $.param(params),
+            headers: {
+                'Content-Type' : 'application/x-www-form-urlencoded'
+            }
+        }).success(function(data, status) {
+            
+            if (data.result == 'error'){
+                $scope.error_flag=true;
+                $scope.message = data.message;
+            } else {
+                $scope.popup.hide_popup();
+                $scope.batches.push(data.batch);
 
+            }
+        }).error(function(data, success){
+            $scope.error_flag=true;
+            $scope.message = data.message;
+        });
+    }
+}
 function CollegeController($scope, $element, $http, $timeout, share, $location)
 {
     
@@ -254,91 +307,40 @@ function EditBatchController($scope, $http, $element, $location, $timeout) {
     
     $scope.init = function(csrf_token, batch_id){
         $scope.csrf_token = csrf_token;
-        $scope.batch_id = batch_id;
-        $scope.url = '/college/edit_batch/' + $scope.batch_id+ '/';
+        $scope.url = '/college/edit_batch/' + batch_id + '/';
         $http.get($scope.url).success(function(data)
         {
             $scope.batch = data.batch[0];
+            console.log($scope.batch);
         }).error(function(data, status)
         {
             console.log(data || "Request failed");
         });
 
-         new Picker.Date($$('#batch_start'), {
-            timePicker: false,
+        new Picker.Date($$('#batch_start'), {
+            timePicker: true,
             positionOffset: {x: 5, y: 0},
             pickerClass: 'datepicker_bootstrap',
             useFadeInOut: !Browser.ie,
-            pickOnly: 'years',
-            format:'%Y',
-            canAlwaysGoUp: ['years']
+            pickOnly: 'time',
+            format:'%X',
+            canAlwaysGoUp: ['time'],
+            ampm: true,
         });
         new Picker.Date($$('#batch_end'), {
-            timePicker: false,
+            timePicker: true,
             positionOffset: {x: 5, y: 0},
             pickerClass: 'datepicker_bootstrap',
             useFadeInOut: !Browser.ie,
-            pickOnly: 'years',
-            format:'%Y',
-            canAlwaysGoUp: ['years']
+            pickOnly: 'time',
+            format:'%X',
+            canAlwaysGoUp: ['time'],
+            ampm: true,
         });
-        
-        
+        get_software_list($scope, $http);
     }
-    $scope.validate_edit_batch = function() {
-
-        
-        $scope.validation_error = '';
-
-        if($scope.batch.batch_start == '' || $scope.batch.batch_start == undefined) {
-            $scope.validation_error = "Please Enter Start Year" ;
-            return false;
-        } else if($scope.batch.batch_end == '' || $scope.batch.batch_end == undefined) {
-            $scope.validation_error = "Please Enter End Year" ;
-            return false;
-        } else if($scope.batch.batch_periods == '' || $scope.batch.batch_periods == undefined) {
-            $scope.validation_error = "Please Enter No of Hours during day" ;
-            return false;
-        } 
-        return true;   
-     }
-
     $scope.save_batch = function() {
-
-        $scope.batch.batch_start = $$('#batch_start')[0].get('value');
-        $scope.batch.batch_end = $$('#batch_end')[0].get('value');
-        $scope.is_valid = $scope.validate_edit_batch();
-
-        if ($scope.is_valid) {
-            $scope.error_flag=false;
-            $scope.message = '';
-           
-            params = { 
-                'batch': angular.toJson($scope.batch),
-                "csrfmiddlewaretoken" : $scope.csrf_token
-            }
-            $http({
-                method : 'post',
-                url : $scope.url,
-                data : $.param(params),
-                headers : {
-                    'Content-Type' : 'application/x-www-form-urlencoded'
-                }
-            }).success(function(data, status) {
-                
-                if (data.result == 'error'){
-                    $scope.error_flag=true;
-                    $scope.message = data.message;
-                } else {
-                    $scope.error_flag=false;
-                    $scope.message = '';
-                    $scope.batches.push(data.batch);
-                }
-            }).error(function(data, status){
-                $scope.error_flag=true;
-                $scope.message = data.message;
-            });
-        }
+        save_batch($scope, $http);
     }
 }
 
@@ -362,30 +364,6 @@ function BatchController($scope, $element, $http, $timeout, share, $location)
         get_batches($scope, $http);
         console.log($scope.softwares);
     }
-
-    validate_new_batch = function($scope) {
-        $scope.validation_error = '';
-        if($scope.batch.name == ''){
-            $scope.validation_error = "Please Enter name" ;
-            return false;
-        } else if($scope.batch.software == ''){
-            $scope.validation_error = "Please Enter software" ;
-            return false;
-        } else if($scope.batch.start == '') {
-            $scope.validation_error = "Please Enter Start time" ;
-            return false;
-        } else if($scope.batch.end == '') {
-            $scope.validation_error = "Please Enter End time" ;
-            return false;
-        } else if($scope.batch.allowed_students == '') {
-            $scope.validation_error = "Please Enter No of allowed students" ;
-            return false;
-        }  
-        else {
-            return true;
-        } 
-    }
-
     $scope.close_popup = function(){
         $scope.popup.hide_popup();
     }
@@ -425,35 +403,7 @@ function BatchController($scope, $element, $http, $timeout, share, $location)
         $scope.branch = '';
     }
     $scope.save_new_batch = function() {
-        $scope.batch.start = $$('#batch_start')[0].get('value');
-        $scope.batch.end = $$('#batch_end')[0].get('value');
-        if(validate_new_batch($scope)) {
-            params = { 
-                'batch': angular.toJson($scope.batch),
-                "csrfmiddlewaretoken" : $scope.csrf_token
-            }
-            $http({
-                method: 'post',
-                url: "/college/add_new_batch/",
-                data: $.param(params),
-                headers: {
-                    'Content-Type' : 'application/x-www-form-urlencoded'
-                }
-            }).success(function(data, status) {
-                
-                if (data.result == 'error'){
-                    $scope.error_flag=true;
-                    $scope.message = data.message;
-                } else {
-                    $scope.popup.hide_popup();
-                    $scope.batches.push(data.batch);
-
-                }
-            }).error(function(data, success){
-                $scope.error_flag=true;
-                $scope.message = data.message;
-            });
-        }
+        save_batch($scope, $http);
     } 
 
 }

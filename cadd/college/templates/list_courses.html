@@ -21,6 +21,7 @@
 		<table id="list" class="table table-hover" >
 			<tr class="success" style="font-size: 12px" style="width:auto">
 			  <th>Course</th>
+			  <th>Softwares</th>
 			  <th>Duration</th>
 			  <th>Amount</th>
 			  <th>Edit </th>
@@ -28,7 +29,14 @@
 			</tr>
 			<tr ng-repeat="course in courses">
 				<td>[[course.name]]</td> 
-				<td>[[course.duration]]</td> 
+				<td>
+					<table>
+						<tr ng-repeat="software in course.softwares">
+							<td class="no_border_top">[[software.name]]</td>
+						</tr>
+					</table>
+				</td>
+				<td>[[course.duration]] [[course.duration_unit]]</td> 
 				<td>[[course.amount]]</td> 
 				<td> <a href="" ng-click="edit_course(course)">Edit </td>
 				<td><a href="" ng-click="delete_course(course)">Delete</td>
