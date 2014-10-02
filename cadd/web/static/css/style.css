@@ -898,3 +898,7 @@ label.block{
 .datepicker_bootstrap .time .ampm_container label {
   float: left;
 }
+a:hover , a:focus{
+	color: #33CCFF !important;
+	/*99CCFF*/
+}
