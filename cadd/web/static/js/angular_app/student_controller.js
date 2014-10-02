@@ -65,7 +65,7 @@ function save_new_student($http, $scope) {
         for(var key in params){
             fd.append(key, params[key]);          
         }
-        var url = "/academic/add_student/";
+        var url = "/admission/add_student/";
         $http.post(url, fd, {
             transformRequest: angular.identity,
             headers: {'Content-Type': undefined
@@ -80,7 +80,7 @@ function save_new_student($http, $scope) {
             }
             else {
                 
-                document.location.href ="/academic/list_student/";
+                document.location.href ="/admission/list_student/";
             }
 
         }).error(function(data, status){
@@ -210,7 +210,7 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         $scope.csrf_token = csrf_token;
         $scope.student_id = student_id;
         
-        $scope.url = '/academic/edit_student_details/' + $scope.student_id+ '/';
+        $scope.url = '/admission/edit_student_details/' + $scope.student_id+ '/';
         $http.get($scope.url).success(function(data)
         {
             
@@ -358,7 +358,7 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
                 } else {
                     $scope.error_flag=false;
                     $scope.message = '';
-                    document.location.href = '/academic/list_student/';
+                    document.location.href = '/admission/list_student/';
                 }
             }).error(function(data, status){
                 $scope.error_flag=true;
@@ -408,7 +408,7 @@ function StudentListController($scope, $http, $element, $location, $timeout) {
         });
     }
     $scope.get_students = function(){
-        var url = '/academic/list_student/?batch_id='+ $scope.batch;
+        var url = '/admission/list_student/?batch_id='+ $scope.batch;
         $http.get(url).success(function(data)
         {
             $scope.students = data.students;
@@ -429,7 +429,7 @@ function StudentListController($scope, $http, $element, $location, $timeout) {
     }    
     $scope.display_student_details = function(student) {
         $scope.student_id = student.id;
-        $scope.url = '/academic/view_student_details/' + $scope.student_id+ '/';
+        $scope.url = '/admission/view_student_details/' + $scope.student_id+ '/';
         $http.get($scope.url).success(function(data)
         {
             $scope.student = data.student[0];
@@ -479,9 +479,16 @@ function EnquiryController($scope, $http) {
         'remarks_for_follow_up_date' : '',
         'discount' : '',
     }
+    new Picker.Date($$('#follow_up_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+    });
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
-        // get_course_list($scope, $http);
+        get_course_list($scope, $http);
     }
     $scope.validate_enquiry = function() {
     $scope.validation_error = '';
@@ -492,10 +499,11 @@ function EnquiryController($scope, $http) {
         $scope.validation_error = "Please Enter the Name" ;
         return false;
     }   
-    else if($scope.enquiry.course == '' || $scope.enquiry.course == undefined) {
-        $scope.validation_error = "Please Enter Course";
-        return false;
-    } else if($scope.enquiry.address == '' || $scope.enquiry.address == undefined) {
+    // else if($scope.enquiry.course == '' || $scope.enquiry.course == undefined) {
+    //     $scope.validation_error = "Please Enter Course";
+    //     return false;
+    // } 
+    else if($scope.enquiry.address == '' || $scope.enquiry.address == undefined) {
         $scope.validation_error = "Please Enter Address";
         return false;
     } else if($scope.enquiry.mobile_number == ''|| $scope.enquiry.mobile_number == undefined){
@@ -528,11 +536,50 @@ function EnquiryController($scope, $http) {
             }).success(function(data){
                
                 if (data.result == 'ok') {
-                   
+                    document.location.href = '/admission/enquiry/'    
                 } 
             }).error(function(data, status){
                 console.log('Request failed'||data);
             });
         }
     }
+}
+function AdmissionController($scope, $http) {
+    
+    $scope.search = {
+        'student_name': '',
+        'enquiry_num': '',
+    }
+    $scope.init = function(csrf_token){
+        $scope.csrf_token = csrf_token;
+        $scope.no_enquiries = false;
+    }
+    $scope.enquiry_search  = function() {    
+        var url = '/admission/enquiry_search/?student_name='+$scope.search.student_name+'&enquiry_num='+$scope.search.enquiry_num;
+        $http.get(url).success(function(data)
+        {
+            $scope.enquiries = data.enquiries; 
+            $scope.count = data.count;
+            if(data.enquiries.length <= 0){
+              $scope.no_enquiries = true;
+            } else {
+              $scope.no_enquiries = false;
+            }
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+    }
+    $scope.add_new_student  = function(){
+        add_new_student($http, $scope);
+    }
+    $scope.save_new_student = function(){
+        save_new_student($http, $scope);
+    }
+    $scope.hide_popup_windows = function(){
+        $('#add_student_details')[0].setStyle('display', 'none');
+    }  
+    $scope.close_popup = function(){
+        $scope.popup.hide_popup();
+    } 
 }

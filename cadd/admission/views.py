@@ -7,7 +7,8 @@ from django.views.generic.base import View
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 
-from admission.models import Student
+from admission.models import Student, Enquiry
+from college.models import Course
 from datetime import datetime
 
 
@@ -79,7 +80,7 @@ class AddStudent(View):
             status_code = 200 
             response = simplejson.dumps(res)
             return HttpResponse(response, status = status_code, mimetype="application/json")
-        return render(request, 'academic/list_student.html', {})
+        return render(request, 'list_student.html', {})
 
 class ListStudent(View):
     def get(self, request, *args, **kwargs):
@@ -103,7 +104,7 @@ class ListStudent(View):
         ctx = {
             'students': students
         }
-        return render(request, 'academic/list_student.html',ctx)
+        return render(request, 'list_student.html',ctx)
 
 
 
@@ -269,7 +270,7 @@ class EditStudentDetails(View):
             status = 200
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')
-        return render(request, 'academic/edit_student_details.html',context)
+        return render(request, 'edit_student_details.html',context)
 
     def post(self, request, *args, **kwargs):
 
@@ -340,7 +341,7 @@ class DeleteStudentDetails(View):
         student.delete()
         return HttpResponseRedirect(reverse('list_student'))
 
-class Enquiry(View):
+class EnquiryView(View):
 
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
@@ -365,12 +366,18 @@ class Enquiry(View):
                 enquiry.details_about_clients_enquiry = enquiry_details['details_about_clients_enquiry']
                 enquiry.educational_qualification = enquiry_details['educational_qualification']
                 enquiry.land_mark = enquiry_details['land_mark']
-                enquiry.course = enquiry_details['course']
+                if enquiry_details['course'] != '':
+                    course = Course.objects.get(id=enquiry_details['course'])
+                    enquiry.course = course
                 enquiry.remarks = enquiry_details['remarks']
-                enquiry.follow_up_date = enquiry_details['follow_up_date']
+                enquiry.follow_up_date = datetime.strptime(enquiry_details['follow_up_date'], '%d/%m/%Y')
                 enquiry.remarks_for_follow_up_date = enquiry_details['remarks_for_follow_up_date']
-                enquiry.discount = enquiry_details['discount']
-                # enquiry.auto_generated_num = 
+                if enquiry_details['discount'] == '':
+                    enquiry.discount = 0
+                else:
+                    enquiry.discount = enquiry_details['discount']
+                enquiry.save()
+                enquiry.auto_generated_num = 'ENQ' + str(Enquiry.objects.latest('id').id)
                 enquiry.save()
             res = {
                 'result': 'ok',
@@ -378,3 +385,53 @@ class Enquiry(View):
             }
             response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype='application/json')
+class SearchEnquiry(View):
+
+    def get(self, request, *args, **kwargs):
+        print "saxas"
+        student_name = request.GET.get('student_name', '')
+        enquiry_num = request.GET.get('enquiry_num', '')
+        enquiries = []
+        q_list = []
+        if student_name :
+            enquiries = Enquiry.objects.filter(student_name=student_name)
+            count = enquiries.count()
+        elif enquiry_num :
+            enquiries = Enquiry.objects.filter(auto_generated_num=enquiry_num)
+            count = enquiries.count()
+        elif student_name and enquiry_num:
+            enquiries = Enquiry.objects.filter(student_name=student_name,auto_generated_num=enquiry_num)
+            count = enquiries.count()
+        else :
+            enquiries = []
+            count = 0
+        enquiry_list = []
+        for enquiry in enquiries:
+            enquiry_list.append({
+                'student_name': enquiry.student_name,
+                'address': enquiry.address,
+                'mobile_number' : enquiry.mobile_number,
+                'email' : enquiry.email,
+                'details_about_clients_enquiry' : enquiry.details_about_clients_enquiry,
+                'educational_qualification': enquiry.educational_qualification,
+                'land_mark': enquiry.land_mark,
+                'course' : enquiry.course.name,
+                'remarks': enquiry.remarks,
+                'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
+                'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,
+                'discount': enquiry.discount,
+                'auto_generated_num': enquiry.auto_generated_num,
+                })
+        if request.is_ajax():
+            print " ajax request"
+            response = simplejson.dumps({
+                'enquiries': enquiry_list,
+                'count': count,
+            })    
+            return HttpResponse(response, status=200, mimetype='application/json')
+        context = {
+            'enquiries': enquiries,
+            'count': count,
+        }
+
+        return render(request, 'admission_details.html', context)

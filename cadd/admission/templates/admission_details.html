@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}Search{% endblock title %}
+{% block body_id %}enquiry_search{% endblock body_id %}
+
+{% block controller %}ng-controller="AdmissionController" ng-init="init('{{csrf_token}}')"{% endblock controller %}
+{% block dialogue_popup %}
+    {% include 'add_student.html' %}
+    
+                
+{% endblock %}
+{% block content %}
+
+<div class="col-sm-11">
+    <div  class="new_button">       
+        <input type="button" class="btn btn-info" value="New Admission" ng-click="add_new_student()">
+    </div>
+	<div class="separation">
+    <h2> Search Enquiry </h2>
+        <div class="formtext">
+            <label > <strong>Search by :</strong> <span style="color:#a84101;" > [[search.student_name]] - [[search.enquiry_num]] </span></label> 
+            <div class="formrow">
+                <div class="formtext">
+                    <label class="col-sm-4 control-label">Student Name</label>
+                </div>
+                <div class="forminput">      
+                    <input class="form-control" type="text" ng-style="alert_style" name="student_name" ng-model="search.student_name" id="student_name">
+                </div>
+                
+            </div>
+            
+            <div class="formrow">
+                <div class="formtext">
+                    <label class="col-sm-4 control-label">Enquiry Number</label>
+                </div>
+                <div class="forminput">      
+                    <input class="form-control" type="text" ng-style="alert_style" name="enquiry_num" ng-model="search.enquiry_num" id="enquiry_num">
+                </div>
+                
+            </div>
+            
+            
+            <div class="btn">
+                <input class="button btn btn-warning" type="submit" name="submit" value="Search Enquiries" ng-click="enquiry_search()">
+                <br>
+                <p  class="error_message">[[error_message]]</p>
+                
+            </div>
+
+			
+            <div class="enquiry_list">
+                <div class="not_found" ng-hide="no_enquiries"> 
+                    <p class="error_message">[[ count ]] enquiry(s) found.</p>
+                </div>
+                <div class="enquiry" ng-repeat="enquiry in enquiries">
+                    
+                    <h2><a href="">Add details to admission form </a></h2>
+                    
+                    <p>Name: [[enquiry.student_name]]</p>
+                    <p>Course : [[enquiry.course]]</p>
+                    <p>Address : [[enquiry.address]]</p>
+                    <p>Education : [[enquiry.educational_qualification]]</p>
+                    <p>Mobile : [[enquiry.mobile_number]]</p>
+                    <p>Email : [[enquiry.email]]</p>
+                    <p>Follow Up Date :[[enquiry.follow_up_date]] </p>
+                    <p>Discount : [[enquiry.discount]]</p>
+                    <br>            
+                    <br>        
+                </div>
+            </div>
+   
+            <div class="not_found" ng-show="no_enquiries">
+
+                <p class="error_message">No Enquiries found for this Student. </p>
+                <p>Your search [[search.student_name]]- [[search.enquiry_num]]  did not match any documents.</p>
+                <p>Suggestions:</p>
+                <ul>
+                    <li>Please check your spelling .</li>
+                </ul>               
+            </div>   
+         
+
+            </div>
+    </div>
+            <br>    
+</div>
+{% endblock content %}
