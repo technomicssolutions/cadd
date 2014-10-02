@@ -498,11 +498,10 @@ function EnquiryController($scope, $http) {
     if($scope.enquiry.student_name == '' || $scope.enquiry.student_name == undefined) {
         $scope.validation_error = "Please Enter the Name" ;
         return false;
-    }   
-    // else if($scope.enquiry.course == '' || $scope.enquiry.course == undefined) {
-    //     $scope.validation_error = "Please Enter Course";
-    //     return false;
-    // } 
+    }else if($scope.enquiry.course == '' || $scope.enquiry.course == undefined) {
+        $scope.validation_error = "Please Enter Course";
+        return false;
+    } 
     else if($scope.enquiry.address == '' || $scope.enquiry.address == undefined) {
         $scope.validation_error = "Please Enter Address";
         return false;
@@ -515,7 +514,10 @@ function EnquiryController($scope, $http) {
     } else if(($scope.enquiry.email != '' && $scope.enquiry.email != undefined) && (!(validateEmail($scope.enquiry.email)))){
         $scope.validation_error = "Please enter a Valid Email Id";
         return false;
-    } else {
+    } else if($scope.enquiry.follow_up_date == '' || $scope.enquiry.follow_up_date == undefined) {
+        $scope.validation_error = "Please Enter follow up date";
+        return false;
+    }else {
         return true;
     }     
 }   
