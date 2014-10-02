@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Staff Details{% endblock title %}
+{% block body_id %}list_staff{% endblock %}
+
+{% block controller %}
+	ng-controller="StaffController" ng-init="init('{{csrf_token}}')"
+{% endblock controller %}
+
+{% block dialogue_popup %}
+	{% include 'add_staff.html' %}
+	{% include 'view_staff_details.html' %} 
+	           	
+{% endblock %}
+
+{% block content %}
+	<div class="main-title">
+		<div class="alert alert-info" align="Center">Permissions </div>
+	</div>
+
+{% endblock %}
