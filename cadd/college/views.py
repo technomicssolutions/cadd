@@ -327,3 +327,4 @@ class DeleteBatch(View):
         batch = Batch.objects.filter(id=batch_id)                          
         batch.delete()
         return HttpResponseRedirect(reverse('batches'))
+
