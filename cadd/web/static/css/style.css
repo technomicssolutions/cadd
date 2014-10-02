@@ -797,9 +797,9 @@ label.block{
     position: absolute;
     width: 46%;
     border-bottom: none;
-    right: 0;
-    top: 80%;
-    width: 69%;
+    /*right: 0;
+    top: 80%;*/
+    width: auto;
     z-index: 1;
 }
 
@@ -809,4 +809,28 @@ label.block{
 }
 .highlight {
 	border: 2px solid #707070;
+}
+.form_container .control {
+	float: left;
+    height: auto;
+    width: 30%;
+    padding: 10px 5px;
+    position: relative;
+}
+.form_container .button_control {
+	float: right;
+    text-align: center;
+    width: 50%;
+    margin-bottom: 30px;
+}
+.form_container {
+	width: 100%;
+}
+.single_column_container {
+	margin: auto;
+	width: 35%;
+	min-height: 100%
+}
+.single_column_container .control {
+	width: 100%;
 }

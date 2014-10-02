@@ -1,6 +1,5 @@
 /************************** Common JS F************/
 app.directive('keyTrap', function() {
-    console.log('hioii');
     return function( scope, elem ) {
     elem.bind('keydown', function( event ) {
       scope.$broadcast('keydown', event.keyCode );

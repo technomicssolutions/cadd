@@ -204,15 +204,6 @@ function StaffController($scope, $element, $http, $timeout, share, $location) {
 }
 
 function PermissionController($scope, $http) {
-    app.directive('keyTrap', function() {
-        console.log('hioii');
-        return function( scope, elem ) {
-        elem.bind('keydown', function( event ) {
-          scope.$broadcast('keydown', event.keyCode );
-
-        });
-      };
-    });
     $scope.focusIndex = 0;
     $scope.keys = [];
     $scope.keys.push({ code: 13, action: function() { $scope.select_list_item( $scope.focusIndex ); }});        
@@ -253,7 +244,12 @@ function PermissionController($scope, $http) {
         })
     }
     $scope.select_staff = function(staff) {
-        $scope.staff_name = staff.name;
+        $scope.staff_name = staff.first_name + ' ' + staff.last_name;
         $scope.permission.staff = staff.id;
+        $scope.staffs = [];
+    }
+    $scope.select_list_item = function(index){
+        staff = $scope.staffs[index];
+        $scope.select_staff(staff);
     }
 }
