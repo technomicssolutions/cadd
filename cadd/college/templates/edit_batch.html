@@ -3,7 +3,7 @@
 {% block body_id %}edit_batch{% endblock %}
 
 {% block controller %}
-	ng-controller="EditBatchController" ng-init="init('{{csrf_token}}', '{{batch_id}}')"
+	ng-controller="BatchController" ng-init="init('{{csrf_token}}')"
 {% endblock controller %}
 
 {% block content %}
@@ -18,7 +18,6 @@
 	<form class="" name="edit_college" method="post" action="">
 		{% csrf_token %}
 		
-		<div class="abc">
 
 		<div class="form_text">
 			<label > Batch Name</label> 
@@ -68,8 +67,8 @@
 		
 		<div  align="Center">
 			<div class="buttons">
-				<input type="button" class="btn btn-info" value="Cancel" onClick="document.location.href = '/college/list_batch/'">
-				<input type="submit" value="Submit" ng-click="save_batch()" class="btn btn-info">
+				<input type="button" class="btn btn-info" value="Cancel" onClick="document.location.href = '/college/batches/'">
+				<input type="submit" value="Submit" ng-click="edit_batch()" class="btn btn-info">
 				
 			</div></div></div>
 		</div>
