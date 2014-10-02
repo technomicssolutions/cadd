@@ -29,6 +29,7 @@ class Student(models.Model):
 	guardian_mobile_number= models.CharField('Guardian Mobile Number',null=True, blank=True, max_length=200)
 	guardian_land_number= models.CharField('Guardian Land Number',null=True, blank=True, max_length=200)
 	guardian_email = models.CharField('Guardian Email',null=True, blank=True, max_length=200)
+	is_rolled = models.BooleanField('Is Rolled',default=False)
 
 	def __unicode__(self):
 		return str(self.student_name)

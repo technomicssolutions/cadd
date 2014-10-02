@@ -76,8 +76,16 @@
 
                 </div>
          </div>
-        <div class="section_1"ng-show="show_admission_form">
+        <div class="section_1" ng-show="show_admission_form">
             <div class="formrow">
+                <div ng-show="enquiry_num_exists">
+                    <div class="formtext">
+                        <label> Enquiry Number</label>  
+                    </div>
+                    <div class="forminput">
+                        <input type="text" name="enquiry_num" ng-change="get_enquiry_details()" ng-model="enquiry_num">
+                    </div>
+                </div>
                 <div class="formtext">
                     <label> Name</label>  
                 </div>
@@ -96,7 +104,7 @@
                 <div class="forminput">
                     <select name="course" ng-model="course" ng-change="get_batch() ">
                         <option value="">Select</option>
-                        <option ng-repeat="course in courses" value="[[course.id]]" >[[course.course]]
+                        <option ng-repeat="course in courses" value="[[course.id]]" >[[course.name]]
                         </option>
                     </select>
                 </div>
