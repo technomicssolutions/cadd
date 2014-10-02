@@ -570,4 +570,16 @@ function AdmissionController($scope, $http) {
             console.log(data || "Request failed");
         });
     }
+    $scope.add_new_student  = function(){
+        add_new_student($http, $scope);
+    }
+    $scope.save_new_student = function(){
+        save_new_student($http, $scope);
+    }
+    $scope.hide_popup_windows = function(){
+        $('#add_student_details')[0].setStyle('display', 'none');
+    }  
+    $scope.close_popup = function(){
+        $scope.popup.hide_popup();
+    } 
 }
