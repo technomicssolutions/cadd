@@ -204,6 +204,37 @@ function StaffController($scope, $element, $http, $timeout, share, $location) {
 }
 
 function PermissionController($scope, $http) {
+    app.directive('keyTrap', function() {
+        console.log('hioii');
+        return function( scope, elem ) {
+        elem.bind('keydown', function( event ) {
+          scope.$broadcast('keydown', event.keyCode );
+
+        });
+      };
+    });
+    $scope.focusIndex = 0;
+    $scope.keys = [];
+    $scope.keys.push({ code: 13, action: function() { $scope.select_list_item( $scope.focusIndex ); }});        
+    $scope.keys.push({ code: 38, action: function() { 
+        if($scope.focusIndex > 0){
+            $scope.focusIndex--; 
+        }
+    }});
+    $scope.keys.push({ code: 40, action: function() {
+        console.log('in 40');
+        if($scope.focusIndex < $scope.staffs.length-1){
+            $scope.focusIndex++; 
+        }
+    }});
+    $scope.$on('keydown', function( msg, code ) {
+        console.log('in down');
+        $scope.keys.forEach(function(o) {
+          if ( o.code !== code ) { return; }
+          o.action();
+          $scope.$apply();
+        });
+    });
     $scope.permission = {
         'staff': '',
         'attendance_module': '',

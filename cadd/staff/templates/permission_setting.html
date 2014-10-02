@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
-{% block title %}Staff Details{% endblock title %}
-{% block body_id %}list_staff{% endblock %}
+{% block title %}Staff Permissions{% endblock title %}
+{% block body_id %}staff_permission{% endblock %}
 
 {% block controller %}
-	ng-controller="StaffController" ng-init="init('{{csrf_token}}')"
+	ng-controller="PermissionController" ng-init="init('{{csrf_token}}')"
 {% endblock controller %}
 
 {% block dialogue_popup %}
@@ -16,5 +16,22 @@
 	<div class="main-title">
 		<div class="alert alert-info" align="Center">Permissions </div>
 	</div>
+	<form action="" id="" name="" method="post" class="">
+		<div class="section_1">
+			<div class="formrow">
+				<div class="formtext">
+					<label> Staff</label>  
+				</div>
+				<div class="forminput">
+					<input type="text" name="first_name" value="" ng-model="staff_name" ng-change="search_staff()" autocomplete="off"/>
+				</div>
+				<div class="search_list">
+					<div ng-repeat="staff in staffs" ng-click="select_student(student)" class="search_list_item" ng-class="{'highlight': $index == focusIndex}">
+    					<span>[[staff.first_name]] [[staff.last_name]]</span>
+    				</div>
+				</div>
+			</div>
+		</div>
+	</form>
 
 {% endblock %}

@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.views.generic.base import View
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth.models import User
 
 from staff.models import Staff, Permission
 
