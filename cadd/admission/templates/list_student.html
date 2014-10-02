@@ -19,7 +19,7 @@
 			<label> Course</label> 
 			<select name="course" ng-model="course" ng-change="get_batch()">
 				<option value="">Select</option>
-				<option ng-repeat="course in courses" value="[[course.id]]">[[course.course]]
+				<option ng-repeat="course in courses" value="[[course.id]]">[[course.name]]
 				</option>
 			</select>
 			<label> Batch</label> 
@@ -29,9 +29,9 @@
 				</option>
 			</select>
 		</div>
-		<div  class="new_button">		
+		<!-- <div  class="new_button">		
 			<input type="button" class="btn btn-info" value="New student" ng-click="add_new_student()">
-		</div>
+		</div> -->
 	</div>
 	<div class="list_student">
 		<table id="list" class="table table-hover" >
