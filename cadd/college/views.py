@@ -270,7 +270,7 @@ class Batches(View):
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
             batches = Batch.objects.all()
-            print batches
+            # print batches
             batch_list = []
             for batch in batches:
                 batch_list.append({
