@@ -790,6 +790,26 @@ label.block{
 .width_popup_input{
 	width: 40%;
 }
+
 .no_border_top{
 	border-top: none;
+}
+.search_list {
+	background-color: #FFFFFF;
+    border: 1px solid #C3C3C3;
+    position: absolute;
+    width: 46%;
+    border-bottom: none;
+    right: 0;
+    top: 80%;
+    width: 69%;
+    z-index: 1;
+}
+
+.search_list_item {
+	border-bottom: 1px solid #C3C3C3;
+    padding: 5px;
+}
+.highlight {
+	border: 2px solid #707070;
 }

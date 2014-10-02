@@ -13,5 +13,6 @@ urlpatterns = patterns('',
 	url(r'^view_student_details/(?P<student_id>\d+)/$',login_required (ViewStudentDetails.as_view()), name="view_student_details"),
 	url(r'^edit_student_details/(?P<student_id>\d+)/$',login_required (EditStudentDetails.as_view()), name="edit_student_details"),
 	url(r'^delete_student_details/(?P<student_id>\d+)/$',login_required (DeleteStudentDetails.as_view()), name="delete_student_details"),
-	url(r'^enquiry/$',login_required (Enquiry.as_view()), name='enquiry'),
+	url(r'^enquiry/$',login_required (EnquiryView.as_view()), name='enquiry'),
+	url(r'^enquiry_search/$',login_required (SearchEnquiry.as_view()), name='enquiry_search')
 )

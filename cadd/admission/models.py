@@ -46,12 +46,12 @@ class Enquiry(models.Model):
 	details_about_clients_enquiry =  models.TextField('Details ', null=True, blank=True)
 	educational_qualification = models.CharField('Educational Qualification', null=True, blank=True, max_length=200)
 	land_mark = models.CharField('Nearest land mark',null=True, blank=True, max_length=200)
-	course = models.ForeignKey(Course)
+	course = models.ForeignKey(Course,null=True, blank=True)
 	remarks = models.TextField('Remark',null=True, blank=True)
 	follow_up_date = models.DateField('Next follow up date',null=True, blank=True)
 	remarks_for_follow_up_date =   models.TextField('Remark for Next follow up date',null=True, blank=True)
 	auto_generated_num = models.CharField('Auto generated number',null=True, blank=True, max_length=200)
-	discount = models.IntegerField('Discount', null=True, blank=True)
+	discount = models.IntegerField('Discount', default=0, null=True, blank=True)
 
 	def __unicode__(self):
 		return str(self.student_name)

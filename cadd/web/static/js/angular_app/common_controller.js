@@ -1,5 +1,13 @@
 /************************** Common JS F************/
+app.directive('keyTrap', function() {
+    console.log('hioii');
+    return function( scope, elem ) {
+    elem.bind('keydown', function( event ) {
+      scope.$broadcast('keydown', event.keyCode );
 
+    });
+  };
+});
 function show_spinner (){
     $('#spinner_overlay').css('display', 'block');
     $('#spinner').css('display', 'block');
@@ -85,14 +93,7 @@ function validateEmail(email) {
     var re = /\S+@\S+\.\S+/;
     return re.test(email);
 }
-function get_designation($scope, $http) {
-    $http.get($scope.url).success(function(data)
-    {
-        $scope.designations = data.designations;
-    }).error(function(data, status){
-        console.log(data || "Request failed");
-    });
-}
+
 function get_fee_structure_details($scope, $http, fees_structure_id) {
     var url = '/fees/edit_fees_structure_details/'+fees_structure_id+'/';
     $http.get(url).success(function(data){
