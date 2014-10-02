@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
 from admission.views import GetStudent,AddStudent,ListStudent,ViewStudentDetails,EditStudentDetails,\
-DeleteStudentDetails, EnquiryView, SearchEnquiry
+DeleteStudentDetails, EnquiryView, SearchEnquiry, EnquiryDetails
 
 urlpatterns = patterns('',
 	url(r'^get_student/(?P<course_id>\d+)/(?P<batch_id>\d+)/$',login_required (GetStudent.as_view()), name="get_student"),
@@ -15,5 +15,6 @@ urlpatterns = patterns('',
 	url(r'^edit_student_details/(?P<student_id>\d+)/$',login_required (EditStudentDetails.as_view()), name="edit_student_details"),
 	url(r'^delete_student_details/(?P<student_id>\d+)/$',login_required (DeleteStudentDetails.as_view()), name="delete_student_details"),
 	url(r'^enquiry/$',login_required (EnquiryView.as_view()), name='enquiry'),
-	url(r'^enquiry_search/$',login_required (SearchEnquiry.as_view()), name='enquiry_search')
+	url(r'^enquiry_details/$',login_required (EnquiryDetails.as_view()), name='enquiry_details'),
+	url(r'^enquiry_search/$',login_required (SearchEnquiry.as_view()), name='enquiry_search'),
 )

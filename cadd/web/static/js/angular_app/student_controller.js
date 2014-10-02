@@ -545,7 +545,9 @@ function EnquiryController($scope, $http) {
     }
 }
 function AdmissionController($scope, $http) {
-    
+    $scope.show_enquiry_search =  false;
+    $scope.show_admission_form = false;
+    $scope.enquiry_num_exists = false;
     $scope.search = {
         'student_name': '',
         'enquiry_num': '',
@@ -553,18 +555,41 @@ function AdmissionController($scope, $http) {
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
         $scope.no_enquiries = false;
+        get_course_list($scope, $http);
     }
     $scope.enquiry_search  = function() {    
-        var url = '/admission/enquiry_search/?student_name='+$scope.search.student_name+'&enquiry_num='+$scope.search.enquiry_num;
+        var url = '/admission/enquiry_search/?student_name='+$scope.search.student_name;
         $http.get(url).success(function(data)
         {
             $scope.enquiries = data.enquiries; 
             $scope.count = data.count;
             if(data.enquiries.length <= 0){
               $scope.no_enquiries = true;
+
             } else {
               $scope.no_enquiries = false;
+              $scope.show_admission_form = true;
+              $scope.enquiry_num_exists = true;
             }
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+    }
+    $scope.change_admission_type = function(admission_type){
+        if(admission_type=='Enquiry'){
+            $scope.show_enquiry_search =  true;
+            $scope.show_admission_form = false;
+        }else{
+            $scope.show_admission_form = true;
+            $scope.show_enquiry_search =  false;
+        }
+    }
+    $scope.get_enquiry_details = function(){
+        var url = '/admission/enquiry_details/?enquiry_num='+$scope.enquiry_num;
+        $http.get(url).success(function(data)
+        {
+            console.log(data)
         }).error(function(data, status)
         {
             console.log(data || "Request failed");

@@ -330,4 +330,3 @@ class DeleteBatch(View):
         return HttpResponseRedirect(reverse('batches'))
 
 
-

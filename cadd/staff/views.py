@@ -15,7 +15,6 @@ class AddStaff(View):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             staff_details = ast.literal_eval(request.POST['staff'])
-            print staff_details
             if staff_details.get('id', ''):
                 staff = Staff.objects.get(id=staff_details['id'])
                 user = staff.user
@@ -47,8 +46,32 @@ class AddStaff(View):
             staff.experience = staff_details['experience']
             staff.role = staff_details['role']
             staff.save()
+            permission_details = {
+                'attendance_module': 'true' if staff.permission and staff.permission.attendance_module  else 'false',
+                'student_module': 'true' if staff.permission and staff.permission.student_module else 'false',
+                'master_module': 'true' if staff.permission and staff.permission.master_module else 'false',
+                'fees_module': 'true' if staff.permission and staff.permission.fees_module else 'false',
+            }
             res = {
                 'result': 'ok',
+                'staff': {
+                    'id': staff.id,
+                    'first_name': staff.user.first_name,
+                    'last_name': staff.user.last_name,
+                    'username': staff.user.username,
+                    'dob': staff.dob.strftime('%d/%m/%Y'),
+                    'address': staff.address,
+                    'mobile_number' : staff.mobile_number,
+                    'land_number' : staff.land_number,
+                    'email': staff.user.email,
+                    'blood_group': staff.blood_group,
+                    'doj': staff.doj.strftime('%d/%m/%Y'),
+                    'qualifications': staff.qualifications,
+                    'role': staff.role,
+                    'experience': staff.experience,
+                    'photo': staff.photo.name,
+                    'permission': permission_details,
+                }
             }  
             response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype="application/json")
@@ -63,6 +86,13 @@ class ListStaff(View):
         if request.is_ajax():
             staff_list = []
             for staff in staffs:
+                permission_details = {}
+                permission_details = {
+                    'attendance_module': 'true' if staff.permission and staff.permission.attendance_module  else 'false',
+                    'student_module': 'true' if staff.permission and staff.permission.student_module else 'false',
+                    'master_module': 'true' if staff.permission and staff.permission.master_module else 'false',
+                    'fees_module': 'true' if staff.permission and staff.permission.fees_module else 'false',
+                }
                 staff_list.append({
                     'id': staff.id,
                     'first_name': staff.user.first_name,
@@ -79,6 +109,7 @@ class ListStaff(View):
                     'role': staff.role,
                     'experience': staff.experience,
                     'photo': staff.photo.name,
+                    'permission': permission_details,
                 })
             res = {
                 'result': 'Ok',
@@ -134,6 +165,25 @@ class PermissionSetting(View):
                 permission = staff.permission
             else:
                 permission = Permission()
+            if permission_details['attendance_module'] == 'true':
+                permission.attendance_module = True
+            else:
+                permission.attendance_module = False
+            if permission_details['student_module'] == 'true':
+                permission.student_module = True
+            else:
+                permission.student_module = False
+            if permission_details['master_module'] == 'true':
+                permission.master_module = True
+            else:
+                permission.master_module = False
+            if permission_details['fees_module'] == 'true':
+                permission.fees_module = True
+            else:
+                permission.fees_module = False
+            permission.save()
+            staff.permission = permission
+            staff.save()
             res = {
                 'result': 'ok',
             }

@@ -38,7 +38,6 @@ var DialogueModelWindow = new Class({
         'content_div': ''
     },
     initialize: function(options) {
-        console.log(options);
         window.scrollTo(0,0);
         this.setOptions(options);
         this.message = ""
@@ -67,7 +66,6 @@ var DialogueModelWindow = new Class({
         // });
     },  
     show_content: function(){ 
-    console.log($$(this.options.content_div), this.options.content_div);
         $$(this.options.content_div)[0].setStyle('display', 'block');
         this.show_popup();
     },

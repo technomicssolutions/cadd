@@ -385,22 +385,46 @@ class EnquiryView(View):
             }
             response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype='application/json')
+
+class EnquiryDetails(View):
+
+    def get(self, request, *args, **kwargs): 
+        if request.is_ajax():
+            enquiry_list = []
+            enquiry_num = request.GET.get('enquiry_num', '')
+            if enquiry_num :
+                enquiry = Enquiry.objects.get(auto_generated_num=enquiry_num)
+                print enquiry,"dsad"
+                enquiry_list.append({
+                    'student_name': enquiry.student_name,
+                    'address': enquiry.address,
+                    'mobile_number' : enquiry.mobile_number,
+                    'email' : enquiry.email,
+                    'details_about_clients_enquiry' : enquiry.details_about_clients_enquiry,
+                    'educational_qualification': enquiry.educational_qualification,
+                    'land_mark': enquiry.land_mark,
+                    'course' : enquiry.course.name,
+                    'remarks': enquiry.remarks,
+                    'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
+                    'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,
+                    'discount': enquiry.discount,
+                    'auto_generated_num': enquiry.auto_generated_num,
+                    })
+        
+            
+            response = simplejson.dumps({
+                'enquiry': enquiry_list,
+            })    
+            return HttpResponse(response, status=200, mimetype='application/json')
 class SearchEnquiry(View):
 
     def get(self, request, *args, **kwargs):
         print "saxas"
         student_name = request.GET.get('student_name', '')
-        enquiry_num = request.GET.get('enquiry_num', '')
         enquiries = []
         q_list = []
         if student_name :
             enquiries = Enquiry.objects.filter(student_name=student_name)
-            count = enquiries.count()
-        elif enquiry_num :
-            enquiries = Enquiry.objects.filter(auto_generated_num=enquiry_num)
-            count = enquiries.count()
-        elif student_name and enquiry_num:
-            enquiries = Enquiry.objects.filter(student_name=student_name,auto_generated_num=enquiry_num)
             count = enquiries.count()
         else :
             enquiries = []
@@ -423,7 +447,7 @@ class SearchEnquiry(View):
                 'auto_generated_num': enquiry.auto_generated_num,
                 })
         if request.is_ajax():
-            print " ajax request"
+            
             response = simplejson.dumps({
                 'enquiries': enquiry_list,
                 'count': count,

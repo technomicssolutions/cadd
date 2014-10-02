@@ -74,12 +74,12 @@ function validate_staff($scope) {
 }
 function save_staff($scope, $http, from) {
     if(validate_staff($scope)) {
+        show_spinner();
         params = { 
             'staff': angular.toJson($scope.staff),
             "csrfmiddlewaretoken" : $scope.csrf_token
         }
         var fd = new FormData();
-        console.log($scope.photo_img);
         if ($scope.photo_img != undefined)
             fd.append('photo_img', $scope.photo_img.src)
         for(var key in params){
@@ -91,11 +91,16 @@ function save_staff($scope, $http, from) {
             headers: {'Content-Type': undefined
             }
         }).success(function(data, status){
+            hide_spinner();
             if (data.result == 'error'){
-                $scope.error_flag=true;
+                $scope.error_flag = true;
                 $scope.message = data.message;
             } else {
-                document.location.href ="/staff/staffs/";
+                if (from == 'permission') {
+                    $scope.close_popup();
+                    $scope.select_staff(data.staff);
+                } else 
+                    document.location.href ="/staff/staffs/";
             }
 
         }).error(function(data, status){
@@ -238,35 +243,127 @@ function PermissionController($scope, $http) {
         $scope.csrf_token = csrf_token;
     }
     $scope.search_staff = function() {
+        $scope.permission.staff = '';
         $scope.staff_selected = true;
         $scope.no_staff = false;
         $scope.staffs = [];
+        $scope.no_staff_message = '';
         if ($scope.staff_name.length > 0) {
             $http.get('/staff/staffs/?staff_name='+$scope.staff_name).success(function(data){
                 $scope.staffs = data.staffs;
+                if ($scope.staffs.length == 0) {
+                    $scope.no_staff_message = 'No such staff';
+                    $scope.no_staff = true;
+                }
             }).error(function(data, status){
                 console.log('Request failed' || data);
             })
-        }
-        if ($scope.staffs.length == 0) {
-            $scope.no_staff_message = 'No such staff';
-            $scope.no_staff = true;
         }
     }
     $scope.select_staff = function(staff) {
         $scope.staff_selected = false;
         $scope.staff_name = staff.first_name + ' ' + staff.last_name;
         $scope.permission.staff = staff.id;
+        if (staff.permission.attendance_module == 'true')
+            $scope.permission.attendance_module = true;
+        else
+            $scope.permission.attendance_module = false;
+        if (staff.permission.student_module == 'true')
+            $scope.permission.student_module = true;
+        else
+            $scope.permission.student_module = false;
+        if (staff.permission.master_module == 'true')
+            $scope.permission.master_module = true;
+        else
+            $scope.permission.master_module = false;
+        if (staff.permission.fees_module == 'true')
+            $scope.permission.fees_module = true;
+        else
+            $scope.permission.fees_module = false;
         $scope.staffs = [];
     }
     $scope.select_list_item = function(index){
         staff = $scope.staffs[index];
         $scope.select_staff(staff);
     }
-    $scope.validate_staff_permission_setting = function() {
-
+    $scope.save_permissions = function() {
+        $scope.validate_staff_permission = '';
+        if ($scope.permission.staff == '' || $scope.permission.staff == undefined) {
+            $scope.validate_staff_permission = 'Please choose the Staff';
+        } else if ($scope.no_staff_error) {
+            $scope.validate_staff_permission = 'No such staff';
+        } else {
+            show_spinner();
+            if ($scope.permission.attendance_module == true) {
+                $scope.permission.attendance_module = 'true';
+            } else {
+                $scope.permission.attendance_module = 'false';
+            }
+            if ($scope.permission.student_module == true) {
+                $scope.permission.student_module = 'true';
+            } else {
+                $scope.permission.student_module = 'false';
+            }
+            if ($scope.permission.master_module == true) {
+                $scope.permission.master_module = 'true';
+            } else {
+                $scope.permission.master_module = 'false';
+            }
+            if ($scope.permission.fees_module == true) {
+                $scope.permission.fees_module = 'true';
+            } else {
+                $scope.permission.fees_module = 'false';
+            }
+            params = {
+                'permission_details': angular.toJson($scope.permission),
+                'csrfmiddlewaretoken': $scope.csrf_token,
+            }
+            $http({
+                method:'post',
+                url: '/staff/permissions/',
+                data: $.param(params),
+                headers: {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data){
+                hide_spinner();
+                document.location.href = '/staff/permissions/';
+            }).error(function(data, status) {
+                console.log('Request failed' || data);
+            })
+        }
     }
     $scope.new_staff = function() {
+        $scope.staff = {
+            'first_name': '',
+            'last_name': '',
+            'username': '',
+            'password': '',
+            'dob': '',
+            'address': '',
+            'mobile_number': '',
+            'land_number': '',
+            'email':'',
+            'blood_group': '',
+            'doj': '',
+            'qualifications': '',
+            'experience':'',
+            'role': '',
+        }
+        var date_pick = new Picker.Date($$('#dob'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
+        new Picker.Date($$('#doj'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
         $scope.staff_selected = false;
         $scope.new_staff = true;
         $scope.popup = new DialogueModelWindow({   
@@ -281,4 +378,10 @@ function PermissionController($scope, $http) {
         $scope.popup.set_overlay_height(height);
         $scope.popup.show_content();
     }
+    $scope.save_new_staff = function() {
+        save_staff($scope, $http, 'permission');
+    }
+    $scope.close_popup = function(){
+        $scope.popup.hide_popup();
+    } 
 }
