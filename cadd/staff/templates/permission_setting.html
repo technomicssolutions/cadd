@@ -16,57 +16,15 @@
 	<div class="main-title">
 		<div class="alert alert-info" align="Center">Permissions </div>
 	</div>
-		<!-- <div class="section_1">
-			<div class="formrow">
-				<div class="formtext">
-					<label> Staff</label>
-				</div>
-				<div class="forminput">
-					<input type="text" name="first_name" ng-model="staff_name" ng-change="search_staff()" autocomplete="off"/>
-					<div class="search_list" ng-show="staffs.length > 0">
-						<div ng-repeat="staff in staffs" class="search_list_item" ng-class="{'highlight': $index == focusIndex}" ng-click="select_staff(staff)" >
-	    					<span>[[staff.first_name]] [[staff.last_name]]</span>
-	    				</div>
-					</div>
-				</div>  
-			</div>
-			<div class="formrow">
-			</div>
-			<div class="formrow">
-			</div>
-			<div class="formrow">
-				<div class="formtext">
-					<label> Attendance</label>
-				</div>
-				<div class="forminput">
-					<input type="checkbox" value="attendance"/> 
-				</div>  
-				<div class="formtext">
-					<label> Attendance</label>
-				</div>
-				<div class="forminput">
-					<input type="checkbox" value="attendance"/> 
-				</div> 
-				<div class="formtext">
-					<label> Attendance</label>
-				</div>
-				<div class="forminput">
-					<input type="checkbox" value="attendance"/> 
-				</div> 
-				<div class="formtext">
-					<label> Attendance</label>
-				</div>
-				<div class="forminput">
-					<input type="checkbox" value="attendance"/> 
-				</div> 
-			</div>
-		</div> -->
 	<div class="form_container single_column_container">
 		<form name="permission_form">
 			<div class="control">
 				<label> Staff</label>
-				<input type="text" name="first_name" ng-model="staff_name" ng-change="search_staff()" autocomplete="off"/>
-				<div class="search_list" ng-show="staffs.length > 0">
+				<input type="text" name="first_name" ng-model="staff_name" ng-change="search_staff()" autocomplete="off" ng-click="staff_selected=true"/>
+				<div class="search_list" ng-show="staff_selected">
+					<div class="search_list_item" ng-click="staff_selected=false">
+						<span><a href="" ng-click="new_staff()">New</a></span>
+					</div>
 					<div ng-repeat="staff in staffs" class="search_list_item" ng-class="{'highlight': $index == focusIndex}" ng-click="select_staff(staff)" >
 						<span>[[staff.first_name]] [[staff.last_name]]</span>
 					</div>

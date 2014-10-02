@@ -800,10 +800,11 @@ label.block{
     position: absolute;
     width: 46%;
     border-bottom: none;
-    /*right: 0;
-    top: 80%;*/
-    width: auto;
+    right: 0;
+    top: 80%;
+    width: 50%;
     z-index: 1;
+    float: left;
 }
 
 .search_list_item {
