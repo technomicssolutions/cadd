@@ -545,7 +545,8 @@ function EnquiryController($scope, $http) {
     }
 }
 function AdmissionController($scope, $http) {
-    
+    $scope.show_enquiry_search =  false;
+    $scope.show_admission_form = false;
     $scope.search = {
         'student_name': '',
         'enquiry_num': '',
@@ -569,6 +570,15 @@ function AdmissionController($scope, $http) {
         {
             console.log(data || "Request failed");
         });
+    }
+    $scope.change_admission_type = function(admission_type){
+        if(admission_type=='Enquiry'){
+            $scope.show_enquiry_search =  true;
+            $scope.show_admission_form = false;
+        }else{
+            $scope.show_admission_form = true;
+            $scope.show_enquiry_search =  false;
+        }
     }
     $scope.add_new_student  = function(){
         add_new_student($http, $scope);

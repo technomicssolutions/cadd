@@ -8,7 +8,65 @@
 							<h4>Student Registration</h4>
 						</div>
 					</div>
-					<div class="section_1">
+					<div class="formrow">
+						<div class="formtext">
+							<input type="radio" ng-model="estimate.bill_type" value="Enquiry" ng-click="change_admission_type('Enquiry')"><label>From Enquiry</label>
+						</div>
+						<div class="formtext">
+							<input type="radio" ng-model="estimate.bill_type" value="Admission" ng-click="change_admission_type('Admission')"><label>Direct Admission</label>
+						</div> 
+					</div>
+					<div class="separation" ng-show="show_enquiry_search">
+					    <h2> Search Enquiry </h2>
+					        <div class="formtext">
+					            <label > <strong>Search by :</strong> [[search.student_name]] - [[search.enquiry_num]] </span></label> 
+					            <div class="formrow">
+					                <div class="formtext">
+					                    <label >Student Name</label>
+					                </div>
+					                <div class="forminput">      
+					                    <input class="form-control" type="text" ng-style="alert_style" name="student_name" ng-model="search.student_name" id="student_name">
+					                </div>
+					                
+					            </div>
+					            
+					            <div class="button_control">
+					                <input type="submit" name="submit" value="Search Enquiries" ng-click="enquiry_search()">
+					                <br>
+					                <p  class="error_message">[[error_message]]</p>
+					                
+					            </div>
+
+								
+					            <div class="enquiry_list">
+					                <div class="not_found" ng-hide="no_enquiries"> 
+					                    <p class="error_message">[[ count ]] enquiry(s) found.</p>
+					                </div>
+					                <div class="enquiry" ng-repeat="enquiry in enquiries">
+					                    
+					                    <h2><a href="">Add details to admission form </a></h2>
+					                    
+					                    <p>Enquiry Number: [[enquiry.auto_generated_num]]</p>
+					                   
+					                    <br>            
+					                    <br>        
+					                </div>
+					            </div>
+					   
+					            <div class="not_found" ng-show="no_enquiries">
+
+					                <p class="error_message">No Enquiries found for this Student. </p>
+					                <p>Your search [[search.student_name]]- [[search.enquiry_num]]  did not match any documents.</p>
+					                <p>Suggestions:</p>
+					                <ul>
+					                    <li>Please check your spelling .</li>
+					                </ul>               
+					            </div>   
+					         
+
+					        </div>
+   					 </div>
+					<div class="section_1"ng-show="show_admission_form">
 						<div class="formrow">
 							<div class="formtext">
 								<label> Name</label>  
