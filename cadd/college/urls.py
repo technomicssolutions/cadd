@@ -3,7 +3,7 @@ from django.conf.urls import patterns, url
 from django.contrib.auth.decorators import login_required
 
 from college.views import Softwares,DeleteSoftware, Courses, ListBatch, AddNewBatch, EditBatch, \
-	DeleteCourse, DeleteBatch
+	DeleteCourse, DeleteBatch, CourseDetails
 
 
 urlpatterns = patterns('',
@@ -11,7 +11,7 @@ urlpatterns = patterns('',
 	url(r'^delete_software/(?P<software_id>\d+)/$',login_required (DeleteSoftware.as_view()), name='delete_software'),
 	url(r'^courses/$',login_required (Courses.as_view()), name='courses'),
 	url(r'^delete_course/(?P<course_id>\d+)/$',login_required (DeleteCourse.as_view()), name='delete_course'),
-
+	url(r'^course_details/$',login_required (CourseDetails.as_view()), name='course_details'),
 	url(r'^batches/$',login_required (ListBatch.as_view()), name='batch_list'),
 	url(r'^add_new_batch/$',login_required (AddNewBatch.as_view()), name='add_new_batch'),
 	url(r'^edit_batch/(?P<batch_id>\d+)/$',login_required (EditBatch.as_view()), name="edit_batch"),

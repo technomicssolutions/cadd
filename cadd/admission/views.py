@@ -415,7 +415,7 @@ class SearchEnquiry(View):
                 'details_about_clients_enquiry' : enquiry.details_about_clients_enquiry,
                 'educational_qualification': enquiry.educational_qualification,
                 'land_mark': enquiry.land_mark,
-                'course' : enquiry.course,
+                'course' : enquiry.course.name,
                 'remarks': enquiry.remarks,
                 'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
                 'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,

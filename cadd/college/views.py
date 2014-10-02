@@ -170,6 +170,35 @@ class DeleteCourse(View):
             response = simplejson.dumps(res)
             return HttpResponse(response, status = status_code, mimetype="application/json")
 
+class CourseDetails(View):
+    def get(self, request, *args, **kwargs):
+
+        courses = Course.objects.all()
+        course_list = []
+        ctx_software = []
+        
+        for course in courses:
+            course_list.append({
+                'software':course.software.name,
+                'duration':course.duration,
+                'duration_unit':course.duration_unit,                                       
+                'name': course.name,
+                'id': course.id
+            })
+            if course.software.all().count() > 0: 
+                for software in course.software.all().order_by('-id'):
+                    ctx_software.append({
+                        'software': software.name,
+                    })
+            course_list.append({
+                'software': ctx_software
+                })
+        res = {
+            'result': 'ok',
+            'courses': course_list,
+        }            
+        response = simplejson.dumps(res)
+        return HttpResponse(response, status=200, mimetype='application/json')
 
 class ListBatch(View):
     def get(self, request, *args, **kwargs):
