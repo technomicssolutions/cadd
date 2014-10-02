@@ -7,8 +7,8 @@
 {% endblock controller %}
 
 {% block dialogue_popup %}
-	{% include 'academic/add_student.html' %}
-	{% include 'academic/view_student_details.html' %} 
+	{% include 'add_student.html' %}
+	{% include 'view_student_details.html' %} 
 	           	
 {% endblock %}
 
@@ -46,8 +46,8 @@
 				<td>[[student.name]]</td>
 				<td>[[student.roll_number]]</td>
 				<td><a href="" ng-click="display_student_details(student)" >View</td>
-				<td><a href="/academic/edit_student_details/[[student.id]]/" >Edit</td>
-				<td><a href="/academic/delete_student_details/[[student.id]]/" >Delete</td>
+				<td><a href="edit_student_details/[[student.id]]/" >Edit</td>
+				<td><a href="delete_student_details/[[student.id]]/" >Delete</td>
 			</tr>
 		</table> 
 		{% include 'pagination_div.html' %}
