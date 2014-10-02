@@ -175,7 +175,23 @@ class ListBatch(View):
     def get(self, request, *args, **kwargs):
 
         batches = Batch.objects.all()
-        
+        batch_list = []
+        if request.is_ajax():
+            for batch in batches:
+                batch_list.append({
+                    'software':batch.software.name,
+                    'start':batch.start_time.strftime('%H:%M.%p'),
+                    'end':batch.end_time.strftime('%H:%M.%p'),
+                    'allowed_students':batch.allowed_students,                                        
+                    'name': batch.name,
+                    'id': batch.id
+                })
+            res = {
+                'result': 'ok',
+                'batches': batch_list,
+            }            
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
         ctx = {
             'batches': batches
         }
@@ -195,10 +211,10 @@ class EditBatch(View):
                 batch = Batch.objects.get(id = batch_id)
                 ctx_data.append({
                     'software':batch.software.name,
-                    'branch':batch.branch.branch if batch.branch else '',                  
-                    'batch_start':batch.start_date,
-                    'batch_end':batch.end_date,
-                    'batch_periods':batch.periods,                                        
+                    'batch_start':batch.start_time,
+                    'batch_end':batch.end_time,
+                    'allowed_students':batch.allowed_students,                                        
+                    'name': batch.name,
                 })
                 res = {
                     'result': 'ok',
@@ -214,7 +230,7 @@ class EditBatch(View):
                 status = 200
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')
-        return render(request, 'college/edit_batch.html',context)
+        return render(request, 'edit_batch.html',context)
 
     def post(self, request, *args, **kwargs):        
         batch_id = kwargs['batch_id']
@@ -245,12 +261,9 @@ class AddNewBatch(View):
         status_code = 200
         if request.is_ajax():
             try:
-                course = Course.objects.get(id = request.POST['course'])
-                if request.POST['branch']:
-                    branch = CourseBranch.objects.get(id = request.POST['branch'])
-                    batch, created = Batch.objects.get_or_create(course=course, start_date=request.POST['batch_start'],end_date=request.POST['batch_end'],periods=request.POST['periods'],branch=branch)
-                else:
-                    batch, created = Batch.objects.get_or_create(course=course, start_date=request.POST['batch_start'],end_date=request.POST['batch_end'],periods=request.POST['periods'])
+                batch = ast.literal_eval(request.POST['batch'])
+                software = Software.objects.get(id = batch['software'])
+                batch, created = Batch.objects.get_or_create(software=software, start_time=batch['start'],end_time=batch['end'], allowed_students=batch['allowed_students'], name=batch['name'])
                 if not created:
                     res = {
                         'result': 'error',
@@ -260,12 +273,27 @@ class AddNewBatch(View):
                     batch.save()
                     res = {
                         'result': 'ok',
+                        'batch': {
+                            'software':batch.software.name,
+                            'batch_start':batch.start_time,
+                            'batch_end':batch.end_time,
+                            'allowed_students':batch.allowed_students,                                        
+                            'name': batch.name,
+                        }
                     }  
             except Exception as ex:
-                print str(ex), "Exception ===="
                 res = {
                         'result': 'error: '+ str(ex),
                         'message': 'Batch Name already exist'
                     }
             response = simplejson.dumps(res)
             return HttpResponse(response, status = status_code, mimetype="application/json")
+
+
+class DeleteBatch(View):
+    def get(self, request, *args, **kwargs):
+
+        batch_id = kwargs['batch_id']       
+        batch = Batch.objects.filter(id=batch_id)                          
+        batch.delete()
+        return HttpResponseRedirect(reverse('list_batch'))
