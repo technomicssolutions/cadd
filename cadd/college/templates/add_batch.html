@@ -18,9 +18,9 @@
                                 <label> Software</label>
                             </div>
                             <div class="form_input"> 
-                                <select name="software" ng-model="batch.software" ng-change=" ">
+                                <select name="software" ng-model="batch.software_id" ng-change=" ">
                                     <option value="">Select</option>
-                                    <option ng-repeat="software in softwares" value="[[software.id]]" >[[software.name]]
+                                    <option ng-repeat="software in softwares" value="[[software.id]]" ng-selected="batch.software_id==software.id">[[software.name]]
                                     </option>
                                 </select>
                             </div>                                       
@@ -48,7 +48,7 @@
                         </div>
                         <div align="center">
                             <p ng-show="error_flag" class="error_message">[[message]]</p>
-                            <input class ="btn btn-info" name="submit" type="button" value="Add" ng-click="save_new_batch()">
+                            <input class ="btn btn-info" name="submit" type="button" value="Add" ng-click="save_batch()">
                             <input class ="btn btn-info" name="cancel" type="button" value="Cancel" ng-click="close_popup()">
                         </div>
                     </form>                        

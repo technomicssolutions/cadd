@@ -5,7 +5,7 @@ from attendance.views import AddAttendance, BatchAttendanceList, AttendanceDetai
 
 urlpatterns = patterns('',
 	url(r'^add_attendance/$',login_required(AddAttendance.as_view()), name='add_attendance'),
-	url(r'^batches/$',login_required(BatchAttendanceList.as_view()), name='batches'),
+	#url(r'^batches/$',login_required(BatchAttendanceList.as_view()), name='batches'),
 	url(r'^attendance_details/$',login_required(AttendanceDetails.as_view()), name='attendance_details'),
 	url(r'^clear_batch_details/$',login_required(ClearBatchAttendanceDetails.as_view()), name='clear_batch_details'),
 	

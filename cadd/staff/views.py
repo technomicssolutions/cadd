@@ -63,6 +63,13 @@ class ListStaff(View):
         if request.is_ajax():
             staff_list = []
             for staff in staffs:
+                permission_details = {}
+                permission_details = {
+                    'attendance_module': 'true' if staff.permission and staff.permission.attendance_module  else 'false',
+                    'student_module': 'true' if staff.permission and staff.permission.student_module else 'false',
+                    'master_module': 'true' if staff.permission and staff.permission.master_module else 'false',
+                    'fees_module': 'true' if staff.permission and staff.permission.fees_module else 'false',
+                }
                 staff_list.append({
                     'id': staff.id,
                     'first_name': staff.user.first_name,
@@ -79,6 +86,7 @@ class ListStaff(View):
                     'role': staff.role,
                     'experience': staff.experience,
                     'photo': staff.photo.name,
+                    'permission': permission_details,
                 })
             res = {
                 'result': 'Ok',
@@ -134,6 +142,25 @@ class PermissionSetting(View):
                 permission = staff.permission
             else:
                 permission = Permission()
+            if permission_details['attendance_module'] == 'true':
+                permission.attendance_module = True
+            else:
+                permission.attendance_module = False
+            if permission_details['student_module'] == 'true':
+                permission.student_module = True
+            else:
+                permission.student_module = False
+            if permission_details['master_module'] == 'true':
+                permission.master_module = True
+            else:
+                permission.master_module = False
+            if permission_details['fees_module'] == 'true':
+                permission.fees_module = True
+            else:
+                permission.fees_module = False
+            permission.save()
+            staff.permission = permission
+            staff.save()
             res = {
                 'result': 'ok',
             }

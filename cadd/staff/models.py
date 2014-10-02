@@ -8,8 +8,8 @@ ROLE = (
 class Permission(models.Model):
 
 	attendance_module = models.BooleanField('Attendance Permission', default=False)
-	admission_module = models.BooleanField('Admission Permission', default=False)
-	college_module = models.BooleanField('College Permission', default=False)
+	student_module = models.BooleanField('Student Permission', default=False)
+	master_module = models.BooleanField('Master Permission', default=False)
 	fees_module = models.BooleanField('Fees Permission', default=False)
 	
 	class Meta:
