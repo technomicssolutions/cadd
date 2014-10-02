@@ -57,6 +57,8 @@ class ListStaff(View):
     def get(self, request, *args, **kwargs):
         
         staffs = Staff.objects.all()
+        if request.GET.get('staff_name', ''):
+            staffs = Staff.objects.filter(user__first_name__istartswith=request.GET.get('staff_name', ''))
         if request.is_ajax():
             staff_list = []
             for staff in staffs:
@@ -115,3 +117,24 @@ class IsUsernameExists(View):
                 }
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')
+
+class PermissionSetting(View):
+
+    def get(self, request, *args, **kwargs):
+
+        return render(request, 'permission_setting.html', {})
+
+    def post(self, request, *args, **kwargs):
+
+        if request.is_ajax():
+            permission_details = ast.literal_eval(request.POST['permission_details'])
+            staff = Staff.objects.get(id=permission_details['staff'])
+            if staff.permission:
+                permission = staff.permission
+            else:
+                permission = Permission()
+            res = {
+                'result': 'ok',
+            }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
