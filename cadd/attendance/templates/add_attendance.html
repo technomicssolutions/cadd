@@ -16,11 +16,11 @@
 					<div class="add_attendance_row">
 						<label class="add_attendance_label">Select Batch</label>				  <select ng-model="batch_id" >
 							<option value="">Select</option>
-							<option ng-repeat="batch in batches" value="[[batch.batch_id]]" ng-click="get_batch_details(batch)">[[batch.name]]</option>
+							<option ng-repeat="batch in batches" value="[[batch.id]]" ng-click="get_batch_details(batch)">[[batch.name]]</option>
 						</select>					
 					</div>
 					<div class="display_date">
-						<label class="add_attendance_label">Date: [[ current_date ]]/[[ current_month ]]/[[ current_year ]]</label>
+						<label class="add_attendance_label">Date: {{current_date}}</label>
 					</div>
 					<div class="display_details">
 						<label class="add_attendance_label"><b>P</b> - Present <b>A</b> - Absent</label>
@@ -30,34 +30,30 @@
 				<div class="section_1_attendance" ng-show="is_edit">
 					<table border="0" class="table table-striped" cellpadding="0" cellspacing="0" ng-show="students.length > 0">
 						<tr>
-							<th class="days">Roll No</th>
-							<th class="days">Name</th>
-							<th class="days" ng-repeat="period in period_nos">[[period]]</th>
+							<th>Roll No</th>
+							<th>Name</th>
+							<th>Absent/Present</th>
 						</tr>
 						<tr ng-repeat="student in students">
-							<td class="days">[[ student.roll_no ]]</td>
-							<td class="days">[[student.name]]</td>
-							<td class="days" ng-repeat="period in student.counts" ng-class="appliedClass(period)"><input type="checkbox" ng-model="period.is_presented" ng-disabled="period.is_holiday == 'true' "></td>
-							
+							<td>[[student.roll_number ]]</td>
+							<td>[[student.name]]</td>
+							<td><input type="checkbox" ng-model="student.is_presented"></td>
 						</tr>			                        
 					</table>
 				</div>
 				<div class="section_1_attendance" ng-hide="is_edit">
 					<table border="0" class="table table-striped" cellpadding="0" cellspacing="0" ng-show="students.length > 0">
 						<tr>
-							<th class="days">Roll No</th>
-							<th class="days">Name</th>
-							<th class="days" ng-repeat="period in period_nos">[[period]]</th>
+							<th>Roll No</th>
+							<th>Name</th>
+							<th>Absent/Present</th>
 						</tr>
 						<tr ng-repeat="student in students">
-							<td class="days">[[ student.roll_no ]]</td>
-							<td class="days">[[student.name]]</td>
-							<td class="days" ng-repeat="period in student.counts" ng-class="appliedClass(period)"><span class="red_font" ng-hide="period.is_presented">[[ period.status ]]</span>
-							<span class="bold_font" ng-show="period.is_presented">[[ period.status ]]</span></td>
-							
+							<td>[[ student.roll_number ]]</td>
+							<td>[[student.name]]</td>
+							<td>[[ student.status ]]</td>
 						</tr>			                        
 					</table>
-
 				</div>	
 			</div>
 			<div  align="Center">

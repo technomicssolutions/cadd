@@ -21,46 +21,33 @@ function get_attendance_list($scope, $http) {
         console.log(data || "Request failed");
     });
 }
-
 function AttendanceController($scope, $http, $element){
-    $scope.batch = {
-        'batch_id': '',
-        'batch_name': '',
-        'current_month': '',
-    }
+    $scope.batch_id = "";
     $scope.students = {}
     $scope.is_edit = false;   
     $scope.init = function(csrf_token) {
         $scope.csrf_token = csrf_token;
         get_attendance_list($scope, $http);
-         $scope.show_buttons = true;
+        get_batches($scope, $http);
+        $scope.show_buttons = true;
     }
-    $scope.get_batch_details = function(batch) {
-        $scope.batch = batch;
-        $scope.students = batch.students;
-        if ($scope.students.length == 0) {
-            $scope.validation_error = 'No Students';
-        }else
+    $scope.get_batch_details = function(batch){
+        var url = '/attendance/batch_students/'+batch.id;
+        $http.get(url).success(function(data)
         {
-            $scope.validation_error = '';
-        }
-        $scope.period_nos = batch.period_nos;
-        for (var i=0; i < $scope.students.length; i++){
-            for (var j=0; j < $scope.students[i].counts.length; j++) {            
-                if ($scope.students[i].counts[j].is_presented == "true" || $scope.students[i].counts[j].is_presented == true) {
-                    $scope.students[i].counts[j].is_presented = true;
-                } else {
-                    $scope.students[i].counts[j].is_presented = false;
-                }
+            $scope.students = data.students;
+            $scope.current_month = data.current_month;
+            $scope.current_year = data.current_year;
+            $scope.current_date = data.current_date;
+            for(var i = 0; i < $scope.students.length; i++){
+                if($scope.students[i].is_presented == 'true')
+                    $scope.students[i].is_presented = true;
+                else 
+                    $scope.students[i].is_presented = false;
             }
-        } 
-        if($scope.is_holiday == "true" || angular.isUndefined($scope.is_holiday)){
-                $scope.show_buttons = false;
-            }
-            else{
-                $scope.show_buttons = true;    
-        }     
+        }).error(function(data, status){
 
+        });
     }
     $scope.appliedClass = function(day) {
         if (day.is_holiday == 'true'){
@@ -72,7 +59,8 @@ function AttendanceController($scope, $http, $element){
     }
 
     $scope.attendance_validation = function() {
-        if($scope.batch.batch_id == '' || $scope.batch.batch_id == undefined) {
+        $scope.validation_error = "";
+        if($scope.batch_id == '') {
             $scope.validation_error = 'Please choose batch';
             return false;
         } else if($scope.is_holiday == true || $scope.is_holiday == "true"){
@@ -86,31 +74,22 @@ function AttendanceController($scope, $http, $element){
 
     $scope.save_attendance = function() {
         if($scope.attendance_validation()) {
-            var height = $(document).height();
-            height = height + 'px';
-           
-            $('#overlay').css('height', height);
-            $('#spinner').css('height', height);
-
-            for (var i=0; i < $scope.students.length; i++){
-                for (var j=0; j < $scope.students[i].counts.length; j++) { 
-                    if ($scope.students[i].counts[j].is_presented == true) {
-                        $scope.students[i].counts[j].is_presented = 'true';
-                    } else {
-                        $scope.students[i].counts[j].is_presented = 'false';
-                    }
-                    
-                }
-            }
+           for(var i = 0; i < $scope.students.length; i++){
+                if($scope.students[i].is_presented == true)
+                    $scope.students[i].is_presented = 'true';
+                else
+                    $scope.students[i].is_presented = 'false';
+           }
             params = { 
-                'batch': angular.toJson($scope.batch),
+                'batch_id': $scope.batch_id,
                 'students': angular.toJson($scope.students),
                 'current_month': $scope.current_month,
                 'current_year': $scope.current_year,
                 'current_date': $scope.current_date,
-                'is_holiday': $scope.is_holiday,
                 "csrfmiddlewaretoken" : $scope.csrf_token
             }
+            console.log($scope.students, $scope.current_month, $scope.current_year, $scope.current_date);
+            show_spinner();
             $http({
                 method : 'post',
                 url : '/attendance/add_attendance/',
@@ -119,6 +98,7 @@ function AttendanceController($scope, $http, $element){
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {
+                hide_spinner();
                 document.location.href = '/attendance/add_attendance/';
                 $('#overlay').css('height', '0px');
                 $('#spinner').css('height', '0px');

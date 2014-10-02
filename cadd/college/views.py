@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404, render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 
 from college.models import Software, Course, Batch
+from admission.models import Student
 
 
 class Softwares(View):
@@ -327,3 +328,6 @@ class DeleteBatch(View):
         batch = Batch.objects.filter(id=batch_id)                          
         batch.delete()
         return HttpResponseRedirect(reverse('batches'))
+
+
+

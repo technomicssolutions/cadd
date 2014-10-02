@@ -21,53 +21,31 @@ class AddAttendance(View):
         context = {
             'current_date': current_date.strftime('%d/%m/%Y')
         }
-        return render(request, 'attendance/add_attendance.html', {})
+        return render(request, 'add_attendance.html', context)
 
     def post(self, request, *args, **kwargs):
 
         status = 200       
-        batch_details = ast.literal_eval(request.POST['batch'])
         day = request.POST['current_date']
         month = request.POST['current_month']
         year = request.POST['current_year']
         students = ast.literal_eval(request.POST['students'])
-        batch = Batch.objects.get(id=batch_details['batch_id'])
+        batch = Batch.objects.get(id=request.POST['batch_id'])
         for student_details in students:    
-            presented = []       
-            student = Student.objects.get(id=student_details['student_id'])
-            periods = student_details['counts']
+            student = Student.objects.get(id=student_details['id'])
             date = dt.date(int(year), int(month), int(day))
-            print date
             attendance, created = Attendance.objects.get_or_create(batch=batch, student=student, date=date)
-            attendance.presented = []   
-            periods_present = 0         
-            for period_details in periods:               
-                if period_details['is_presented'] == 'true':
-                    presented.append({
-                        'period': period_details['count'],
-                        'is_presented': True,
-                        })   
-                    periods_present = periods_present+1
-                elif period_details['is_presented'] == 'false':
-                    presented.append({
-                        'period': period_details['count'],
-                        'is_presented': False,
-                        }) 
-                    periods_present = periods_present-1
-            if periods_present == int(batch.periods):
-                attendance.status = "P"
-            elif periods_present == -int(batch.periods):
-                attendance.status = "A"
+            if student_details['is_presented'] == 'true':
+                attendance.status = "Present"
             else:
-                attendance.status = "H"
-            attendance.presented = presented
+                attendance.status = "Absent"
             attendance.save()                
-
         res = {
             'result': 'ok',
         }
         response = simplejson.dumps(res)
         return HttpResponse(response, status=status,  mimetype='application/json')
+
 
 class BatchAttendanceList(View):
 
@@ -389,6 +367,40 @@ class ClearHolidayCalendar(View):
             response = simplejson.dumps(res)
             return HttpResponseRedirect(reverse('clear_holiday_calendar'))
         return render(request, 'attendance/clear_holiday_calendar.html', {})
+
+
+class BatchStudents(View):
+
+    def get(self, request, *args, **kwargs):
+
+        current_date = datetime.now()
+        year = current_date.year
+        month = current_date.month      
+        day = current_date.day  
+        batch_id = kwargs['batch_id']
+        batch = Batch.objects.get(id=batch_id)
+        students = Student.objects.filter(batch=batch).order_by('roll_number')
+        students_list = []
+        date = dt.date(int(year), int(month), int(day))
+        holiday_calendar, created = HolidayCalendar.objects.get_or_create(date=date)
+        for student in students:
+            attendance, created = Attendance.objects.get_or_create(batch=batch, student=student, date=date)
+            students_list.append({
+                'id': student.id,
+                'name': student.student_name,
+                'roll_number': student.roll_number,
+                'status': attendance.status if attendance.status else 'NA',
+                'is_presented': 'false' if attendance.status == 'Absent' else 'true',
+            })
+        res = {
+            'students': students_list,
+            'current_month': current_date.month,  
+            'current_date': current_date.day,    
+            'current_year': current_date.year, 
+        }
+        status_code = 200
+        response = simplejson.dumps(res)
+        return HttpResponse(response, status = status_code, mimetype="application/json")
 
 
 
