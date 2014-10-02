@@ -464,3 +464,75 @@ function StudentListController($scope, $http, $element, $location, $timeout) {
         return new Array(n);
     }
 }
+function EnquiryController($scope, $http) {
+    $scope.enquiry = {
+        'student_name' : '',
+        'address' :'',
+        'mobile_number' : '',
+        'email' : '',
+        'details_about_clients_enquiry' : '',
+        'educational_qualification' : '',
+        'land_mark' : '',
+        'course' : '',
+        'remarks': '',
+        'follow_up_date' : '',
+        'remarks_for_follow_up_date' : '',
+        'discount' : '',
+    }
+    $scope.init = function(csrf_token){
+        $scope.csrf_token = csrf_token;
+        // get_course_list($scope, $http);
+    }
+    $scope.validate_enquiry = function() {
+    $scope.validation_error = '';
+    $scope.enquiry.follow_up_date = $$('#follow_up_date')[0].get('value');
+    
+
+    if($scope.enquiry.student_name == '' || $scope.enquiry.student_name == undefined) {
+        $scope.validation_error = "Please Enter the Name" ;
+        return false;
+    }   
+    else if($scope.enquiry.course == '' || $scope.enquiry.course == undefined) {
+        $scope.validation_error = "Please Enter Course";
+        return false;
+    } else if($scope.enquiry.address == '' || $scope.enquiry.address == undefined) {
+        $scope.validation_error = "Please Enter Address";
+        return false;
+    } else if($scope.enquiry.mobile_number == ''|| $scope.enquiry.mobile_number == undefined){
+        $scope.validation_error = "Please enter the Mobile Number";
+        return false;
+    } else if(!(Number($scope.enquiry.mobile_number)) || $scope.enquiry.mobile_number.length > 15) {            
+        $scope.validation_error = "Please enter a Valid Mobile Number";
+        return false;
+    } else if(($scope.enquiry.email != '' && $scope.enquiry.email != undefined) && (!(validateEmail($scope.enquiry.email)))){
+        $scope.validation_error = "Please enter a Valid Email Id";
+        return false;
+    } else {
+        return true;
+    }     
+}   
+    $scope.save_enquiry = function(){
+         if ($scope.validate_enquiry()) {
+            params = {
+                'enquiry': angular.toJson($scope.enquiry),
+                'csrfmiddlewaretoken': $scope.csrf_token,
+                }
+            
+            $http({
+                method: 'post',
+                url: '/admission/enquiry/',
+                data : $.param(params),
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data){
+               
+                if (data.result == 'ok') {
+                   
+                } 
+            }).error(function(data, status){
+                console.log('Request failed'||data);
+            });
+        }
+    }
+}

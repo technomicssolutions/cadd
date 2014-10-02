@@ -40,7 +40,7 @@ class Student(models.Model):
 class Enquiry(models.Model):
 
 	student_name = models.CharField('Student Name', null=True, blank=True, max_length=200)
-	address = address= models.CharField('Student Address',null=True, blank=True, max_length=600)
+	address = address= models.TextField('Student Address',null=True, blank=True)
 	mobile_number= models.CharField('Mobile Number',null=True, blank=True, max_length=200)
 	email = models.CharField('Email',null=True, blank=True, max_length=200)
 	details_about_clients_enquiry =  models.TextField('Details ', null=True, blank=True)

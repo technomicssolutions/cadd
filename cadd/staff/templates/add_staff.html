@@ -45,7 +45,7 @@
 									<label> DOB</label>  
 								</div>
 								<div class="forminput">
-									<input type="text"name="dob" value="" ng-model="dob" id="dob"></text>
+									<input type="text"name="dob" value="" ng-model="staff.dob" id="dob"></text>
 								</div>
 								<div class="formtext">
 									<label>Address</label> 
@@ -93,7 +93,7 @@
 									<label > Date of join</label>  
 								</div>
 								<div class="forminput">
-									<input type="text"  name="doj" value=""  ng-model="doj" id="doj">	
+									<input type="text"  name="doj" value=""  ng-model="staff.doj" id="doj">	
 								</div>
 								
 								<div class="formtext">
@@ -108,9 +108,10 @@
 								<div class="forminput">
 									<input type="file" fileread="photo_img.src"/>
 									<input type="hidden" ng-model="photo_img.src"> 
+									<a href="/site_media/[[staff.photo]]" ng-show="staff.photo" target="_blank">View</a>
 								</div>
 								<div class="formtext">
-									<label>Experaince</label>
+									<label>Experience</label>
 								</div>
 								<div class="forminput">
 									<textarea name="experiance" value="" ng-model="staff.experience"></textarea>

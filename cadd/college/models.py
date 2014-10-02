@@ -1,7 +1,7 @@
 from django.db import models
 
 class Software(models.Model):
-	name = models.CharField('Software Name', null=True, blank=True, max_length=200)
+	name = models.CharField('Software Name', null=True, blank=True, max_length=200, unique=True)
 	
 	def __unicode__(self):
 		return (self.name)

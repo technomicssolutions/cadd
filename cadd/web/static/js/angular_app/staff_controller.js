@@ -25,13 +25,13 @@ function validate_staff($scope) {
     } else if($scope.is_user_exists) {
         $scope.validation_staff_error = "Username already exists" ;
         return false;
-    } else if($scope.new_staff && $scope.staff.password == '' || $scope.staff.password == undefined) {
+    } else if($scope.new_staff == true &&($scope.staff.password == '' || $scope.staff.password == undefined)) {
         $scope.validation_staff_error = "Please Enter the Password" ;
         return false;
-    } else if($scope.new_staff && $scope.confirm_password == '' || $scope.confirm_password == undefined) {
+    } else if($scope.new_staff == true && ($scope.confirm_password == '' || $scope.confirm_password == undefined)) {
         $scope.validation_staff_error = "Please Enter the Confirm Password" ;
         return false;
-    } else if($scope.new_staff && $scope.staff.password != $scope.confirm_password) {
+    } else if($scope.new_staff == true && ($scope.staff.password != $scope.confirm_password)) {
         $scope.validation_staff_error = "Password not matches with Confirm Password" ;
         return false;
     } else if($scope.staff.dob == '' || $scope.staff.dob == undefined) {
@@ -43,7 +43,7 @@ function validate_staff($scope) {
     } else if($scope.staff.mobile_number == ''|| $scope.staff.mobile_number == undefined){
         $scope.validation_staff_error = "Please enter the Mobile Number";
         return false;
-    } else if($scope.staff.mobile_number.length <9 || $scope.staff.mobile_number.length > 15) {            
+    } else if($scope.staff.mobile_number.length < 9 || $scope.staff.mobile_number.length > 15) {            
         $scope.validation_staff_error = "Please enter a Valid Mobile Number";
         return false;
     } else if($scope.staff.land_number == ''|| $scope.staff.land_number == undefined){
@@ -96,9 +96,8 @@ function save_staff($scope, $http, from) {
             if (data.result == 'error'){
                 $scope.error_flag=true;
                 $scope.message = data.message;
-            }
-            else {
-                document.location.href ="/staff/list_staff/";
+            } else {
+                document.location.href ="/staff/staffs/";
             }
 
         }).error(function(data, status){
@@ -220,6 +219,22 @@ function StaffController($scope, $element, $http, $timeout, share, $location) {
     }
     $scope.save_new_staff = function() {
         save_staff($scope, $http, 'staff');
+    }
+    $scope.edit_staff = function(staff) {
+        console.log(staff);
+        $scope.new_staff = false;
+        $scope.popup = new DialogueModelWindow({   
+            'dialogue_popup_width': '79%',
+            'message_padding': '0px',
+            'left': '28%',
+            'top': '182px',
+            'height': 'auto',
+            'content_div': '#add_staff_details'
+        });
+        var height = $(document).height();
+        $scope.popup.set_overlay_height(height);
+        $scope.popup.show_content();
+        $scope.staff = staff;
     }
 }
 
