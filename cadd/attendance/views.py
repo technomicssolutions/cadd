@@ -142,6 +142,7 @@ class BatchAttendanceList(View):
             }
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')
+        return HttpResponse('Ok')
 
 
 
