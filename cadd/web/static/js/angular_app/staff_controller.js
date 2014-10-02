@@ -259,7 +259,6 @@ function PermissionController($scope, $http) {
                 console.log('Request failed' || data);
             })
         }
-        
     }
     $scope.select_staff = function(staff) {
         $scope.staff_selected = false;
@@ -315,7 +314,6 @@ function PermissionController($scope, $http) {
             } else {
                 $scope.permission.fees_module = 'false';
             }
-            
             params = {
                 'permission_details': angular.toJson($scope.permission),
                 'csrfmiddlewaretoken': $scope.csrf_token,
