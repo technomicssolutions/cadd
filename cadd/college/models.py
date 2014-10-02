@@ -7,7 +7,7 @@ class Software(models.Model):
 		return (self.name)
 
 class Course(models.Model):
-	name = models.CharField('Course Name', null=True, blank=True, max_length=200)
+	name = models.CharField('Course Name', null=True, blank=True, max_length=200, unique=True)
 	software = models.ManyToManyField(Software)
 	amount = models.DecimalField('Amount', null=True, blank=True, decimal_places=2, max_digits=10)
 	duration = models.IntegerField('Duration', null=True, blank=True, max_length=200)
@@ -17,7 +17,7 @@ class Course(models.Model):
 		return (self.name)
 
 class Batch(models.Model):
-	name = models.CharField('Batch Name', null=True, blank=True, max_length=200)
+	name = models.CharField('Batch Name', null=True, blank=True, max_length=200, unique=True)
 	software = models.ForeignKey(Software)
 	start_time = models.TimeField('Start Date', null=True, blank=True)
 	end_time = models.TimeField('End Date', null=True, blank=True)
