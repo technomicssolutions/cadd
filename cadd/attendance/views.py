@@ -9,7 +9,7 @@ from django.views.generic.base import View
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 
-from attendance.models import Attendance, HolidayCalendar
+from attendance.models import Attendance, HolidayCalendar, StudentAttendance
 from college.models import Batch
 from admission.models import Student
 from staff.models import Staff
@@ -35,25 +35,26 @@ class AddAttendance(View):
         batch_details = ast.literal_eval(request.POST['batch'])
         batch = Batch.objects.get(id=batch_details['id'])
         user = request.user;
+        date = dt.date(int(year), int(month), int(day))
+        try:
+            attendance = Attendance.objects.get(batch=batch, date=date)
+        except:
+            attendance = Attendance()
+            attendance.batch = batch
+            attendance.date = date
+        attendance.user = user
+        attendance.topics_covered =  batch_details['topics']
+        if batch_details['remarks']:
+            attendance.remarks = batch_details['remarks']
+        attendance.save()
         for student_details in students:    
             student = Student.objects.get(id=student_details['id'])
-            date = dt.date(int(year), int(month), int(day))
-            try:
-                attendance = Attendance.objects.get(batch=batch, student=student, date=date)
-            except:
-                attendance = Attendance()
-            attendance.user = request.user
-            attendance.batch = batch
-            attendance.student = student
-            attendance.date = date
+            student_attendance, created =  StudentAttendance.objects.get_or_create(student=student, attendance=attendance)
             if student_details['is_presented'] == 'true':
-                attendance.status = "Present"
+                student_attendance.status = "Present"
             else:
-                attendance.status = "Absent"
-            attendance.topics_covered = batch_details['topics']
-            if batch_details['remarks']:
-                attendance.remarks = batch_details['remarks']
-            attendance.save()                
+                student_attendance.status = "Absent"
+            student_attendance.save()                
         res = {
             'result': 'ok',
         }
@@ -397,33 +398,37 @@ class BatchStudents(View):
         students_list = []
         date = dt.date(int(year), int(month), int(day))
         holiday_calendar, created = HolidayCalendar.objects.get_or_create(date=date)
+        try:
+            attendance = Attendance.objects.get(batch=batch, date=date)
+            if attendance.user.username == 'admin':
+                staff = attendance.user.username
+            else:
+                staff_obj = Staff.objects.get(user=attendance.user)
+                staff = staff_obj.user.first_name + " " + staff_obj.user.last_name
+        except Exception as ex:
+            print str(ex)
+            attendance = Attendance()
+            staff = ''
         for student in students:
             try:
-                attendance = Attendance.objects.get(batch=batch, student=student, date=date)
-                if attendance.user.username == 'admin':
-                    staff = attendance.user.username
-                else:
-                    staff_obj = Staff.objects.get(user=attendance.user)
-                    staff = staff_obj.user.first_name + " " + staff_obj.user.last_name
-            except Exception as ex:
-                print str(ex)
-                attendance = Attendance()
-                staff = ''
+                student_attendance = StudentAttendance.objects.get(attendance=attendance, student=student)
+            except:
+                student_attendance = StudentAttendance()
             students_list.append({
                 'id': student.id,
                 'name': student.student_name,
                 'roll_number': student.roll_number,
-                'status': attendance.status if attendance.status else 'NA',
-                'is_presented': 'false' if attendance.status == 'Absent' else 'true',
-                'topics': attendance.topics_covered if attendance.topics_covered else '',
-                'remarks': attendance.remarks if attendance.remarks else '',
-                'staff': staff,
+                'status': student_attendance.status if student_attendance.status else 'NA',
+                'is_presented': 'false' if student_attendance.status == 'Absent' else 'true',
             })
         res = {
             'students': students_list,
             'current_month': current_date.month,  
             'current_date': current_date.day,    
             'current_year': current_date.year, 
+            'topics': attendance.topics_covered if attendance.topics_covered else '',
+            'remarks': attendance.remarks if attendance.remarks else '',
+            'staff': staff,
         }
         status_code = 200
         response = simplejson.dumps(res)
