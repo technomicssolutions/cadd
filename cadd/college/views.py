@@ -105,6 +105,7 @@ class Courses(View):
                     'duration_unit': course.duration_unit,
                     'amount': course.amount,
                     'softwares': software_list,
+                    'course_name': course.name + str(' - ') + str(course.duration_unit)
                 })
                 software_list = []
             res = {
