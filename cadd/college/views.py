@@ -108,7 +108,7 @@ class Courses(View):
                     'amount': course.amount,
                     'fine': course.fine,
                     'softwares': software_list,
-                    'course_name': course.name + str(' - ') + str(course.duration_unit)
+                    'course_name': course.name + str(' - ') +str(course.duration) + ' ' + str(course.duration_unit)
                 })
                 software_list = []
             res = {
@@ -184,6 +184,7 @@ class CourseDetails(View):
         ctx_software = []
         
         for course in courses:
+            print str(course.duration), course.duration
             course_name = course.name + str(course.duration) + str(course.duration_unit)
             course_list.append({
                 'software':course.software.name,

@@ -542,6 +542,11 @@ function AdmissionController($scope, $http) {
                 console.log(data.enquiry);
                 $scope.student_name = data.enquiry[0].student_name;
                 $scope.course = data.enquiry[0].course;
+                $scope.address = data.enquiry[0].address;
+                $scope.qualifications = data.enquiry[0].educational_qualification;
+                $scope.email = data.enquiry[0].email;
+                $scope.mobile_number = data.enquiry[0].mobile_number;
+                $scope.get_fees();
             }
         }).error(function(data, status)
         {
@@ -580,5 +585,12 @@ function AdmissionController($scope, $http) {
             useFadeInOut: !Browser.ie,
             format:'%d/%m/%Y',
         });
+    }
+    $scope.get_fees = function() {
+        for(var i=0; i<$scope.courses.length; i++) {
+            if ($scope.course == $scope.courses[i].id) {
+                $scope.fees = $scope.courses[i].amount;
+            }
+        }
     }
 }
