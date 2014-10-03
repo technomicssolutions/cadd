@@ -130,45 +130,26 @@ class ViewStudentDetails(View):
         if request.is_ajax():
             try:
                 student = Student.objects.get(id = student_id)
-                qualified_exam = ''
-                technical_qualification = ''
-                for exam in student.qualified_exam.all():
-                    qualified_exam = qualified_exam + exam.name + ',' 
-                qualified_exam = qualified_exam[:-1]
-                
-                for exam in student.technical_qualification.all():
-                    technical_qualification = technical_qualification + exam.name + ',' 
-                technical_qualification = technical_qualification[:-1]
+               
                 ctx_student_data.append({
-                    'student_name': student.student_name if student.student_name else '',
-                    'roll_number': student.roll_number if student.roll_number else '',
-                    'dob': student.dob.strftime('%d/%m/%Y') if student.dob else '',
-                    'address': student.address if student.address else '',
-                    'course': student.course.course if student.course.course else '',
-                    'course_id': student.course.id if student.course.course else '',
-                    'name': str(student.batch.start_date) + '-' + str(student.batch.end_date) + ' ' + (str(student.batch.branch) if student.batch.branch else ''),     
-                    'batch_start_date': student.batch.start_date if student.batch.start_date else '',
-                    'batch_end_date': student.batch.end_date if student.batch.end_date else '',
-                    'mobile_number': student.mobile_number if student.mobile_number else '',
-                    'land_number': student.land_number if student.land_number else '',
-                    'email': student.email if student.email else '',
-                    'blood_group': student.blood_group if student.blood_group else '',
-                    'doj': student.doj.strftime('%d/%m/%Y') if student.doj else '',
-                    'photo': student.photo.name if student.photo.name else '',
-                    'certificates_submitted': student.certificates_submitted if student.certificates_submitted else '',
-                    'certificates_remarks': student.certificates_remarks if student.certificates_remarks else '',
-                    'certificates_file': student.certificates_file if student.certificates_file else '',
-                    'id_proofs_submitted': student.id_proofs_submitted if student.id_proofs_submitted else '',
-                    'id_proofs_remarks': student.id_proofs_remarks if student.id_proofs_remarks else '',
-                    'id_proofs_file': student.id_proofs_file if student.id_proofs_file else '',
-                    'guardian_name': student.guardian_name if student.guardian_name else '',
-                    'guardian_address': student.guardian_address if student.guardian_address else '',
-                    'relationship': student.relationship if student.relationship else '',
-                    'guardian_mobile_number': student.guardian_mobile_number if student.guardian_mobile_number else '',
-                    'guardian_land_number': student.guardian_land_number if student.guardian_land_number else '',
-                    'guardian_email': student.guardian_email if student.guardian_email else '',
-                    'qualified_exam': qualified_exam if qualified_exam else 'xxx',
-                    'technical_qualification': technical_qualification if technical_qualification else 'xxx',
+                'student_name': student.student_name if student.student_name else '',
+                'roll_number': student.roll_number if student.roll_number else '',
+                'dob': student.dob.strftime('%d/%m/%Y') if student.dob else '',
+                'address': student.address if student.address else '',
+                'course': student.course.id if student.course else '',
+                'batch' :student.batch.id if student.batch else '',
+                'mobile_number': student.mobile_number if student.mobile_number else '',
+                'email': student.email if student.email else '',
+                'blood_group': student.blood_group if student.blood_group else '',
+                'doj': student.doj.strftime('%d/%m/%Y') if student.doj else '',
+                'photo': student.photo.name if student.photo.name else '',
+                'certificates_submitted': student.certificates_submitted if student.certificates_submitted else '',
+                'id_proofs_submitted': student.id_proofs_submitted if student.id_proofs_submitted else '',
+        
+                'guardian_name': student.guardian_name if student.guardian_name else '',
+                
+                'relationship': student.relationship if student.relationship else '',
+                'guardian_mobile_number': student.guardian_mobile_number if student.guardian_mobile_number else '',
                 })
                 res = {
                     'result': 'ok',
@@ -192,47 +173,33 @@ class EditStudentDetails(View):
             'student_id': student_id,
         }
         ctx_student_data = []
-        
+        student = Student.objects.get(id=student_id)
         if request.is_ajax():
-            try:
-                batch =  request.GET.get('batch', '')             
-
-                if batch:
-                    batch = Batch.objects.get(id=batch)
+            ctx_student_data.append({
+                'student_name': student.student_name if student.student_name else '',
+                'roll_number': student.roll_number if student.roll_number else '',
+                'dob': student.dob.strftime('%d/%m/%Y') if student.dob else '',
+                'address': student.address if student.address else '',
+                'course': student.course.id if student.course else '',
+                'batch' :student.batch.id if student.batch else '',
+                'mobile_number': student.mobile_number if student.mobile_number else '',
+                'email': student.email if student.email else '',
+                'blood_group': student.blood_group if student.blood_group else '',
+                'doj': student.doj.strftime('%d/%m/%Y') if student.doj else '',
+                'photo': student.photo.name if student.photo.name else '',
+                'certificates_submitted': student.certificates_submitted if student.certificates_submitted else '',
+                'id_proofs_submitted': student.id_proofs_submitted if student.id_proofs_submitted else '',
+        
+                'guardian_name': student.guardian_name if student.guardian_name else '',
                 
-
-                ctx_student_data.append({
-                    'student_name': student.student_name if student.student_name else '',
-                    'roll_number': student.roll_number if student.roll_number else '',
-                    'dob': student.dob.strftime('%d/%m/%Y') if student.dob else '',
-                    'address': student.address if student.address else '',
-                    'course': student.course.course if student.course.course else '',
-                    'course_id': student.course.id if student.course.course else '',
-                    'name': str(student.batch.start_date) + '-' + str(student.batch.end_date) + ' ' + (str(student.batch.branch) if student.batch.branch else ''),     
-                    'mobile_number': student.mobile_number if student.mobile_number else '',
-                    'land_number': student.land_number if student.land_number else '',
-                    'email': student.email if student.email else '',
-                    'blood_group': student.blood_group if student.blood_group else '',
-                    'doj': student.doj.strftime('%d/%m/%Y') if student.doj else '',
-                    'photo': student.photo.name if student.photo.name else '',
-                    'certificates_submitted': student.certificates_submitted if student.certificates_submitted else '',
-                    'id_proofs_submitted': student.id_proofs_submitted if student.id_proofs_submitted else '',
-            
-                    'guardian_name': student.guardian_name if student.guardian_name else '',
-                    
-                    'relationship': student.relationship if student.relationship else '',
-                    'guardian_mobile_number': student.guardian_mobile_number if student.guardian_mobile_number else '',
-            
+                'relationship': student.relationship if student.relationship else '',
+                'guardian_mobile_number': student.guardian_mobile_number if student.guardian_mobile_number else '',
+        
                 })
-                res = {
-                    'result': 'ok',
-                    'student': ctx_student_data,
-                }
-            except Exception as ex:
-                res = {
-                    'result': 'error: '+ str(ex),
-                    'student': ctx_student_data,
-                }
+            res = {
+                'result': 'ok',
+                'student': ctx_student_data,
+            }
             status = 200
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')

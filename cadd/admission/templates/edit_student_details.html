@@ -3,7 +3,7 @@
 {% block body_id %}edit_student{% endblock %}
 
 {% block controller %}
-	ng-controller="EditStudentController" ng-init="init('{{csrf_token}}', '{{student_id}}')"
+	ng-controller="StudentListController" ng-init="init('{{csrf_token}}')"
 {% endblock controller %}
 
 {% block content %}
