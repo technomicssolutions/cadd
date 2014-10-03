@@ -1,26 +1,13 @@
-
-/*function get_attendance_list($scope, $http) {
-    var height = $(document).height();
-    height = height + 'px';
-    
-    $('#overlay').css('height', height);
-    $('#spinner').css('height', height);
-    $http.get('/attendance/batches/').success(function(data)
-    {
-        $scope.batches = data.batches;
-        $('#overlay').css('height', '0px');
-        $('#spinner').css('height', '0px');
-        $scope.current_month = data.current_month;
-        $scope.current_year = data.current_year;
-        $scope.current_date = data.current_date;
-        $scope.is_holiday = data.is_holiday;        
-    }).error(function(data, status)
-    {
-        $('#overlay').css('height', '0px');
-        $('#spinner').css('height', '0px');
-        console.log(data || "Request failed");
-    });
-}*/
+function attendance_validation($scope, $http){
+    $scope.validation_error = "";
+    if($scope.batch.id == '') {
+        $scope.validation_error = 'Please choose batch';
+        return false;
+    } else if($scope.batch.topics == '') {
+        $scope.validation_error = 'Please enter the topics covered';
+        return false;
+    } return true;
+}
 function AttendanceController($scope, $http, $element){
     $scope.batch_id = "";
     $scope.students = {}
@@ -71,17 +58,7 @@ function AttendanceController($scope, $http, $element){
     }
 
     $scope.attendance_validation = function() {
-        $scope.validation_error = "";
-        if($scope.batch.id == '') {
-            $scope.validation_error = 'Please choose batch';
-            return false;
-        } if($scope.batch.topics == '') {
-            $scope.validation_error = 'Please enter the topics covered';
-            return false;
-        } else if($scope.is_holiday == true || $scope.is_holiday == "true"){
-            $scope.validation_error = 'Attendance cannot be marked on holidays';
-            return false;
-        } return true;
+        attendance_validation($scope, $http);
     }
     $scope.edit_attendance = function() {
         $scope.is_edit = true;
@@ -132,12 +109,19 @@ function AttendanceDetailsController($scope, $element, $http) {
     $scope.batch_year = '';
     $scope.init = function(csrf_token) {
         $scope.csrf_token = csrf_token;
-        get_attendance_list($scope, $http);
+        get_batches($scope, $http);
+        $scope.batch_id = '';
         $scope.monthly_attendance = false
         $scope.show_batch_select = false
         $scope.daily_attendance = false;
         $scope.show_buttons = false;
         $scope.show_data = false;
+        $scope.batch = {
+            'id': '',
+            'staff': '',
+            'remarks': '',
+            'topics': '',
+        }
         new Picker.Date($$('#attendance_date'), {
             timePicker: false,
             positionOffset: {x: 5, y: 0},
@@ -151,7 +135,6 @@ function AttendanceDetailsController($scope, $element, $http) {
     var start_year = current_year - 4;
     current_year = current_year + 4;
     for(var i=start_year; i<=current_year; i++){
-        
         $scope.year.push(i);
     }
     $scope.attendance_validation = function() {
@@ -173,18 +156,12 @@ function AttendanceDetailsController($scope, $element, $http) {
             if($scope.attendance_date == '' || $scope.attendance_date == undefined) {
                 $scope.validation_error = 'Please choose the Date';
                 return false;
-            } /*else if(!angular.isUndefined($scope.batch) && $scope.batch.is_holiday == "true"){
-                $scope.validation_error = 'Attendance cannot be marked on holidays';
-                return false;
-            } */return true;
+            } return true;
         }
 
     }
     $scope.appliedClass = function(day) {
-        if (day.is_holiday == 'true'){
-            return "red_color";
-        } 
-        else if(day.is_future_date == 'true') {
+        if(day.is_future_date == 'true') {
           return "blue_color";  
         }
     }
@@ -231,7 +208,29 @@ function AttendanceDetailsController($scope, $element, $http) {
             
             $http.get(url).success(function(data)
             {
-                $scope.batch = data.batch[0];
+                console.log(data);
+                $scope.view = data.view;
+                if($scope.view == 'monthly'){
+                    $scope.students = data.batch[0].students;
+                    $scope.columns = data.batch[0].column_count;  
+                } else if($scope.view == 'daily'){
+                    $scope.students = data.students;
+                    $scope.batch.topics = data.topics;
+                    $scope.batch.remarks = data.remarks;
+                    $scope.batch.staff = data.staff;
+                    $scope.batch.id = data.batch_id;
+                    $scope.show_buttons = true;
+                    for(var i = 0; i < $scope.students.length; i++){
+                    if($scope.students[i].is_presented == 'true')
+                        $scope.students[i].is_presented = true;
+                    else 
+                        $scope.students[i].is_presented = false;
+                    }
+                }
+
+                if ($scope.students.length == 0)
+                    $scope.validation_error = 'No Students';
+                /*$scope.batch = data.batch[0];
                 if($scope.attendance_view == "2")
                     $scope.day_details = data.batch[0].day_details[0];
                 $scope.students = data.batch[0].students;
@@ -254,7 +253,7 @@ function AttendanceDetailsController($scope, $element, $http) {
                 }
                 else{
                     $scope.show_buttons = true;    
-                }
+                }*/
                 $('#overlay').css('height', '0px');
                 $('#spinner').css('height', '0px');
             }).error(function(data, status)
@@ -266,22 +265,19 @@ function AttendanceDetailsController($scope, $element, $http) {
         }
     }
     $scope.save_attendance = function() {
-        if($scope.attendance_validation()) {
+        if(attendance_validation($scope, $http)) {
             var height = $(document).height();
             height = height + 'px';
            
             $('#overlay').css('height', height);
             $('#spinner').css('height', height);
-
+            console.log($scope.batch);
+            console.log($scope.students);
             for (var i=0; i < $scope.students.length; i++){
-                for (var j=0; j < $scope.students[i].counts.length; j++) { 
-                    if ($scope.students[i].counts[j].is_presented == true) {
-                        $scope.students[i].counts[j].is_presented = 'true';
-                    } else {
-                        $scope.students[i].counts[j].is_presented = 'false';
-                    }
-                    
-                }
+                if($scope.students[i].is_presented == true)
+                    $scope.students[i].is_presented = "true";
+                else
+                    $scope.students[i].is_presented = "false";
             }
             $scope.attendance_date = $$('#attendance_date')[0].get('value');
             $scope.date_array = $scope.attendance_date.split('/')
