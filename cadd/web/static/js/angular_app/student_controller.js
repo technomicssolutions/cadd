@@ -313,7 +313,6 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
 function StudentListController($scope, $http, $element, $location, $timeout) {
 
     $scope.init = function(csrf_token){
-        get_course_list($scope, $http);
         get_batch_list($scope, $http);
         $scope.page_interval = 10;
         $scope.visible_list = [];

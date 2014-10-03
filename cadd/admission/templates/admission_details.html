@@ -115,7 +115,7 @@
                 <div class="forminput">
                     <select name="batch" ng-model="batch" ng-change="get_fees_head()">
                         <option value="">Select</option>
-                        <option ng-repeat="batch in batches" value="[[batch.id]]"  >[[batch.name]]
+                        <option ng-repeat="batch in batches" value="[[batch.id]]"  >[[batch.batch_time]]
                         </option>
                     </select>
                 </div>
@@ -181,7 +181,7 @@
                 </div>
             </div>
             <div class="formrow">
-                 <div class="formtext">
+                <div class="formtext">
                     <label> Cadd Registration Number</label>
                 </div>
                 <div class="forminput">
@@ -222,7 +222,28 @@
                 <div class="forminput">
                     <input type="text"  name="guardian_mobile_number" value=""  ng-model="guardian_mobile_number">
                 </div>
-               
+                 <div class="control">
+                    
+                    <label>&nbsp;</label>
+                </div>  
+                <div class="formtext">
+                    <label> Fees</label>
+                </div>
+                <div class="forminput">
+                    <input type="text" name="fees" value="" ng-model="fees">
+                </div> 
+                <div class="formtext">
+                    <label> No of Installmets</label>
+                </div>
+                <div class="forminput">
+                    <input type="text" name="no_installments" value="" ng-model="no_installments">
+                </div>
+                <div class="formtext">
+                    <label> Installmets</label>
+                </div>
+                <div class="forminput">
+                    <input type="text" name="installments" value="" ng-model="installments">
+                </div>
             </div>
             <div  align="Center">       
             <div class="buttons">

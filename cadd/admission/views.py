@@ -195,12 +195,8 @@ class EditStudentDetails(View):
         
         if request.is_ajax():
             try:
-                course =  request.GET.get('course', '')
-                batch =  request.GET.get('batch', '')
-                semester =  request.GET.get('semester', '')              
+                batch =  request.GET.get('batch', '')             
 
-                if course:
-                    course = Course.objects.get(id=course)
                 if batch:
                     batch = Batch.objects.get(id=batch)
                 
@@ -255,25 +251,11 @@ class EditStudentDetails(View):
             student.course=course
             batch = Batch.objects.get(batch = student_data['batch'])
             student.batch=batch
-            for exam in student.qualified_exam.all():
-                student.qualified_exam.remove(exam)
-            for exam in student.technical_qualification.all():
-                student.technical_qualification.remove(exam)
-            qualified_exams = student_data['qualified_exams'].split(',')
-            for exam in qualified_exams:
-                qualified_exam, created = QualifiedExam.objects.get_or_create(name=exam)
-                student.qualified_exam.add(qualified_exam)
-
-            technical_exams = student_data['technical_exams'].split(',')
-
-            for technical_exam in technical_exams:
-                tech_exam, created = TechnicalQualification.objects.get_or_create(name=technical_exam)
-                student.technical_qualification.add(tech_exam)
 
             student.dob = datetime.strptime(student_data['dob'], '%d/%m/%Y')
             student.address = student_data['address']
             student.mobile_number = student_data['mobile_number']
-            student.land_number = student_data['land_number']
+            
             student.email = student_data['email']
             student.blood_group = student_data['blood_group']
             student.doj = datetime.strptime(student_data['doj'], '%d/%m/%Y')
