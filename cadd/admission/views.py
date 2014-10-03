@@ -7,7 +7,7 @@ from django.views.generic.base import View
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 
-from admission.models import Student, Enquiry
+from admission.models import Student, Enquiry, Installment
 from college.models import Course, Batch
 from datetime import datetime
 
@@ -17,9 +17,16 @@ class AddStudent(View):
             try:
                 course = Course.objects.get(id = request.POST['course'])
                 batch = Batch.objects.get(id = request.POST['batch'])
-                batch.no_of_students = batch.no_of_students + 1
+                enquiry = None
+                if request.POST.get('enquiry', ''):
+                    if request.POST.get('enquiry', '') != 'undefined':
+                        enquiry = Enquiry.objects.get(id=request.POST['enquiry'])
+                if batch.no_of_students == None:
+                    batch.no_of_students = 1
+                else:
+                    batch.no_of_students = batch.no_of_students + 1
                 batch.save()
-                student, created = Student.objects.get_or_create(roll_number = request.POST['roll_number'], course=course, batch=batch)
+                student, created = Student.objects.get_or_create(roll_number = request.POST['roll_number'], course=course)
                 if not created:
                     res = {
                         'result': 'error',
@@ -28,6 +35,8 @@ class AddStudent(View):
                 else:
                     try:
                         student.student_name = request.POST['student_name']
+                        if enquiry is not None:
+                            student.enquiry = enquiry
                         student.roll_number = request.POST['roll_number']
                         student.address = request.POST['address']
                         student.qualifications = request.POST['qualifications']
@@ -47,14 +56,15 @@ class AddStudent(View):
                         student.guardian_mobile_number = request.POST['guardian_mobile_number']
                         student.fees = request.POST['fees']           
                         student.no_installments = request.POST['no_installments']
-                        installments = request.POST['installments']
+                        installments = ast.literal_eval(request.POST['installments'])
                         for installment in installments:
-                            installment = Installment()
-                            installment.amount = installment['amount']
-                            installment.fine_amount = installment['fine']
-                            installment.due_date = datetime.strptime(installment['due_date'], '%d/%m/%Y')
-                            installment.save()
-                            student.installments.add(installment)
+                            installmet = Installment()
+                            installmet.amount = installment['amount']
+                            installmet.fine_amount = installment['fine']
+                            installmet.due_date = datetime.strptime(installment['due_date'], '%d/%m/%Y')
+                            installmet.save()
+                            student.installments.add(installmet)
+                            student.save()
                     except Exception as ex:
                         print str(ex)
                         res = {

@@ -51,7 +51,7 @@ class Student(models.Model):
 	cadd_registration_no = models.CharField('Cadd Registration No', null=True, blank=True, max_length=200)
 	address = models.CharField('Student Address', null=True, blank=True, max_length=200 )
 	course = models.ForeignKey(Course, null=True, blank=True)
-	batch = models.ForeignKey(Batch, null=True, blank=True)
+	batch = models.ManyToManyField(Batch, null=True, blank=True)
 	dob = models.DateField('Date of Birth',null=True, blank=True)
 	mobile_number= models.CharField('Mobile Number',null=True, blank=True, max_length=200)
 	email = models.CharField('Email',null=True, blank=True, max_length=200)

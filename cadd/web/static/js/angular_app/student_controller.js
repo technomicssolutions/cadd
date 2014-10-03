@@ -27,6 +27,7 @@ function save_new_student($http, $scope) {
             id_name = '#'+$scope.installments[i].due_date_id;
             $scope.installments[i].due_date = $$(id_name)[0].get('value');
         }
+        $scope.installments = angular.toJson($scope.installments)
         params = { 
             'enquiry': $scope.enquiry,
             'student_name':$scope.student_name,
@@ -70,7 +71,7 @@ function save_new_student($http, $scope) {
             }
             else {
                 
-                document.location.href ="/admission/enquiry_search/";
+                document.location.href ="/admission/student_admission/";
             }
 
         }).error(function(data, status){
