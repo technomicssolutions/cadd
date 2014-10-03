@@ -104,7 +104,9 @@ class Courses(View):
                     'duration': course.duration,
                     'duration_unit': course.duration_unit,
                     'amount': course.amount,
+                    'fine': course.fine,
                     'softwares': software_list,
+                    'course_name': course.name + str(' - ') + str(course.duration_unit)
                 })
                 software_list = []
             res = {
@@ -118,7 +120,6 @@ class Courses(View):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             course_details = ast.literal_eval(request.POST['course_details'])
-            print course_details
             try:
                 if course_details.get('id'):
                     course = Course.objects.get(id=course_details['id'])
@@ -128,10 +129,10 @@ class Courses(View):
                 course.amount = course_details['amount']
                 course.duration = course_details['duration']
                 course.duration_unit = course_details['duration_unit']
+                course.fine = course_details['fine']
                 course.save()
                 if course.software:
                     course.software.clear()
-                print course_details['softwares']
                 softwares = course_details['softwares']
                 for software_id in softwares:
                     software = Software.objects.get(id=software_id)
@@ -329,4 +330,28 @@ class DeleteBatch(View):
         batch.delete()
         return HttpResponseRedirect(reverse('batches'))
 
+class FreeBatchDetails(View):
+
+    def get(self, request, *args, **kwargs):
+
+        if request.is_ajax():
+            batches = Batch.objects.all()
+            batch_list = []
+            for batch in batches:
+                if batch.allowed_students != batch.no_of_students:
+                    batch_list.append({
+                        'software':batch.software.name,
+                        'software_id': batch.software.id,
+                        'start':batch.start_time.strftime('%H:%M.%p'),
+                        'end':batch.end_time.strftime('%H:%M.%p'),
+                        'allowed_students':batch.allowed_students,                                        
+                        'name': batch.name,
+                        'id': batch.id
+                    })
+            res = {
+                'result': 'ok',
+                'batches': batch_list,
+            }            
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
 

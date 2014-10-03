@@ -54,7 +54,7 @@
                         </div>
                         <div class="enquiry" ng-repeat="enquiry in enquiries">
                             
-                            <h2><a href="">Add details to admission form </a></h2>
+                            <h2>Enquiry num of student [[search.student_name]] </h2>
                             
                             <p>Enquiry Number: [[enquiry.auto_generated_num]]</p>
                            
@@ -76,9 +76,10 @@
 
                 </div>
          </div>
-        <div class="section_1" ng-show="show_admission_form">
+        <div class="section_1" >
             <div class="formrow">
-                <div ng-show="enquiry_num_exists">
+                <h2>Admission Form</h2>
+                <div ng-show="show_enquiry_search">
                     <div class="formtext">
                         <label> Enquiry Number</label>  
                     </div>
@@ -102,7 +103,7 @@
                     <label> Course</label>  
                 </div>
                 <div class="forminput">
-                    <select name="course" ng-model="course" ng-change="get_batch() ">
+                    <select name="course" ng-model="course" >
                         <option value="">Select</option>
                         <option ng-repeat="course in courses" value="[[course.id]]" >[[course.name]]
                         </option>
@@ -127,9 +128,6 @@
                 <div class="formtext">
                     <label> Tech. Qual</label>  
                 </div>
-                <div class="forminput">                         
-                    <input type="text" name="technical_qualification" value="" ng-model="technical_qualification">
-                </div>
                 <div class="formtext">
                     <label> DOB</label>  
                 </div>
@@ -147,12 +145,6 @@
                 </div>
                 <div class="forminput">                         
                     <input type="text"  name="mobile_number" value=""  ng-model="mobile_number">
-                </div>
-                <div class="formtext">
-                    <label> Tel:</label>            
-                </div>
-                <div class="forminput">                         
-                    <input type="text" name="land_number" value="" ng-model="land_number">                      
                 </div>
                 <div class="formtext">
                     <label> Email</label>       
@@ -197,36 +189,12 @@
                 <div class="forminput">
                     <textarea name="certificates_submitted" value="" ng-model="certificates_submitted"> </textarea>
                 </div>
-                <div class="formtext">
-                    <label>Remarks </label>
-                </div>
-                <div class="forminput">
-                    <textarea name="certificates_remarks" value="" ng-model="certificates_remarks"> </textarea>
-                </div>
-
-                <div class="formtext">
-                    <label>File Number</label>          
-                </div>
-                <div class="forminput">
-                    <input type="text" name="certificates_file" value="" ng-model="certificates_file">
-                </div>
+                
                 <div class="formtext">
                     <label>ID Proofs </label>
                 </div>
                 <div class="forminput">
                     <textarea name="id_proof" value="" ng-model="id_proof"></textarea> 
-                </div>
-                <div class="formtext">
-                    <label>Remarks </label>
-                </div>
-                <div class="forminput">
-                    <textarea name="id_proof_remarks" value="" ng-model="id_proof_remarks"> </textarea>
-                </div>
-                <div class="formtext">
-                    <label>File Number</label>
-                </div>
-                <div class="forminput">
-                    <input type="text" name="id_proof_file" value="" ng-model="id_proof_file">                      
                 </div>
                 <div class="control">
                     <label> Father/Mother/Guardian Details</label>
@@ -237,12 +205,6 @@
                 </div>
                 <div class="forminput">
                     <input type="text" name="guardian_name" value="" ng-model="guardian_name">
-                </div>
-                <div class="formtext">
-                    <label>Address</label>              
-                </div>
-                <div class="forminput">
-                    <textarea name="guardian_address" value="" ng-model="guardian_address"> </textarea>
                 </div>
                 <div class="formtext">
                     <label> Relationship</label>
@@ -256,23 +218,10 @@
                 <div class="forminput">
                     <input type="text"  name="guardian_mobile_number" value=""  ng-model="guardian_mobile_number">
                 </div>
-                <div class="formtext">
-                    <label> Tel:</label>
-                </div>
-                <div class="forminput">
-                    <input type="text" name="guardian_land_number" value="" ng-model="guardian_land_number">
-                </div>
-                <div class="formtext">
-                    <label> Email</label>
-                </div>
-                <div class="forminput">
-                    <input type="text"name="guardian_email" value="" ng-model="guardian_email">
-                </div>
             </div>
             <div  align="Center">       
             <div class="buttons">
                 <p class="error_message"> [[validation_error]] </p>
-                <input type="button" class="btn btn-info" value="Cancel" ng-click="close_popup()" >
                 <input type="submit" value="Submit" ng-click="save_new_student()" class="btn btn-info">             
             </div>
         </div>

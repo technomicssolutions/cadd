@@ -20,7 +20,7 @@ function add_new_student($http, $scope){
 
 function save_new_student($http, $scope) {
     if(validate_new_student($scope)) {
-        $scope.popup.hide_popup();
+        
         var height = $(document).height();
         height = height + 'px';
         
@@ -36,26 +36,17 @@ function save_new_student($http, $scope) {
             'batch': $scope.batch,
             'semester': $scope.semester,           
             'qualified_exam': $scope.qualified_exam,
-            'technical_qualification': $scope.technical_qualification,
             'dob': $scope.dob,
             'address': $scope.address,
             'mobile_number': $scope.mobile_number,
-            'land_number': $scope.land_number,
             'email':$scope.email,
             'blood_group': $scope.blood_group,
             'doj': $scope.doj,
             'certificates_submitted': $scope.certificates_submitted,
-            'certificates_remarks': $scope.certificates_remarks,
-            'certificates_file': $scope.certificates_file,
             'id_proofs_submitted': $scope.id_proof,
-            'id_proofs_remarks': $scope.id_proof_remarks,
-            'id_proofs_file': $scope.id_proof_file,
             'guardian_name': $scope.guardian_name,
-            'guardian_address':$scope.guardian_address,
             'relationship': $scope.relationship,
             'guardian_mobile_number': $scope.guardian_mobile_number,
-            'guardian_land_number': $scope.guardian_land_number,
-            'guardian_email': $scope.guardian_email,            
             "csrfmiddlewaretoken" : $scope.csrf_token
         }
         var fd = new FormData();
@@ -74,20 +65,15 @@ function save_new_student($http, $scope) {
             if (data.result == 'error'){
                 $scope.error_flag=true;
                 $scope.validation_error = data.message;
-                $scope.popup.set_overlay_height(height);
-                $scope.popup.show_content();
-                $('#spinner').css('height', '0px');
             }
             else {
                 
-                document.location.href ="/admission/list_student/";
+                document.location.href ="/admission/enquiry_search/";
             }
 
         }).error(function(data, status){
             $scope.error_flag=true;
             $scope.validation_error = data.message;
-            $scope.popup.set_overlay_height(height);
-            $scope.popup.show_content();
             $('#spinner').css('height', '0px');
         });
     }
@@ -100,26 +86,16 @@ function reset_student($scope) {
     $scope.batch = '';
     $scope.semester = '';
     $scope.qualified_exam = '';
-    $scope.technical_qualification = '';
     $scope.dob = '';
     $scope.address = '';
     $scope.mobile_number = '';
-    $scope.land_number = '';
     $scope.email = '';
     $scope.blood_group = '';
     $scope.doj = '';
     $scope.certificates_submitted = '';
-    $scope.certificates_remarks = '';
-    $scope.certificates_file = '';
     $scope.id_proof = '';
-    $scope.id_proof_remarks = '';
-    $scope.id_proof_file = '';
     $scope.guardian_name = '';
-    $scope.guardian_address = '';
     $scope.relationship = '';
-    $scope.guardian_mobile_number = '';
-    $scope.guardian_land_number = '';
-    $scope.guardian_email    = '';
     $scope.photo_img = {};
 }
 validate_new_student = function($scope) {
@@ -152,13 +128,7 @@ validate_new_student = function($scope) {
     } else if(!(Number($scope.mobile_number)) || $scope.mobile_number.length > 15) {            
         $scope.validation_error = "Please enter a Valid Mobile Number";
         return false;
-    } else if($scope.land_number == ''|| $scope.land_number == undefined){
-        $scope.validation_error = "Please enter the Telephone Number";
-        return false;
-    } else if(!(Number($scope.land_number)) || $scope.land_number.length > 15) {            
-        $scope.validation_error = "Please enter a Valid Telephone Number";
-        return false;
-    } else if(($scope.email != '' && $scope.email != undefined) && (!(validateEmail($scope.email)))){
+    }  else if(($scope.email != '' && $scope.email != undefined) && (!(validateEmail($scope.email)))){
             $scope.validation_error = "Please enter a Valid Email Id";
             return false;
     } else if($scope.blood_group == '' || $scope.blood_group == undefined) {
@@ -177,10 +147,7 @@ validate_new_student = function($scope) {
         $scope.validation_error = "Please Enter the Guardian Name" ;
         return false;
     
-    } else if($scope.guardian_address == '' || $scope.guardian_address == undefined) {
-        $scope.validation_error = "Please Enter Guardian Address";
-        return false;
-    } else if($scope.relationship == '' || $scope.relationship == undefined) {
+    }  else if($scope.relationship == '' || $scope.relationship == undefined) {
         $scope.validation_error = "Please Enter Relationship";
         return false;
     } else if($scope.guardian_mobile_number == ''|| $scope.guardian_mobile_number == undefined){
@@ -189,15 +156,6 @@ validate_new_student = function($scope) {
     } else if(!(Number($scope.guardian_mobile_number)) || $scope.guardian_mobile_number.length > 15) {            
         $scope.validation_error = "Please enter a Valid Mobile Number";
         return false;
-    } else if($scope.guardian_land_number == ''|| $scope.guardian_land_number == undefined){
-        $scope.validation_error = "Please enter the Telephone Number";
-        return false;
-    } else if(!(Number($scope.guardian_land_number)) || $scope.guardian_land_number.length > 15) {            
-        $scope.validation_error = "Please enter a Valid Telephone Number";
-        return false;
-    } else if(($scope.guardian_email != '' && $scope.guardian_email != undefined) && (!(validateEmail($scope.guardian_email)))){
-            $scope.validation_error = "Please enter a Valid Email Id";
-            return false;                                                          
     } else {
         return true;
     }     
@@ -282,13 +240,7 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         } else if(!(Number($scope.student.mobile_number)) || $scope.student.mobile_number.length > 15) {            
             $scope.validation_error = "Please enter a Valid Mobile Number";
             return false;
-        } else if($scope.student.land_number == ''|| $scope.student.land_number == undefined){
-            $scope.validation_error = "Please enter the Telephone Number";
-            return false;
-        } else if(!(Number($scope.student.land_number)) || $scope.student.land_number.length > 15) {            
-            $scope.validation_error = "Please enter a Valid Telephone Number";
-            return false;
-        } else if(($scope.student.email != '' && $scope.student.email != undefined) && (!(validateEmail($scope.student.email)))){
+        }  else if(($scope.student.email != '' && $scope.student.email != undefined) && (!(validateEmail($scope.student.email)))){
                 $scope.validation_error = "Please enter a Valid Email Id";
                 return false;
         } else if($scope.student.blood_group == '' || $scope.student.blood_group == undefined) {
@@ -307,10 +259,7 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
             $scope.validation_error = "Please Enter the Guardian Name" ;
             return false;
         
-        } else if($scope.student.guardian_address == '' || $scope.student.guardian_address == undefined) {
-            $scope.validation_error = "Please Enter Guardian Address";
-            return false;
-        } else if($scope.student.relationship == '' || $scope.student.relationship == undefined) {
+        }  else if($scope.student.relationship == '' || $scope.student.relationship == undefined) {
             $scope.validation_error = "Please Enter Relationship";
             return false;
         } else if($scope.student.guardian_mobile_number == ''|| $scope.student.guardian_mobile_number == undefined){
@@ -319,17 +268,7 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         } else if(!(Number($scope.student.guardian_mobile_number)) || $scope.student.guardian_mobile_number.length > 15) {            
             $scope.validation_error = "Please enter a Valid Mobile Number";
             return false;
-        } else if($scope.student.guardian_land_number == ''|| $scope.student.guardian_land_number == undefined){
-            $scope.validation_error = "Please enter the Telephone Number";
-            return false;
-        } else if(!(Number($scope.student.guardian_land_number)) || $scope.student.guardian_land_number.length > 15) {            
-            $scope.validation_error = "Please enter a Valid Telephone Number";
-            return false;
-        } else if(($scope.student.guardian_email != '' && $scope.student.guardian_email != undefined) && (!(validateEmail($scope.student.guardian_email)))){
-                $scope.validation_error = "Please enter a Valid Email Id";
-                return false;
-                                                              
-        } else {
+        }  else {
             return true;
         } 
         
@@ -373,6 +312,7 @@ function StudentListController($scope, $http, $element, $location, $timeout) {
 
     $scope.init = function(csrf_token){
         get_course_list($scope, $http);
+        get_batch_list($scope, $http);
         $scope.page_interval = 10;
         $scope.visible_list = [];
         $scope.students = [];
@@ -397,16 +337,7 @@ function StudentListController($scope, $http, $element, $location, $timeout) {
         });
         reset_student($scope);
     }
-    $scope.get_batch = function(){        
-        var url = '/college/get_batch/'+ $scope.course+ '/';
-        $http.get(url).success(function(data)
-        {
-            $scope.batches = data.batches;
-        }).error(function(data, status)
-        {
-            console.log(data || "Request failed");
-        });
-    }
+    
     $scope.get_students = function(){
         var url = '/admission/list_student/?batch_id='+ $scope.batch;
         $http.get(url).success(function(data)
@@ -548,16 +479,32 @@ function EnquiryController($scope, $http) {
 }
 function AdmissionController($scope, $http) {
     $scope.show_enquiry_search =  false;
-    $scope.show_admission_form = false;
-    $scope.enquiry_num_exists = false;
+    // $scope.show_admission_form = false;
+    // $scope.enquiry_num_exists = false;
+    $scope.photo_img = {};
     $scope.search = {
         'student_name': '',
         'enquiry_num': '',
     }
+    new Picker.Date($$('#dob'), {
+        timePicker: false,
+        positionOffset: {x: 5, y: 0},
+        pickerClass: 'datepicker_bootstrap',
+        useFadeInOut: !Browser.ie,
+        format:'%d/%m/%Y',
+    });
+    new Picker.Date($$('#doj'), {
+        timePicker: false,
+        positionOffset: {x: 5, y: 0},
+        pickerClass: 'datepicker_bootstrap',
+        useFadeInOut: !Browser.ie,
+        format:'%d/%m/%Y',
+    });
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
         $scope.no_enquiries = false;
         get_course_list($scope, $http);
+        get_batch_list($scope,$http);
     }
     $scope.enquiry_search  = function() {    
         var url = '/admission/enquiry_search/?student_name='+$scope.search.student_name;
@@ -570,8 +517,8 @@ function AdmissionController($scope, $http) {
 
             } else {
               $scope.no_enquiries = false;
-              $scope.show_admission_form = true;
-              $scope.enquiry_num_exists = true;
+              // $scope.show_admission_form = true;
+              // $scope.enquiry_num_exists = true;
             }
         }).error(function(data, status)
         {
@@ -581,9 +528,9 @@ function AdmissionController($scope, $http) {
     $scope.change_admission_type = function(admission_type){
         if(admission_type=='Enquiry'){
             $scope.show_enquiry_search =  true;
-            $scope.show_admission_form = false;
+            // $scope.show_admission_form = false;
         }else{
-            $scope.show_admission_form = true;
+            // $scope.show_admission_form = true;
             $scope.show_enquiry_search =  false;
         }
     }
@@ -597,16 +544,8 @@ function AdmissionController($scope, $http) {
             console.log(data || "Request failed");
         });
     }
-    $scope.add_new_student  = function(){
-        add_new_student($http, $scope);
-    }
     $scope.save_new_student = function(){
         save_new_student($http, $scope);
     }
-    $scope.hide_popup_windows = function(){
-        $('#add_student_details')[0].setStyle('display', 'none');
-    }  
-    $scope.close_popup = function(){
-        $scope.popup.hide_popup();
-    } 
+    
 }

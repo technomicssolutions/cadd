@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 
 from admission.models import Student, Enquiry
-from college.models import Course
+from college.models import Course, Batch
 from datetime import datetime
 
 
@@ -20,6 +20,8 @@ class AddStudent(View):
             try:
                 course = Course.objects.get(id = request.POST['course'])
                 batch = Batch.objects.get(id = request.POST['batch'])
+                batch.no_of_students = batch.no_of_students + 1
+                batch.save()
                 student, created = Student.objects.get_or_create(roll_number = request.POST['roll_number'], course=course, batch=batch)
                 if not created:
                     res = {
@@ -28,41 +30,24 @@ class AddStudent(View):
                     }
                 else:
                     try:
-                        qualified_exams = request.POST['qualified_exam'].split(',')
-                        technical_exams = request.POST['technical_qualification'].split(',')
                         student.student_name = request.POST['student_name']
                         student.roll_number = request.POST['roll_number']
                         student.address = request.POST['address']
                         student.course=course
                         student.batch=batch
-                        for exam in qualified_exams:
-                            qualified_exam, created = QualifiedExam.objects.get_or_create(name=exam)
-                            student.qualified_exam.add(qualified_exam)
-
-                        for technical_exam in technical_exams:
-                            tech_exam, created = TechnicalQualification.objects.get_or_create(name=technical_exam)
-                            student.technical_qualification.add(tech_exam)
-                    
                         student.dob = datetime.strptime(request.POST['dob'], '%d/%m/%Y')
                         student.address = request.POST['address']
                         student.mobile_number = request.POST['mobile_number']
-                        student.land_number = request.POST['land_number']
                         student.email = request.POST['email']
                         student.blood_group = request.POST['blood_group']
                         student.doj = datetime.strptime(request.POST['doj'], '%d/%m/%Y')
                         student.photo = request.FILES.get('photo_img', '')                       
                         student.certificates_submitted = request.POST['certificates_submitted']
                         student.certificates_remarks = request.POST['certificates_remarks']
-                        student.certificates_file = request.POST['certificates_file']
                         student.id_proofs_submitted = request.POST['id_proofs_submitted']
-                        student.id_proofs_remarks = request.POST['id_proofs_remarks']
-                        student.id_proofs_file = request.POST['id_proofs_file']
                         student.guardian_name = request.POST['guardian_name']
-                        student.guardian_address = request.POST['guardian_address']
                         student.relationship = request.POST['relationship']
-                        student.guardian_mobile_number = request.POST['guardian_mobile_number']
-                        student.guardian_land_number = request.POST['guardian_land_number']
-                        student.guardian_email = request.POST['guardian_email']                   
+                        student.guardian_mobile_number = request.POST['guardian_mobile_number']                 
                     except Exception as ex:
                         res = {
                             'result': 'error',
@@ -205,8 +190,7 @@ class EditStudentDetails(View):
             'student_id': student_id,
         }
         ctx_student_data = []
-        qualified_exam = ''
-        technical_qualification = ''
+        
         if request.is_ajax():
             try:
                 course =  request.GET.get('course', '')
@@ -217,17 +201,7 @@ class EditStudentDetails(View):
                     course = Course.objects.get(id=course)
                 if batch:
                     batch = Batch.objects.get(id=batch)
-                if semester:
-                    semester = Semester.objects.get(id=semester)
-                student = Student.objects.get(id = student_id)
-
-                for exam in student.qualified_exam.all():
-                    qualified_exam = qualified_exam + exam.name + ',' 
-                qualified_exam = qualified_exam[:-1]
                 
-                for exam in student.technical_qualification.all():
-                    technical_qualification = technical_qualification + exam.name + ',' 
-                technical_qualification = technical_qualification[:-1]
 
                 ctx_student_data.append({
                     'student_name': student.student_name if student.student_name else '',
@@ -244,19 +218,13 @@ class EditStudentDetails(View):
                     'doj': student.doj.strftime('%d/%m/%Y') if student.doj else '',
                     'photo': student.photo.name if student.photo.name else '',
                     'certificates_submitted': student.certificates_submitted if student.certificates_submitted else '',
-                    'certificates_remarks': student.certificates_remarks if student.certificates_remarks else '',
-                    'certificates_file': student.certificates_file if student.certificates_file else '',
                     'id_proofs_submitted': student.id_proofs_submitted if student.id_proofs_submitted else '',
-                    'id_proofs_remarks': student.id_proofs_remarks if student.id_proofs_remarks else '',
-                    'id_proofs_file': student.id_proofs_file if student.id_proofs_file else '',
+            
                     'guardian_name': student.guardian_name if student.guardian_name else '',
-                    'guardian_address': student.guardian_address if student.guardian_address else '',
+                    
                     'relationship': student.relationship if student.relationship else '',
                     'guardian_mobile_number': student.guardian_mobile_number if student.guardian_mobile_number else '',
-                    'guardian_land_number': student.guardian_land_number if student.guardian_land_number else '',
-                    'guardian_email': student.guardian_email if student.guardian_email else '',
-                    'qualified_exams': qualified_exam if qualified_exam else '',
-                    'technical_exams': technical_qualification if technical_qualification else '',
+            
                 })
                 res = {
                     'result': 'ok',
@@ -309,17 +277,10 @@ class EditStudentDetails(View):
             student.doj = datetime.strptime(student_data['doj'], '%d/%m/%Y')
             student.photo = request.FILES.get('photo_img', '')                       
             student.certificates_submitted = student_data['certificates_submitted']
-            student.certificates_remarks = student_data['certificates_remarks']
-            student.certificates_file = student_data['certificates_file']
             student.id_proofs_submitted = student_data['id_proofs_submitted']
-            student.id_proofs_remarks = student_data['id_proofs_remarks']
-            student.id_proofs_file = student_data['id_proofs_file']
             student.guardian_name = student_data['guardian_name']
-            student.guardian_address = student_data['guardian_address']
             student.relationship = student_data['relationship']
             student.guardian_mobile_number = student_data['guardian_mobile_number']
-            student.guardian_land_number = student_data['guardian_land_number']
-            student.guardian_email = student_data['guardian_email']   
             student.save()
             res = {
                 'result': 'ok',
@@ -393,24 +354,24 @@ class EnquiryDetails(View):
             enquiry_list = []
             enquiry_num = request.GET.get('enquiry_num', '')
             if enquiry_num :
-                enquiry = Enquiry.objects.get(auto_generated_num=enquiry_num)
-                print enquiry,"dsad"
-                enquiry_list.append({
-                    'student_name': enquiry.student_name,
-                    'address': enquiry.address,
-                    'mobile_number' : enquiry.mobile_number,
-                    'email' : enquiry.email,
-                    'details_about_clients_enquiry' : enquiry.details_about_clients_enquiry,
-                    'educational_qualification': enquiry.educational_qualification,
-                    'land_mark': enquiry.land_mark,
-                    'course' : enquiry.course.name,
-                    'remarks': enquiry.remarks,
-                    'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
-                    'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,
-                    'discount': enquiry.discount,
-                    'auto_generated_num': enquiry.auto_generated_num,
-                    })
-        
+                enquiries = Enquiry.objects.filter(auto_generated_num__icontains=enquiry_num)
+                for enquiry in enquiries:
+                    enquiry_list.append({
+                        'student_name': enquiry.student_name,
+                        'address': enquiry.address,
+                        'mobile_number' : enquiry.mobile_number,
+                        'email' : enquiry.email,
+                        'details_about_clients_enquiry' : enquiry.details_about_clients_enquiry,
+                        'educational_qualification': enquiry.educational_qualification,
+                        'land_mark': enquiry.land_mark,
+                        'course' : enquiry.course.name,
+                        'remarks': enquiry.remarks,
+                        'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
+                        'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,
+                        'discount': enquiry.discount,
+                        'auto_generated_num': enquiry.auto_generated_num,
+                        })
+            
             
             response = simplejson.dumps({
                 'enquiry': enquiry_list,
@@ -424,7 +385,7 @@ class SearchEnquiry(View):
         enquiries = []
         q_list = []
         if student_name :
-            enquiries = Enquiry.objects.filter(student_name=student_name)
+            enquiries = Enquiry.objects.filter(student_name__icontains=student_name)
             count = enquiries.count()
         else :
             enquiries = []
@@ -459,3 +420,4 @@ class SearchEnquiry(View):
         }
 
         return render(request, 'admission_details.html', context)
+

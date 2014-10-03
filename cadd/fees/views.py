@@ -182,7 +182,7 @@ class ListFeesStructure(View):
         ctx = {
             'fees_structures': fees_structures
         }
-        return render(request, 'fees/list_fees_structure.html',ctx)
+        return render(request, 'list_fees_structure.html',ctx)
 # Fees structure end
 
 # Fees head start
