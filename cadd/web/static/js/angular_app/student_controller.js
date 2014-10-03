@@ -27,6 +27,7 @@ function save_new_student($http, $scope) {
             id_name = '#'+$scope.installments[i].due_date_id;
             $scope.installments[i].due_date = $$(id_name)[0].get('value');
         }
+        $scope.installments = angular.toJson($scope.installments)
         params = { 
             'enquiry': $scope.enquiry,
             'student_name':$scope.student_name,
@@ -70,7 +71,7 @@ function save_new_student($http, $scope) {
             }
             else {
                 
-                document.location.href ="/admission/enquiry_search/";
+                document.location.href ="/admission/student_admission/";
             }
 
         }).error(function(data, status){
@@ -417,6 +418,7 @@ function EnquiryController($scope, $http) {
         'follow_up_date' : '',
         'remarks_for_follow_up_date' : '',
         'discount' : '',
+        'date': '',
     }
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
@@ -428,11 +430,18 @@ function EnquiryController($scope, $http) {
             useFadeInOut: !Browser.ie,
             format:'%d/%m/%Y',
         });
+        new Picker.Date($$('#date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
     }
     $scope.validate_enquiry = function() {
         $scope.validation_error = '';
         $scope.enquiry.follow_up_date = $$('#follow_up_date')[0].get('value');
-        
+        $scope.enquiry.date = $$('#date')[0].get('value');
         if($scope.enquiry.student_name == '' || $scope.enquiry.student_name == undefined) {
             $scope.validation_error = "Please Enter the Name" ;
             return false;
@@ -595,4 +604,53 @@ function AdmissionController($scope, $http) {
             }
         }
     }
+}
+function EnquiryReportController($scope, $http) {
+    $scope.start_date = '';
+    $scope.end_date = '';
+    $scope.init = function(csrf_token){
+        $scope.csrf_token = csrf_token;
+        new Picker.Date($$('#start_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
+        new Picker.Date($$('#end_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
+    }
+    $scope.validate = function(){
+        $scope.start_date = $$('#start_date')[0].get('value');
+        $scope.end_date = $$('#end_date')[0].get('value');
+        if($scope.start_date == ''){
+            $scope.validate_error_msg = 'Please select the start date';
+            return false;
+        } else if($scope.end_date == ''){
+            $scope.validate_error_msg = 'Please select the end date';
+            return false;
+        } return true;
+    }
+    $scope.view_enquiry = function(){
+        if($scope.validate()){
+            $http.get('/admission/enquiry_report?start_date='+$scope.start_date+'&end_date='+$scope.end_date).success(function(data){
+                if( data.enquiries.length == 0)
+                    $scope.validate_error_msg = "No enquiries  found";
+                else
+                    $scope.enquiries = data.enquiries;
+            }).error(function(data, status){
+                $scope.message = data.message;
+            })
+        }
+    } 
+    $scope.get_enquiry_report = function(){
+        $scope.start_date= $$('#start_date')[0].get('value');
+        $scope.end_date = $$('#end_date')[0].get('value');
+        document.location.href = '/admission/enquiry_report?start_date='+$scope.start_date+'&end_date='+$scope.end_date+'&report_type=pdf';
+    }  
 }

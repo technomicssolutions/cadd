@@ -32,7 +32,7 @@ class Enquiry(models.Model):
 	remarks_for_follow_up_date =   models.TextField('Remark for Next follow up date',null=True, blank=True)
 	auto_generated_num = models.CharField('Auto generated number',null=True, blank=True, max_length=200)
 	discount = models.IntegerField('Discount', default=0, null=True, blank=True)
-
+	saved_date = models.DateField('Saved Date',null=True, blank=True)
 	def __unicode__(self):
 		return str(self.student_name)
 
@@ -51,7 +51,7 @@ class Student(models.Model):
 	cadd_registration_no = models.CharField('Cadd Registration No', null=True, blank=True, max_length=200)
 	address = models.CharField('Student Address', null=True, blank=True, max_length=200 )
 	course = models.ForeignKey(Course, null=True, blank=True)
-	batch = models.ForeignKey(Batch, null=True, blank=True)
+	batches = models.ManyToManyField(Batch, null=True, blank=True)
 	dob = models.DateField('Date of Birth',null=True, blank=True)
 	mobile_number= models.CharField('Mobile Number',null=True, blank=True, max_length=200)
 	email = models.CharField('Email',null=True, blank=True, max_length=200)
@@ -76,4 +76,5 @@ class Student(models.Model):
 	class Meta:
 		verbose_name = 'Student'
 		verbose_name_plural = 'Student'
+
 

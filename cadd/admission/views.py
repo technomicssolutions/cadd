@@ -1,25 +1,43 @@
 
 import simplejson
 import ast
+from datetime import datetime
+from reportlab.pdfgen import canvas
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.platypus import Paragraph, Table, TableStyle, SimpleDocTemplate, Spacer
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter, A4
 
 from django.core.urlresolvers import reverse
 from django.views.generic.base import View
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 
-from admission.models import Student, Enquiry
+from admission.models import Student, Enquiry, Installment
 from college.models import Course, Batch
 from datetime import datetime
+
+style = [
+    ('FONTSIZE', (0,0), (-1, -1), 12),
+    ('FONTNAME',(0,0),(-1,-1),'Helvetica') 
+]
+
+para_style = ParagraphStyle('fancy')
+para_style.fontSize = 12
+para_style.fontName = 'Helvetica'
 
 class AddStudent(View):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             try:
                 course = Course.objects.get(id = request.POST['course'])
-                batch = Batch.objects.get(id = request.POST['batch'])
-                batch.no_of_students = batch.no_of_students + 1
-                batch.save()
-                student, created = Student.objects.get_or_create(roll_number = request.POST['roll_number'], course=course, batch=batch)
+                
+                enquiry = None
+                if request.POST.get('enquiry', ''):
+                    if request.POST.get('enquiry', '') != 'undefined':
+                        enquiry = Enquiry.objects.get(id=request.POST['enquiry'])
+
+                student, created = Student.objects.get_or_create(roll_number = request.POST['roll_number'], course=course)
                 if not created:
                     res = {
                         'result': 'error',
@@ -27,7 +45,19 @@ class AddStudent(View):
                     }
                 else:
                     try:
+                        batches = request.POST['batch'].split(',')
+                        print batches, 'higasdkgdf'
+                        for batch in batches:
+                            batch_obj = Batch.objects.get(id = batch)
+                            if batch_obj.no_of_students == None:
+                                batch_obj.no_of_students = 1
+                            else:
+                                batch_obj.no_of_students = batch_obj.no_of_students + 1
+                            batch_obj.save()
+                            student.batches.add(batch_obj)
                         student.student_name = request.POST['student_name']
+                        if enquiry is not None:
+                            student.enquiry = enquiry
                         student.roll_number = request.POST['roll_number']
                         student.address = request.POST['address']
                         student.qualifications = request.POST['qualifications']
@@ -47,14 +77,15 @@ class AddStudent(View):
                         student.guardian_mobile_number = request.POST['guardian_mobile_number']
                         student.fees = request.POST['fees']           
                         student.no_installments = request.POST['no_installments']
-                        installments = request.POST['installments']
+                        installments = ast.literal_eval(request.POST['installments'])
                         for installment in installments:
-                            installment = Installment()
-                            installment.amount = installment['amount']
-                            installment.fine_amount = installment['fine']
-                            installment.due_date = datetime.strptime(installment['due_date'], '%d/%m/%Y')
-                            installment.save()
-                            student.installments.add(installment)
+                            installmet = Installment()
+                            installmet.amount = installment['amount']
+                            installmet.fine_amount = installment['fine']
+                            installmet.due_date = datetime.strptime(installment['due_date'], '%d/%m/%Y')
+                            installmet.save()
+                            student.installments.add(installmet)
+                            student.save()
                     except Exception as ex:
                         print str(ex)
                         res = {
@@ -294,6 +325,7 @@ class EnquiryView(View):
                     enquiry.discount = 0
                 else:
                     enquiry.discount = enquiry_details['discount']
+                enquiry.saved_date = datetime.strptime(enquiry_details['date'], '%d/%m/%Y')
                 enquiry.save()
                 enquiry.auto_generated_num = 'ENQ' + str(Enquiry.objects.latest('id').id)
                 enquiry.save()
@@ -381,4 +413,92 @@ class StudentAdmission(View):
     def get(self, request, *args, **kwargs):
 
         return render(request, 'admission_details.html', {})
+
+class EnquiryReport(View):
+
+    def get(self, request, *args, **kwargs):
+        
+        date = datetime.now().date()
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if not start_date: 
+            return render(request, 'enquiry_report.html', {})
+        elif not end_date:
+            return render(request, 'enquiry_report.html', {}) 
+        else:
+            start_date = datetime.strptime(start_date, '%d/%m/%Y')
+            end_date = datetime.strptime(end_date, '%d/%m/%Y')
+        
+        enquiries = Enquiry.objects.filter( saved_date__gte=start_date,saved_date__lte=end_date).order_by('saved_date')
+        if enquiries:
+            if request.is_ajax():
+                enquiry_list = []
+                for enquiry in enquiries:
+                    enquiry_list.append({
+                        'student_name': enquiry.student_name,
+                        'address': enquiry.address,
+                        'mobile_number' : enquiry.mobile_number,
+                        'email' : enquiry.email,
+                        'details_about_clients_enquiry' : enquiry.details_about_clients_enquiry,
+                        'educational_qualification': enquiry.educational_qualification,
+                        'land_mark': enquiry.land_mark,
+                        'course' : enquiry.course.name,
+                        'remarks': enquiry.remarks,
+                        'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
+                        'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,
+                        'discount': enquiry.discount,
+                        'auto_generated_num': enquiry.auto_generated_num,
+                        'saved_date':enquiry.saved_date.strftime('%d/%m/%Y') if enquiry.saved_date else '',
+                    })
+                res = {
+                        'result': 'ok',
+                        'enquiries': enquiry_list,
+                    }
+                response = simplejson.dumps(res)
+                return HttpResponse(response, status=200, mimetype='application/json')
+
+        if request.GET.get('report_type',''):
+            if enquiries:
+                
+                response = HttpResponse(content_type='application/pdf')
+                p = SimpleDocTemplate(response, pagesize=A4)
+                elements = []        
+                d = [['Enquiry Report as at '+date.strftime('%d %B %Y')]]
+                t = Table(d, colWidths=(450), rowHeights=25, style=style)
+                t.setStyle([('ALIGN',(0,0),(-1,-1),'CENTER'),
+                            ('TEXTCOLOR',(0,0),(-1,-1),colors.HexColor('#699AB7')),
+                            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                            ('BACKGROUND',(0, 0),(-1,-1),colors.HexColor('#EEEEEE')),
+                            ('FONTSIZE', (0,0), (0,0), 20),
+                            ('FONTSIZE', (1,0), (-1,-1), 17),
+                            ])   
+                elements.append(t)
+                
+                elements.append(Spacer(4, 5))
+                data = []
+                data_list = []
+                data.append(['Date','Enquiry Number','Name','Course'])
+                for enquiry in enquiries:
+                    data.append([enquiry.saved_date.strftime('%d/%m/%Y') ,enquiry.auto_generated_num,Paragraph(enquiry.student_name,para_style), enquiry.course.name])
+                table = Table(data, colWidths=(100,100,100,100),  style=style)
+                table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
+                            ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
+                            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                            ('BACKGROUND',(0, 0),(-1,-1),colors.white),
+                            ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+                            ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+                            ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
+                            
+                            ])   
+                elements.append(table)
+                
+                
+                p.build(elements)        
+                return response
+            else:
+
+                return render(request, 'enquiry_report.html',{'message':'No enquiries founds'})
+        else:
+            return render(request, 'enquiry_report.html',{})
+
 

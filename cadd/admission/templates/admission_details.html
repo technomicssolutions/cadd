@@ -62,7 +62,7 @@
                 </div>
                 <div class="control">
                     <label> Batch</label>  
-                    <select name="batch" ng-model="batch" ng-change="get_fees_head()" ng-options="batch.id as batch.batch_name for batch in batches">
+                    <select name="batch" ng-model="batch" ng-change="get_fees_head()" ng-options="batch.id as batch.batch_name for batch in batches" multiple>
                         <option value="">Select</option>
                     </select>
                 </div>
@@ -155,7 +155,9 @@
                             <td><input type="text" ng-model="installment.fine" /></td>
                         </tr>
                     </table>
-
+                </div>
+                <div>
+                    <input type="button" value="Create" ng-click="save_new_student()"/>
                 </div>
             </div>
         </form>

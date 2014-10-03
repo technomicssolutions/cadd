@@ -18,7 +18,7 @@
 			<label> Batch</label> 
 			<select name="batch" ng-model="batch" ng-change="get_students()">
 				<option value="">Select</option>
-				<option ng-repeat="bat in batches" value="[[bat.id]]">[[bat.batch_time]]
+				<option ng-repeat="bat in batches" value="[[bat.id]]">[[bat.batch_name]]
 				</option>
 			</select>
 		</div>
