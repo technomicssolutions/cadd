@@ -482,6 +482,7 @@ function AdmissionController($scope, $http) {
     $scope.show_enquiry_search =  false;
     // $scope.show_admission_form = false;
     // $scope.enquiry_num_exists = false;
+    $scope.admission_type = 'Admission';
     $scope.photo_img = {};
     $scope.search = {
         'student_name': '',

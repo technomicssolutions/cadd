@@ -278,7 +278,7 @@ class FreeBatchDetails(View):
             batch_list = []
             for batch in batches:
                 if batch.allowed_students != batch.no_of_students:
-                    batch_time = batch.name + str(batch.start_time) + 'to' + str(batch.end_time)
+                    batch_time = batch.name + str(batch.start_time) + ' to ' + str(batch.end_time)
                     batch_list.append({
                         'software':batch.software.name,
                         'software_id': batch.software.id,
