@@ -902,3 +902,8 @@ a:hover , a:focus{
 	color: #33CCFF !important;
 	/*99CCFF*/
 }
+
+#attendance textarea{
+	height: 75px;
+    padding-left: 21px;
+}

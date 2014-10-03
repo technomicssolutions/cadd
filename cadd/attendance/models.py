@@ -1,6 +1,7 @@
 from jsonfield import JSONField
 
 from django.db import models
+from django.contrib.auth.models import User
 
 from admission.models import Student 
 from college.models import Batch
@@ -14,11 +15,12 @@ CHOICES = (
 
 class Attendance(models.Model):
 
+	user = models.ForeignKey(User)
 	batch = models.ForeignKey(Batch, null=True, blank=True)
-	teacher = models.ForeignKey(Staff, null=True, blank=True)
 	student = models.ForeignKey(Student, null=True, blank=True)
 	status = models.CharField('Status', null=True, blank=True, max_length=30, choices=CHOICES)
-	
+	topics_covered = models.CharField('Topics Covered', null=True, blank=True, max_length=200)
+	remarks = models.CharField('Remarks', null=True, blank=True, max_length=200)
 	date = models.DateField('Date', null=True, blank=True)
 
 	def __unicode__(self):

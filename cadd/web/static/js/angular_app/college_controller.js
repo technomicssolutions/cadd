@@ -14,6 +14,7 @@ function get_batches($scope, $http){
     $http.get($scope.url).success(function(data)
     {        
         $scope.batches = data.batches; 
+        console.log($scope.batches);
     }).error(function(data, status)
     {
         console.log(data || "Request failed");

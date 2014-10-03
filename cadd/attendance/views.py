@@ -12,6 +12,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from attendance.models import Attendance, HolidayCalendar
 from college.models import Batch
 from admission.models import Student
+from staff.models import Staff
 
 class AddAttendance(View):
 
@@ -21,6 +22,7 @@ class AddAttendance(View):
         context = {
             'current_date': current_date.strftime('%d/%m/%Y')
         }
+        print current_date
         return render(request, 'add_attendance.html', context)
 
     def post(self, request, *args, **kwargs):
@@ -30,15 +32,27 @@ class AddAttendance(View):
         month = request.POST['current_month']
         year = request.POST['current_year']
         students = ast.literal_eval(request.POST['students'])
-        batch = Batch.objects.get(id=request.POST['batch_id'])
+        batch_details = ast.literal_eval(request.POST['batch'])
+        batch = Batch.objects.get(id=batch_details['id'])
+        user = request.user;
         for student_details in students:    
             student = Student.objects.get(id=student_details['id'])
             date = dt.date(int(year), int(month), int(day))
-            attendance, created = Attendance.objects.get_or_create(batch=batch, student=student, date=date)
+            try:
+                attendance = Attendance.objects.get(batch=batch, student=student, date=date)
+            except:
+                attendance = Attendance()
+            attendance.user = request.user
+            attendance.batch = batch
+            attendance.student = student
+            attendance.date = date
             if student_details['is_presented'] == 'true':
                 attendance.status = "Present"
             else:
                 attendance.status = "Absent"
+            attendance.topics_covered = batch_details['topics']
+            if batch_details['remarks']:
+                attendance.remarks = batch_details['remarks']
             attendance.save()                
         res = {
             'result': 'ok',
@@ -384,13 +398,26 @@ class BatchStudents(View):
         date = dt.date(int(year), int(month), int(day))
         holiday_calendar, created = HolidayCalendar.objects.get_or_create(date=date)
         for student in students:
-            attendance, created = Attendance.objects.get_or_create(batch=batch, student=student, date=date)
+            try:
+                attendance = Attendance.objects.get(batch=batch, student=student, date=date)
+                if attendance.user.username == 'admin':
+                    staff = attendance.user.username
+                else:
+                    staff_obj = Staff.objects.get(user=attendance.user)
+                    staff = staff_obj.user.first_name + " " + staff_obj.user.last_name
+            except Exception as ex:
+                print str(ex)
+                attendance = Attendance()
+                staff = ''
             students_list.append({
                 'id': student.id,
                 'name': student.student_name,
                 'roll_number': student.roll_number,
                 'status': attendance.status if attendance.status else 'NA',
                 'is_presented': 'false' if attendance.status == 'Absent' else 'true',
+                'topics': attendance.topics_covered if attendance.topics_covered else '',
+                'remarks': attendance.remarks if attendance.remarks else '',
+                'staff': staff,
             })
         res = {
             'students': students_list,
