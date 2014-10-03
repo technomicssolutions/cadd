@@ -315,3 +315,4 @@ class JobCard(View):
         return render(request, 'job_card.html', {})
 
 
+

@@ -502,3 +502,25 @@ class EnquiryReport(View):
             return render(request, 'enquiry_report.html',{})
 
 
+class StudentSearch(View):
+
+    def get(self, request, *args, **kwargs):
+
+        if request.is_ajax():
+            batch_id = request.GET.get('batch')
+            student_name = request.GET.get('name')
+            batch = Batch.objects.get(id=batch_id)
+            students_list = []
+            students = Student.objects.all()
+            for student in students:
+                batches = students.batches.all()
+                print batches
+            print students
+            res = {
+                    'result': 'ok',
+                    'enquiries': enquiry_list,
+                }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
+
+

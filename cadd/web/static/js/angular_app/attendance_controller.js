@@ -12,7 +12,14 @@ function attendance_validation($scope, $http){
     } return true;
 }
 function student_search($scope, $http){
-    console.log($scope.batch_id);
+    $http.get('/admission/search_student/?name='+$scope.student_name+'&batch='+$scope.batch_id).success(function(data){
+        if(data.result == 'ok')
+            $scope.students_list = data.students;
+        else
+            $scope.message = data.message;
+        }).error(function(data, status){
+            console.log('Request failed'|| data);
+        });
 }
 function AttendanceController($scope, $http, $element){
     $scope.batch_id = "";
