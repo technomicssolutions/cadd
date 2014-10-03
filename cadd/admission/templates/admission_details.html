@@ -54,7 +54,7 @@
                         </div>
                         <div class="enquiry" ng-repeat="enquiry in enquiries">
                             
-                            <h2><a href="">Add details to admission form </a></h2>
+                            <h2>Enquiry num of student [[search.student_name]] </h2>
                             
                             <p>Enquiry Number: [[enquiry.auto_generated_num]]</p>
                            
@@ -76,9 +76,10 @@
 
                 </div>
          </div>
-        <div class="section_1" ng-show="show_admission_form">
+        <div class="section_1" >
             <div class="formrow">
-                <div ng-show="enquiry_num_exists">
+                <h2>Admission Form</h2>
+                <div ng-show="show_enquiry_search">
                     <div class="formtext">
                         <label> Enquiry Number</label>  
                     </div>
@@ -102,7 +103,7 @@
                     <label> Course</label>  
                 </div>
                 <div class="forminput">
-                    <select name="course" ng-model="course" ng-change="get_batch() ">
+                    <select name="course" ng-model="course" >
                         <option value="">Select</option>
                         <option ng-repeat="course in courses" value="[[course.id]]" >[[course.name]]
                         </option>
@@ -272,7 +273,6 @@
             <div  align="Center">       
             <div class="buttons">
                 <p class="error_message"> [[validation_error]] </p>
-                <input type="button" class="btn btn-info" value="Cancel" ng-click="close_popup()" >
                 <input type="submit" value="Submit" ng-click="save_new_student()" class="btn btn-info">             
             </div>
         </div>

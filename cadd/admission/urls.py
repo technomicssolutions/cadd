@@ -17,4 +17,5 @@ urlpatterns = patterns('',
 	url(r'^enquiry/$',login_required (EnquiryView.as_view()), name='enquiry'),
 	url(r'^enquiry_details/$',login_required (EnquiryDetails.as_view()), name='enquiry_details'),
 	url(r'^enquiry_search/$',login_required (SearchEnquiry.as_view()), name='enquiry_search'),
+	
 )

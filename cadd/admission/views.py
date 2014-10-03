@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 
 from admission.models import Student, Enquiry
-from college.models import Course
+from college.models import Course, Batch
 from datetime import datetime
 
 
@@ -20,6 +20,8 @@ class AddStudent(View):
             try:
                 course = Course.objects.get(id = request.POST['course'])
                 batch = Batch.objects.get(id = request.POST['batch'])
+                batch.no_of_students = batch.no_of_students + 1
+                batch.save()
                 student, created = Student.objects.get_or_create(roll_number = request.POST['roll_number'], course=course, batch=batch)
                 if not created:
                     res = {
@@ -424,7 +426,7 @@ class SearchEnquiry(View):
         enquiries = []
         q_list = []
         if student_name :
-            enquiries = Enquiry.objects.filter(student_name=student_name)
+            enquiries = Enquiry.objects.filter(student_name__icontains=student_name)
             count = enquiries.count()
         else :
             enquiries = []
@@ -459,3 +461,4 @@ class SearchEnquiry(View):
         }
 
         return render(request, 'admission_details.html', context)
+
