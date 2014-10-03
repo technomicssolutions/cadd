@@ -11,9 +11,6 @@ from admission.models import Student, Enquiry
 from college.models import Course, Batch
 from datetime import datetime
 
-
-
-
 class AddStudent(View):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
@@ -331,7 +328,6 @@ class EnquiryDetails(View):
 class SearchEnquiry(View):
 
     def get(self, request, *args, **kwargs):
-        print "saxas"
         student_name = request.GET.get('student_name', '')
         enquiries = []
         q_list = []
@@ -365,10 +361,10 @@ class SearchEnquiry(View):
                 'count': count,
             })    
             return HttpResponse(response, status=200, mimetype='application/json')
-        context = {
-            'enquiries': enquiries,
-            'count': count,
-        }
+        
+class StudentAdmission(View):
 
-        return render(request, 'admission_details.html', context)
+    def get(self, request, *args, **kwargs):
+
+        return render(request, 'admission_details.html', {})
 
