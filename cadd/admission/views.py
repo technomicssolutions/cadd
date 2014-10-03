@@ -109,9 +109,10 @@ class AddStudent(View):
 class ListStudent(View):
     def get(self, request, *args, **kwargs):
         if request.GET.get('batch_id', ''):
-            students = Student.objects.filter(batch__id=request.GET.get('batch_id', '')).order_by('roll_number')
+            batch = Batch.objects.get(id=request.GET.get('batch_id', ''))
+            students = batch.student_set.all()
         else:
-            students = Student.objects.all().order_by('roll_number')   
+            students = Student.objects.all().order_by('roll_number')  
         if request.is_ajax():
             student_list = []
             for student in students:
