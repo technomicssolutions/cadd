@@ -1,12 +1,18 @@
 function attendance_validation($scope, $http){
     $scope.validation_error = "";
-    if($scope.batch.id == '') {
+    if($scope.students.length == 0){
+        $scope.validation_error = 'No students in this batch ';
+        return false;
+    } else if($scope.batch.id == '') {
         $scope.validation_error = 'Please choose batch';
         return false;
     } else if($scope.batch.topics == '') {
         $scope.validation_error = 'Please enter the topics covered';
         return false;
     } return true;
+}
+function student_search($scope, $http){
+    console.log($scope.batch_id);
 }
 function AttendanceController($scope, $http, $element){
     $scope.batch_id = "";
@@ -57,15 +63,12 @@ function AttendanceController($scope, $http, $element){
         }
     }
 
-    $scope.attendance_validation = function() {
-        attendance_validation($scope, $http);
-    }
     $scope.edit_attendance = function() {
         $scope.is_edit = true;
     }   
 
     $scope.save_attendance = function() {
-        if($scope.attendance_validation()) {
+        if(attendance_validation($scope, $http)) {
            for(var i = 0; i < $scope.students.length; i++){
                 if($scope.students[i].is_presented == true)
                     $scope.students[i].is_presented = 'true';
@@ -219,41 +222,22 @@ function AttendanceDetailsController($scope, $element, $http) {
                     $scope.batch.remarks = data.remarks;
                     $scope.batch.staff = data.staff;
                     $scope.batch.id = data.batch_id;
-                    $scope.show_buttons = true;
+                    if(data.is_future_date == "true")
+                        $scope.show_buttons = false;
+                    else
+                        $scope.show_buttons = true;
                     for(var i = 0; i < $scope.students.length; i++){
-                    if($scope.students[i].is_presented == 'true')
-                        $scope.students[i].is_presented = true;
-                    else 
-                        $scope.students[i].is_presented = false;
+                        if($scope.students[i].is_presented == 'true')
+                            $scope.students[i].is_presented = true;
+                        else 
+                            $scope.students[i].is_presented = false;
                     }
                 }
 
-                if ($scope.students.length == 0)
-                    $scope.validation_error = 'No Students';
-                /*$scope.batch = data.batch[0];
-                if($scope.attendance_view == "2")
-                    $scope.day_details = data.batch[0].day_details[0];
-                $scope.students = data.batch[0].students;
-                $scope.columns = data.batch[0].column_count;
-                if ($scope.students.length == 0) {
-                    $scope.validation_error = 'No Students';
-                }
-                for (var i=0; i < $scope.students.length; i++){
-                    for (var j=0; j < $scope.students[i].counts.length; j++) { 
-                        if ($scope.students[i].counts[j].is_presented == "true") {
-                            $scope.students[i].counts[j].is_presented = true;
-                        } else {
-                            $scope.students[i].counts[j].is_presented = false;
-                        }
-                        
-                    }
-                }               
-                if($scope.day_details == undefined || $scope.day_details.is_future_date == "true" || $scope.day_details.is_holiday == "true"){
+                if ($scope.students.length == 0){
                     $scope.show_buttons = false;
+                    $scope.validation_error = 'No Students';
                 }
-                else{
-                    $scope.show_buttons = true;    
-                }*/
                 $('#overlay').css('height', '0px');
                 $('#spinner').css('height', '0px');
             }).error(function(data, status)
@@ -328,6 +312,7 @@ function AttendanceDetailsController($scope, $element, $http) {
         $scope.batch_id = '';
         $scope.show_data = false;
         $scope.show_buttons = false;
+        $scope.is_edit = false;
     }
     $scope.clear_ok = function() {
         document.location.href = '/attendance/clear_batch_details/?batch_id='+$scope.batch_id+'&batch_year='+$scope.batch_year+'&batch_month='+$scope.batch_month;
@@ -337,133 +322,31 @@ function AttendanceDetailsController($scope, $element, $http) {
     }
 }
 
-function HolidayCalendarController($scope, $http, $element) {
-
-    $scope.year = '';
-    $scope.month = '';
-
-    $scope.init = function(csrf_token) {
-        $scope.csrf_token = csrf_token;
+function JobCardController($scope, $http){
+    $scope.init = function(){
+        get_batches($scope, $http);
+        $scope.batch_id = "";
+        $scope.student_name = "";
+        $scope.job_card = {
+            'batch_id': '',
+            'student_id': '',
+        };
     }
-
-    $scope.years = []
-    var date = new Date();
-    var current_year = date.getFullYear(); 
-    var start_year = current_year - 4;
-    current_year = current_year + 4;
-    for(var i=start_year; i<=current_year; i++){
-        
-        $scope.years.push(i);
-    }
-
-    $scope.appliedClass = function(day) {
-        if (day.is_holiday == true) {
-            return "blue_color";
-        } else{
-            return "white_color";
+    $scope.student_search = function(){
+        if($scope.student_name.length > 0){
+            $scope.message = "";
+            if($scope.batch_id != '')
+                student_search($scope, $http);
+            else
+                $scope.message = "Please select a Batch";
         }
     }
-
-    $scope.attendance_validation = function() {
-
-        if($scope.month == '' || $scope.month == undefined) {
-            $scope.validation_error = 'Please choose the Month';
-            return false;
-        } else if($scope.year == '' || $scope.year == undefined) {
-            $scope.validation_error = 'Please choose the Year';
-            return false;
-        } return true;
-    }
-    $scope.get_attendance_details = function() {
-        if ($scope.attendance_validation()) {         
-            var height = $(document).height();
-            height = height + 'px';
-            $('#overlay').css('height', height);
-            $('#spinner').css('height', height);
-            $scope.validation_error = '';
-            var url = '/attendance/holiday_calendar/?year='+$scope.year+'&month='+$scope.month;
-            
-            $http.get(url).success(function(data)
-            {
-                $scope.days = data.days;
-                
-                for (var i=0; i < $scope.days.length; i++){
-                    if ($scope.days[i].is_holiday == "true") {
-                        $scope.days[i].is_holiday = true;
-                    } else {
-                        $scope.days[i].is_holiday = false;
-                    }
-                }
-                $('#overlay').css('height', '0px');
-                $('#spinner').css('height', '0px');
-            }).error(function(data, status)
-            {
-                $('#overlay').css('height', '0px');
-                $('#spinner').css('height', '0px');
-                console.log(data || "Request failed");
-            });
-        }
-    }
-
-    $scope.save_holiday_calendar = function(){
-        if ($scope.attendance_validation()) {
-            var height = $(document).height();
-            height = height + 'px';
-            $('#overlay').css('height', height);
-            $('#spinner').css('height', height);
-            for (var i=0; i<$scope.days.length; i++){
-                if ($scope.days[i].is_holiday == true) {
-                    
-                    $scope.days[i].is_holiday = 'true'
-                } else {
-                    $scope.days[i].is_holiday = 'false';
-                }
-            }
-            params = {
-                'year': $scope.year,
-                'month': $scope.month,
-                'holiday_calendar': angular.toJson($scope.days),
-                'csrfmiddlewaretoken': $scope.csrf_token,
-            }
-            $http({
-                method : 'post',
-                url : '/attendance/holiday_calendar/',
-                data : $.param(params),
-                headers : {
-                    'Content-Type' : 'application/x-www-form-urlencoded'
-                }
-            }).success(function(data, status) {
-                $('#overlay').css('height', '0px');
-                $('#spinner').css('height', '0px');
-               document.location.href = '/attendance/holiday_calendar/'
-            }).error(function(data, status){
-                $('#overlay').css('height', '0px');
-                $('#spinner').css('height', '0px');
-                console.log('error - ', data);
-            });
-        }
-    }
-
-    $scope.clear_holiday_calendar_ok = function() {
-        document.location.href = '/attendance/clear_holiday_calendar/?year='+$scope.year+'&month='+$scope.month;
-    }
-    $scope.clear_cancel = function() {
-        $scope.popup.hide_popup();
-    }
-    $scope.remove_holiday_calendar = function() {
-        if ($scope.attendance_validation()) {
-            $scope.popup = new DialogueModelWindow({
-                
-                'dialogue_popup_width': '20%',
-                'message_padding': '0px',
-                'left': '28%',
-                'top': '182px',
-                'height': 'auto',
-                'content_div': '#clear_holiday_message'
-            });
-            var height = $(document).height();
-            $scope.popup.set_overlay_height(height);
-            $scope.popup.show_content();
-        }
+    $scope.select_batch = function(){
+        $scope.student_name = "";
+        $scope.message = "";
+        $scope.job_card = {
+            'batch_id': '',
+            'student_id': '',
+        };
     }
 }
