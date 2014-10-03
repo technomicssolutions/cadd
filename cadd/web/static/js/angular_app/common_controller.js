@@ -113,16 +113,13 @@ function get_course_list($scope, $http) {
     });
 }
 
-function get_course_batch_list($scope, $http) {
-    if ($scope.course != 'select') {
-        $http.get('/college/get_batch/'+ $scope.course+ '/').success(function(data)
+function get_batch_list($scope, $http) {
+    
+        $http.get('/college/batch_details/').success(function(data)
         {
             $scope.batches = data.batches;
-            $scope.no_head_error = '';
-            $scope.no_student_error = '';
-            $scope.no_installment_error = '';
             if ($scope.batches.length == 0) {
-                $scope.no_batch_error = 'No batch in this course';
+                $scope.no_batch_error = 'No batch';
             } else {
                 $scope.no_batch_error = '';
             }
@@ -130,7 +127,7 @@ function get_course_batch_list($scope, $http) {
         {
             console.log(data || "Request failed");
         });
-    }
+  
 }
 
 function get_course_batch_student_list($scope, $http) {

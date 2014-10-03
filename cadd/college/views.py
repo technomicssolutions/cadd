@@ -330,4 +330,28 @@ class DeleteBatch(View):
         batch.delete()
         return HttpResponseRedirect(reverse('batches'))
 
+class FreeBatchDetails(View):
+
+    def get(self, request, *args, **kwargs):
+
+        if request.is_ajax():
+            batches = Batch.objects.all()
+            batch_list = []
+            for batch in batches:
+                if batch.allowed_students != batch.no_of_students:
+                    batch_list.append({
+                        'software':batch.software.name,
+                        'software_id': batch.software.id,
+                        'start':batch.start_time.strftime('%H:%M.%p'),
+                        'end':batch.end_time.strftime('%H:%M.%p'),
+                        'allowed_students':batch.allowed_students,                                        
+                        'name': batch.name,
+                        'id': batch.id
+                    })
+            res = {
+                'result': 'ok',
+                'batches': batch_list,
+            }            
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
 

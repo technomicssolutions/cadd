@@ -17,7 +17,7 @@
 		<div class="alert alert-info" align="Center"> Students </div>
 		<div class="search_students">
 			<label> Course</label> 
-			<select name="course" ng-model="course" ng-change="get_batch()">
+			<select name="course" ng-model="course" >
 				<option value="">Select</option>
 				<option ng-repeat="course in courses" value="[[course.id]]">[[course.name]]
 				</option>
