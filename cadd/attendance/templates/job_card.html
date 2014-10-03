@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Job Card{% endblock title %}
+{% block body_id %}job_card{% endblock %}
+
+{% block controller %}
+	ng-controller="JobCardController" ng-init="init('{{csrf_token}}')"
+{% endblock controller %}
+
+{% block content %}
+		<form name="attendance_entry" method="post">
+			<div class="form_contents_attendance">
+				<div class="section_1_attendance">
+					<div class="add_attendance_row">
+						<label class="add_attendance_label">Select Batch</label>				  <select ng-model="batch_id" ng-change="select_batch()">
+							<option value="">Select</option>
+							<option ng-repeat="batch in batches" value="[[batch.id]]">[[batch.name]]</option>
+						</select>					
+					</div>
+					<div class="add_attendance_row">
+						<label class="add_attendance_label">Select Student</label>				 <input type="text" ng-model="student_name" ng-change="student_search()">
+					</div>
+				</div>
+			</div>
+			<p class="error_message">[[message]]</p>
+		</form>
+{% endblock content %}

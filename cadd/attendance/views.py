@@ -193,6 +193,7 @@ class AttendanceDetails(View):
                     'remarks': attendance.remarks if attendance.remarks else '',
                     'staff': staff,
                     'view': 'daily',
+                    'is_future_date': "true" if datetime(int(year),int(month),int(day)) > datetime.now() else "false",
                 }            
             else:  
                 students = Student.objects.filter(batch=batch).order_by('roll_number')
@@ -236,7 +237,7 @@ class AttendanceDetails(View):
             return HttpResponse(response, status=status, mimetype='application/json')
 
         return render(request, 'attendance_details.html', {})
-        
+
 
 class ClearBatchAttendanceDetails(View):
 
@@ -307,6 +308,10 @@ class BatchStudents(View):
         return HttpResponse(response, status = status_code, mimetype="application/json")
 
 
+class JobCard(View):
 
+     def get(self, request, *args, **kwargs):
+
+        return render(request, 'job_card.html', {})
 
 

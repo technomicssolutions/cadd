@@ -79,9 +79,7 @@
 						</select>					
 						</div>	
 					</div>
-					<div class="view_flags" ng-show="show_data">
-						<div class="red_box"></div>
-						<label class="flag_label">Holiday</label>
+					<div class="view_flags" ng-show="view=='monthly'">
 						<div class="blue_box"></div>
 						<label class="flag_label">Coming Day</label>
 					</div>
@@ -108,11 +106,6 @@
 									<input type="checkbox" ng-model="student.is_presented">
 								</span>
 							</td>
-
-
-							<td class="days" ng-repeat="day in student.days" ng-class="appliedClass(day)"><span class="red_font" ng-hide="day.status=='P'">[[day.status]]</span><span class="bold_font" ng-show="day.status=='P'">[[day.status]]</span></td>
-
-
 						</tr>			                   
 						</table>
 

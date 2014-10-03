@@ -337,6 +337,8 @@ class EnquiryDetails(View):
                 'enquiry': enquiry_list,
             })    
             return HttpResponse(response, status=200, mimetype='application/json')
+
+            
 class SearchEnquiry(View):
 
     def get(self, request, *args, **kwargs):
