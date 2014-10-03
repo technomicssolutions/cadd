@@ -33,6 +33,7 @@ class AddStudent(View):
                         student.student_name = request.POST['student_name']
                         student.roll_number = request.POST['roll_number']
                         student.address = request.POST['address']
+                        student.qualifications = request.POST['qualifications']
                         student.course=course
                         student.batch=batch
                         student.dob = datetime.strptime(request.POST['dob'], '%d/%m/%Y')
@@ -47,7 +48,8 @@ class AddStudent(View):
                         student.id_proofs_submitted = request.POST['id_proofs_submitted']
                         student.guardian_name = request.POST['guardian_name']
                         student.relationship = request.POST['relationship']
-                        student.guardian_mobile_number = request.POST['guardian_mobile_number']                 
+                        student.guardian_mobile_number = request.POST['guardian_mobile_number']
+                        student.is_rolled = True                 
                     except Exception as ex:
                         res = {
                             'result': 'error',
