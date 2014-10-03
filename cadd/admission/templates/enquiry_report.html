@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block body_id %}enquiry_report{% endblock %}
+{% block title %} Enquiry Report {% endblock title%}
+{% block controller %} ng-controller="EnquiryReportController" ng-init="init('{{csrf_token}}')"{% endblock controller %}
+
+{% block content %}
+	<div class="formtext">
+		<label>Start Date</label>
+	</div>
+	<div class="forminput">
+		<input type="text"name="start_date" value="" ng-model="start_date" id="start_date">						
+	</div>
+	<div class="formtext">
+		<label>End Date</label>
+	</div>
+	<div class="forminput">
+		<input type="text"name="end_date" value="" ng-model="end_date" id="end_date">					
+	</div>
+	<div class="button_control">
+		<p class="error_message">[[validate_error_msg]]</p>
+		<button  ng-click="view_enquiry()" >View</button>
+		<button  ng-click="get_enquiry_report()" >Generate PDF</button>
+		
+	</div>
+	<table ng-show="enquiries.length > 0" class="table list_table">
+		<tr>
+			<th>#</th>
+			<th>Date</th>
+			<th>Enquiry Number</th>
+			<th>Name</th>
+			<th>Course</th>
+			
+		</tr>
+		<tr ng-repeat="enquiry in enquiries">
+			<td>[[$index+1]]</td>
+			<td>[[enquiry.saved_date]]</td>
+			<td>[[enquiry.auto_generated_num]]</td>
+			<td>[[enquiry.student_name]]</td>
+			<td>[[enquiry.course]]</td>
+		</tr>
+		
+	</table>
+{% endblock content %}
