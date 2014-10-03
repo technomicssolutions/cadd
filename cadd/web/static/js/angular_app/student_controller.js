@@ -572,6 +572,7 @@ function AdmissionController($scope, $http) {
     $scope.show_enquiry_search =  false;
     $scope.admission_type = 'Admission';
     $scope.photo_img = {};
+    $scope.installments = [];
     $scope.search = {
         'student_name': '',
         'enquiry_num': '',
@@ -633,15 +634,23 @@ function AdmissionController($scope, $http) {
         save_new_student($http, $scope);
     }
     $scope.load_installments = function() {
-        $scope.installments = [];
-        for (var i=0; i<$scope.no_installments; i++) {
-            due_date_id = 'due_date_'+i;
-            $scope.installments.push({
-                'amount': '',
-                'fine': '',
-                'due_date': '',
-                'due_date_id': due_date_id,
-            })
+        if ($scope.no_installments > $scope.installments.length) {
+            diff = $scope.no_installments - $scope.installments.length;
+            for (var i=0; i<diff; i++) {
+                due_date_id = 'due_date_'+$scope.installments.length;
+                $scope.installments.push({
+                    'amount': '',
+                    'fine': '',
+                    'due_date': '',
+                    'due_date_id': due_date_id,
+                })
+            }
+        } else {
+            diff = $scope.installments.length - $scope.no_installments;
+            for (var i=diff; i>0; i--) {
+                index = $scope.installments.indexOf($scope.installments[$scope.installments.length])
+                $scope.installments.splice(index, 1);
+            }
         }
     }
     $scope.attach_date_picker = function(installment) {

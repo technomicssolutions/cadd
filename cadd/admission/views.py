@@ -361,10 +361,10 @@ class SearchEnquiry(View):
                 'count': count,
             })    
             return HttpResponse(response, status=200, mimetype='application/json')
-        context = {
-            'enquiries': enquiries,
-            'count': count,
-        }
+        
+class StudentAdmission(View):
 
-        return render(request, 'admission_details.html', context)
+    def get(self, request, *args, **kwargs):
+
+        return render(request, 'admission_details.html', {})
 
