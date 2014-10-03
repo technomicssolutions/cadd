@@ -18,7 +18,6 @@
 					<ul>
 						<li> <a href="{% url 'reset_password' user.id %}"> Reset password </a> </li>
 						<li> <a href="{% url 'logout' %}"> Logout </a> </li>
-						
 					</ul>
 				</li>
 				{% if user.is_superuser or user.staff_set.all.0.permission.master_module %}
