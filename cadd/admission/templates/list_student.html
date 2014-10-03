@@ -7,7 +7,6 @@
 {% endblock controller %}
 
 {% block dialogue_popup %}
-	{% include 'add_student.html' %}
 	{% include 'view_student_details.html' %} 
 	           	
 {% endblock %}
@@ -16,16 +15,10 @@
 	<div class="main-title">
 		<div class="alert alert-info" align="Center"> Students </div>
 		<div class="search_students">
-			<label> Course</label> 
-			<select name="course" ng-model="course" >
-				<option value="">Select</option>
-				<option ng-repeat="course in courses" value="[[course.id]]">[[course.name]]
-				</option>
-			</select>
 			<label> Batch</label> 
 			<select name="batch" ng-model="batch" ng-change="get_students()">
 				<option value="">Select</option>
-				<option ng-repeat="bat in batches" value="[[bat.id]]">[[bat.name]]
+				<option ng-repeat="bat in batches" value="[[bat.id]]">[[bat.batch_time]]
 				</option>
 			</select>
 		</div>

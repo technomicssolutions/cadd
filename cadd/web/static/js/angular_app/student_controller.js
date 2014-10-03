@@ -32,6 +32,7 @@ function save_new_student($http, $scope) {
         params = { 
             'student_name':$scope.student_name,
             'roll_number': $scope.roll_number,
+            'cadd_registration_no' : $scope.cadd_registration_no,
             'course': $scope.course,
             'batch': $scope.batch,
             'semester': $scope.semester,           
@@ -82,10 +83,11 @@ function save_new_student($http, $scope) {
 function reset_student($scope) {
     $scope.student_name = '';
     $scope.roll_number = '';
+    $scope.cadd_registration_no = '';
     $scope.course = '';
     $scope.batch = '';
     $scope.semester = '';
-    $scope.qualified_exam = '';
+    $scope.qualifications = '';
     $scope.dob = '';
     $scope.address = '';
     $scope.mobile_number = '';
@@ -311,7 +313,6 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
 function StudentListController($scope, $http, $element, $location, $timeout) {
 
     $scope.init = function(csrf_token){
-        get_course_list($scope, $http);
         get_batch_list($scope, $http);
         $scope.page_interval = 10;
         $scope.visible_list = [];
