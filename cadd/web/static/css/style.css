@@ -258,7 +258,7 @@ textarea{
     width: 45%;
 }
 
-.form_container input[type="text"]{
+.form_container input[type="text"], .form_container input[type="file"]{
 	float: left;
 	display: block;
 	width: 50%;
@@ -906,4 +906,9 @@ a:hover , a:focus{
 #attendance textarea{
 	height: 75px;
     padding-left: 21px;
+}
+
+#search_box {
+	border: 1px solid #336699;
+    border-radius: 5px;
 }

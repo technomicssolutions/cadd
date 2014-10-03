@@ -18,7 +18,6 @@
 					<ul>
 						<li> <a href="{% url 'reset_password' user.id %}"> Reset password </a> </li>
 						<li> <a href="{% url 'logout' %}"> Logout </a> </li>
-						
 					</ul>
 				</li>
 				{% if user.is_superuser or user.staff_set.all.0.permission.master_module %}
@@ -42,7 +41,7 @@
 					<li class="menu"> <a href=""> Student </a>
 						<ul> 
 							<li> <a href="{% url 'enquiry'  %}"> Enquiry </a> </li>
-							<li> <a href="{% url 'enquiry_search'  %}"> Admission </a> </li>
+							<li> <a href="{% url 'student_admission'  %}"> Admission </a> </li>
 							<li><a href="{% url 'list_student'  %}">Students</a></li>
 						</ul>
 					</li>

@@ -4,151 +4,90 @@
 
 {% block controller %}ng-controller="AdmissionController" ng-init="init('{{csrf_token}}')"{% endblock controller %}
 {% block content %}
-
-	
-        <div id="main-title">
-            <div class="alert alert-info" align="Center">
-                <h4>Student Registration</h4>
-            </div>
-            
+    <div id="main-title">
+        <div class="alert alert-info" align="Center">
+            <h4>Admission Form</h4>
         </div>
-        <div class="control">
-            <div class="formtext">
-                    <input type="radio"  ng-model="admission_type" value="Enquiry" ng-click="change_admission_type('Enquiry')"><label>From Enquiry</label>
+    </div>
+    <div class="form_container">
+        <form>
+            <div class="control">
+
+            </div> 
+            <div class="control">
+                <input type="radio"  ng-model="admission_type" value="Enquiry" ng-click="change_admission_type('Enquiry')" />
+                <label>From Enquiry</label>
+                <input type="radio" ng-model="admission_type" value="Admission" ng-click="change_admission_type('Admission')" />
+                <label>Direct Admission</label>
             </div>
-            <div class="formtext">
-                    <input type="radio" ng-model="admission_type" value="Admission" ng-click="change_admission_type('Admission')"><label>Direct Admission</label>
-             </div> 
-
-        </div> 
-        <div class="section_1" ng-show="show_enquiry_search">
-            <h2> Search Enquiry </h2>
-                <div class="formtext">
-                    <label > <strong>Search by :</strong> [[search.student_name]] - [[search.enquiry_num]] </span></label> 
-                    <div class="formrow">
-                        <div class="formtext">
-                            <label >Student Name</label>
-                        </div>
-                        <div class="forminput">      
-                            <input class="form-control" type="text" ng-style="alert_style" name="student_name" ng-model="search.student_name" id="student_name">
-                        </div>
-                        
-                    </div>
-                    
-                    <div class="button_control">
-                        <input type="submit" name="submit" value="Search Enquiries" ng-click="enquiry_search()">
-                        <br>
-                        <p  class="error_message">[[error_message]]</p>
-                        
-                    </div>
-
-                    
-                    <div class="enquiry_list">
-                        <div class="not_found" ng-hide="no_enquiries"> 
-                            <p class="error_message">[[ count ]] enquiry(s) found.</p>
-                        </div>
-                        <div class="enquiry" ng-repeat="enquiry in enquiries">
-                            
-                            <h2>Enquiry num of student [[search.student_name]] </h2>
-                            
-                            <p>Enquiry Number: [[enquiry.auto_generated_num]]</p>
-                           
-                            <br>            
-                            <br>        
-                        </div>
-                    </div>
-           
-                    <div class="not_found" ng-show="no_enquiries">
-
-                        <p class="error_message">No Enquiries found for this Student. </p>
-                        <p>Your search [[search.student_name]]- [[search.enquiry_num]]  did not match any documents.</p>
-                        <p>Suggestions:</p>
-                        <ul>
-                            <li>Please check your spelling .</li>
-                        </ul>               
-                    </div>   
-                 
-
-                </div>
-         </div>
-        <div class="section_1" >
-            <div class="formrow">
-                <h2>Admission Form</h2>
-                <div ng-show="show_enquiry_search">
-                    <div class="formtext">
-                        <label> Enquiry Number</label>  
-                    </div>
-                    <div class="forminput">
-                        <input type="text" name="enquiry_num" ng-change="get_enquiry_details()" ng-model="enquiry_num">
+            <div class="control" ng-show="show_enquiry_search" id="search_box">
+                <h4> Search Enquiry </h4>
+                <label>Student Name</label>
+                <input class="form-control" type="text" name="student_name" ng-model="search.student_name" id="student_name" ng-change="enquiry_search()" autocomplete="off"/>
+                <p  class="error_message">[[error_message]]</p> 
+                <div class="enquiry_list">
+                    <p class="error_message" ng-show="count">[[ count ]] enquiry(s) found.</p>
+                    <div class="enquiry" ng-repeat="enquiry in enquiries">
+                        <span> [[enquiry.student_name]] - [[enquiry.auto_generated_num]]</span>
                     </div>
                 </div>
-                <div class="formtext">
-                    <label> Name</label>  
+                <div class="not_found" ng-show="no_enquiries">
+                    <p class="error_message">No Enquiries found for this Student. </p>
+                </div>  
+            </div>
+
+            <div class="section_1" >
+                <div class="control" ng-hide="show_enquiry_search">
+                    <br>
+                    <br>
                 </div>
-                <div class="forminput">
-                    <input type="text" name="student_name" value="" ng-model="student_name">
+                <div class="control" ng-show="show_enquiry_search">
+                    <label> Enquiry Number</label>  
+                    <input type="text" name="enquiry_num" ng-change="get_enquiry_details()" ng-model="enquiry_num" />
+                    <p class="error_message">[[no_enquiry_msg]]</p>
                 </div>
-                <div class="formtext">
+                <div class="control">
+                    <label>Student Name</label>
+                    <input type="text" name="student_name" value="" ng-model="student_name" />
+                </div>
+                <div class="control">
                     <label > Roll No</label>  
+                    <input type="text" name="roll_number" value="" ng-model="roll_number"/>
                 </div>
-                <div class="forminput">
-                    <input type="text" name="roll_number" value="" ng-model="roll_number">
-                </div>
-                <div class="formtext">
+                <div class="control">
                     <label> Course</label>  
-                </div>
-                <div class="forminput">
-                    <select name="course" ng-model="course" >
+                    <select name="course" ng-model="course" ng-options="course.id as course.course_name for course in courses" ng-change="get_fees()">
                         <option value="">Select</option>
-                        <option ng-repeat="course in courses" value="[[course.id]]" >[[course.name]]
-                        </option>
                     </select>
                 </div>
-                <div class="formtext">
+                <div class="control">
                     <label> Batch</label>  
-                </div>
-                <div class="forminput">
-                    <select name="batch" ng-model="batch" ng-change="get_fees_head()">
+                    <select name="batch" ng-model="batch" ng-change="get_fees_head()" ng-options="batch.id as batch.batch_name for batch in batches">
                         <option value="">Select</option>
-                        <option ng-repeat="batch in batches" value="[[batch.id]]"  >[[batch.batch_time]]
-                        </option>
                     </select>
                 </div>
-                <div class="formtext">
+                <div class="control">
                     <label> Qualification</label>  
+                    <input type="text" name="qualifications" value="" ng-model="qualifications" />
                 </div>
-                <div class="forminput">                         
-                    <input type="text" name="qualifications" value="" ng-model="qualifications">
-                </div>
-               
-                <div class="formtext">
+                <div class="control">
                     <label> DOB</label>  
+                    <input type="text"name="dob" value="" ng-model="dob" id="dob" />
                 </div>
-                <div class="forminput">                         
-                    <input type="text"name="dob" value="" ng-model="dob" id="dob"></text>
-                </div>
-                <div class="formtext">
+                <div class="control">
                     <label>Address</label> 
-                </div>
-                <div class="forminput">                         
                     <textarea name="address" value="" ng-model="address"></textarea>
                 </div>
-                <div class="formtext">
-                    <label > Mobile </label>            
+                <div class="control">
+                    <label> Mobile </label>  
+                    <input type="text"  name="mobile_number" value=""  ng-model="mobile_number" />
                 </div>
-                <div class="forminput">                         
-                    <input type="text"  name="mobile_number" value=""  ng-model="mobile_number">
+                <div class="control">
+                    <label> Email</label>      
+                    <input type="text"name="email" value="" ng-model="email">
                 </div>
-                <div class="formtext">
-                    <label> Email</label>       
-                </div>
-                <div class="forminput">                         
-                    <input type="text"name="email" value="" ng-model="email"></textarea>                        
-                </div>
-                <div class="formtext">
-                    <label>Blood Group</label>      
-                </div>
-                <div class="forminput">                         
+                <div class="control">
+                    <label>Blood Group</label> 
                     <select ng-model="blood_group">
                         <option value="">Select</option>
                         <option value="A-">A-</option>
@@ -159,93 +98,66 @@
                         <option value="AB+">AB+</option>
                         <option value="O-">O-</option>
                         <option value="O+">O+</option>
-                    </select>                   
+                    </select>
                 </div>
-                <div class="formtext">
-                    <label > Date of join</label>
+                <div class="control">
+                    <label> Date of join</label>
+                    <input type="text"name="doj" value="" ng-model="doj" id="doj" />
                 </div>
-                <div class="forminput">                         
-                    <input type="text"name="doj" value="" ng-model="doj" id="doj"></text>
-                </div>
-                <div class="formtext">
+                <div class="control">
                     <label>Photo</label>
-                </div>
-                <div class="forminput">
                     <input type="file" fileread="photo_img.src"/>
                     <input type="hidden" ng-model="photo_img.src">
                 </div>
-            </div>
-            <div class="formrow">
-                <div class="formtext">
+                <div class="control">
                     <label> Cadd Registration Number</label>
+                    <input type="text"name="cadd_registration_no" value="" ng-model="cadd_registration_no" />
                 </div>
-                <div class="forminput">
-                    <input type="text"name="cadd_registration_no" value="" ng-model="cadd_registration_no">
-                </div>
-                <div class="formtext">
+                <div class="control">
                     <label>Certificates </label>
-                </div>
-                <div class="forminput">
                     <textarea name="certificates_submitted" value="" ng-model="certificates_submitted"> </textarea>
                 </div>
-                
-                <div class="formtext">
+                <div class="control">
                     <label>ID Proofs </label>
-                </div>
-                <div class="forminput">
                     <textarea name="id_proof" value="" ng-model="id_proof"></textarea> 
                 </div>
                 <div class="control">
-                    <label> Father/Mother/Guardian Details</label>
-                    <label>&nbsp;</label>
-                </div>              
-                <div class="formtext">
-                    <label> Name</label>                
-                </div>
-                <div class="forminput">
+                    <label> Guardian's Name</label>   
                     <input type="text" name="guardian_name" value="" ng-model="guardian_name">
                 </div>
-                <div class="formtext">
+                <div class="control">
                     <label> Relationship</label>
+                    <input type="text" ng-model="relationship" />
                 </div>
-                <div class="forminput">
-                    <textarea name="relationship" value="" ng-model="relationship"></textarea>
-                </div>  
-                <div class="formtext">
+                <div class="control">
                     <label > Mobile </label> 
+                    <input type="text"  name="guardian_mobile_number" value=""  ng-model="guardian_mobile_number" />
                 </div>
-                <div class="forminput">
-                    <input type="text"  name="guardian_mobile_number" value=""  ng-model="guardian_mobile_number">
-                </div>
-                 <div class="control">
-                    
-                    <label>&nbsp;</label>
-                </div>  
-                <div class="formtext">
+                <div class="control">
                     <label> Fees</label>
-                </div>
-                <div class="forminput">
                     <input type="text" name="fees" value="" ng-model="fees">
-                </div> 
-                <div class="formtext">
+                </div>
+                <div class="control">
                     <label> No of Installmets</label>
+                    <input type="text" name="no_installments" value="" ng-model="no_installments" ng-change="load_installments()" />
                 </div>
-                <div class="forminput">
-                    <input type="text" name="no_installments" value="" ng-model="no_installments">
-                </div>
-                <div class="formtext">
-                    <label> Installmets</label>
-                </div>
-                <div class="forminput">
-                    <input type="text" name="installments" value="" ng-model="installments">
-                </div>
-            </div>
-            <div  align="Center">       
-            <div class="buttons">
-                <p class="error_message"> [[validation_error]] </p>
-                <input type="submit" value="Submit" ng-click="save_new_student()" class="btn btn-info">             
-            </div>
-        </div>
-        </div>
 
+                <div class="control" ng-show="no_installments > 0">
+                    <table>
+                        <tr>
+                            <th>Amount</th>
+                            <th>Due Date</th>
+                            <th>Fine</th>
+                        </tr>
+                        <tr ng-repeat="installment in installments">
+                            <td><input type="text" ng-model="installment.amount" /></td>
+                            <td><input type="text" ng-model="installment.due_date" id="[[installment.due_date_id]]"ng-click="attach_date_picker(installment)" /></td>
+                            <td><input type="text" ng-model="installment.fine" /></td>
+                        </tr>
+                    </table>
+
+                </div>
+            </div>
+        </form>
+    </div>
 {% endblock content %}
