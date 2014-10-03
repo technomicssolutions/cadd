@@ -48,12 +48,11 @@ class FeesStructureHead(models.Model):
 
 class FeesStructure(models.Model):
 	course = models.ForeignKey(Course, null=True, blank=True)
-	batch = models.ForeignKey(Batch, null=True, blank=True)
 	head = models.ManyToManyField(FeesStructureHead, null=True, blank=True)
 	
 	def __unicode__(self):
 
-		return str(self.course.course) + ' - ' + str(self.batch.start_date) + ' - ' + str(self.batch.end_date) + ' - ' + str(self.batch.branch.branch)
+		return str(self.course.course)
 	
 	class Meta:
 
