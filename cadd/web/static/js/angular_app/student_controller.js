@@ -534,8 +534,15 @@ function AdmissionController($scope, $http) {
     $scope.get_enquiry_details = function(){
         var url = '/admission/enquiry_details/?enquiry_num='+$scope.enquiry_num;
         $http.get(url).success(function(data)
-        {
-            console.log(data)
+        {   
+            $scope.no_enquiry_msg = '';
+            if (data.enquiry.length == 0)
+                $scope.no_enquiry_msg = 'No such enquiry';
+            else {
+                console.log(data.enquiry);
+                $scope.student_name = data.enquiry[0].student_name;
+                $scope.course = data.enquiry[0].course;
+            }
         }).error(function(data, status)
         {
             console.log(data || "Request failed");

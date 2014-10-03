@@ -301,9 +301,9 @@ class EnquiryDetails(View):
         if request.is_ajax():
             enquiry_list = []
             enquiry_num = request.GET.get('enquiry_num', '')
-            if enquiry_num :
-                enquiries = Enquiry.objects.filter(auto_generated_num__icontains=enquiry_num)
-                for enquiry in enquiries:
+            try:
+                if enquiry_num :
+                    enquiry = Enquiry.objects.get(auto_generated_num=enquiry_num)
                     enquiry_list.append({
                         'student_name': enquiry.student_name,
                         'address': enquiry.address,
@@ -312,14 +312,16 @@ class EnquiryDetails(View):
                         'details_about_clients_enquiry' : enquiry.details_about_clients_enquiry,
                         'educational_qualification': enquiry.educational_qualification,
                         'land_mark': enquiry.land_mark,
-                        'course' : enquiry.course.name,
+                        'course' : enquiry.course.id,
                         'remarks': enquiry.remarks,
                         'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
                         'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,
                         'discount': enquiry.discount,
                         'auto_generated_num': enquiry.auto_generated_num,
-                        })
-            
+                    })
+            except Exception as ex:
+                print str(ex), 'Exception'
+                enquiry_list = []
             
             response = simplejson.dumps({
                 'enquiry': enquiry_list,

@@ -44,6 +44,7 @@
                 <div class="control" ng-show="show_enquiry_search">
                     <label> Enquiry Number</label>  
                     <input type="text" name="enquiry_num" ng-change="get_enquiry_details()" ng-model="enquiry_num" />
+                    <p class="error_message">[[no_enquiry_msg]]</p>
                 </div>
                 <div class="control">
                     <label>Student Name</label>
@@ -61,7 +62,7 @@
                 </div>
                 <div class="control">
                     <label> Batch</label>  
-                    <select name="batch" ng-model="batch" ng-change="get_fees_head()" ng-options="batch.id as batch.name for batch in batches">
+                    <select name="batch" ng-model="batch" ng-change="get_fees_head()" ng-options="batch.id as batch.batch_name for batch in batches">
                         <option value="">Select</option>
                     </select>
                 </div>
