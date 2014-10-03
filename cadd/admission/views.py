@@ -16,16 +16,12 @@ class AddStudent(View):
         if request.is_ajax():
             try:
                 course = Course.objects.get(id = request.POST['course'])
-                batch = Batch.objects.get(id = request.POST['batch'])
+                
                 enquiry = None
                 if request.POST.get('enquiry', ''):
                     if request.POST.get('enquiry', '') != 'undefined':
                         enquiry = Enquiry.objects.get(id=request.POST['enquiry'])
-                if batch.no_of_students == None:
-                    batch.no_of_students = 1
-                else:
-                    batch.no_of_students = batch.no_of_students + 1
-                batch.save()
+
                 student, created = Student.objects.get_or_create(roll_number = request.POST['roll_number'], course=course)
                 if not created:
                     res = {
@@ -34,6 +30,16 @@ class AddStudent(View):
                     }
                 else:
                     try:
+                        batches = request.POST['batch'].split(',')
+                        print batches, 'higasdkgdf'
+                        for batch in batches:
+                            batch_obj = Batch.objects.get(id = batch)
+                            if batch_obj.no_of_students == None:
+                                batch_obj.no_of_students = 1
+                            else:
+                                batch_obj.no_of_students = batch_obj.no_of_students + 1
+                            batch_obj.save()
+                            student.batches.add(batch_obj)
                         student.student_name = request.POST['student_name']
                         if enquiry is not None:
                             student.enquiry = enquiry
