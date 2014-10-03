@@ -65,7 +65,7 @@ class Enquiry(models.Model):
 	remarks_for_follow_up_date =   models.TextField('Remark for Next follow up date',null=True, blank=True)
 	auto_generated_num = models.CharField('Auto generated number',null=True, blank=True, max_length=200)
 	discount = models.IntegerField('Discount', default=0, null=True, blank=True)
-	saved_date = models.DateField('Saved Date', null=True, blank=True)
+	
 
 	def __unicode__(self):
 		return str(self.student_name)
