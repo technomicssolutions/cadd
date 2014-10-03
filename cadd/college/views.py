@@ -184,11 +184,12 @@ class CourseDetails(View):
         ctx_software = []
         
         for course in courses:
+            course_name = course.name + str(course.duration) + str(course.duration_unit)
             course_list.append({
                 'software':course.software.name,
                 'duration':course.duration,
                 'duration_unit':course.duration_unit,                                       
-                'name': course.name,
+                'course_name': course_name,
                 'id': course.id
             })
             if course.software.all().count() > 0: 
