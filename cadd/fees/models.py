@@ -1,21 +1,6 @@
 from django.db import models
 from college.models import Batch, Course
-from admission.models import Student 
-
-
-class Installment(models.Model):
-
-	due_date = models.DateField('Due Date', null=True, blank=True)
-	amount = models.DecimalField('Amount',max_digits=14, decimal_places=2, default=0)
-	fine_amount = models.DecimalField('Fine Amount',max_digits=14, decimal_places=2, default=0)
-	
-	def __unicode__(self):
-
-		return str(self.amount)
-	
-	class Meta:
-
-		verbose_name_plural = 'Installment'
+from admission.models import Student, Installment
 
 class FeesHead(models.Model):
 	

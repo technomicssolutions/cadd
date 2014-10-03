@@ -104,6 +104,7 @@ class Courses(View):
                     'duration': course.duration,
                     'duration_unit': course.duration_unit,
                     'amount': course.amount,
+                    'fine': course.fine,
                     'softwares': software_list,
                     'course_name': course.name + str(' - ') + str(course.duration_unit)
                 })
@@ -119,7 +120,6 @@ class Courses(View):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             course_details = ast.literal_eval(request.POST['course_details'])
-            print course_details
             try:
                 if course_details.get('id'):
                     course = Course.objects.get(id=course_details['id'])
@@ -129,10 +129,10 @@ class Courses(View):
                 course.amount = course_details['amount']
                 course.duration = course_details['duration']
                 course.duration_unit = course_details['duration_unit']
+                course.fine = course_details['fine']
                 course.save()
                 if course.software:
                     course.software.clear()
-                print course_details['softwares']
                 softwares = course_details['softwares']
                 for software_id in softwares:
                     software = Software.objects.get(id=software_id)
