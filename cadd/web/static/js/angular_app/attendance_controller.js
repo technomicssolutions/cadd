@@ -44,6 +44,9 @@ function AttendanceController($scope, $http, $element){
             $scope.current_month = data.current_month;
             $scope.current_year = data.current_year;
             $scope.current_date = data.current_date;
+            $scope.batch.topics = data.topics;
+            $scope.batch.remarks = data.remarks;
+            $scope.batch.staff = data.staff;
             for(var i = 0; i < $scope.students.length; i++){
                 if($scope.students[i].is_presented == 'true')
                     $scope.students[i].is_presented = true;
@@ -52,12 +55,8 @@ function AttendanceController($scope, $http, $element){
             }
             if($scope.students.length == 0)
                 $scope.validation_error = "No students in this batch";
-            else{
-                    $scope.batch.topics = data.students[0].topics;
-                    $scope.batch.remarks = data.students[0].remarks;
-                    $scope.batch.staff = data.students[0].staff;
-                    $scope.validation_error = "";
-            }
+            else
+                $scope.validation_error = "";
         }).error(function(data, status){
 
         });
@@ -73,7 +72,6 @@ function AttendanceController($scope, $http, $element){
 
     $scope.attendance_validation = function() {
         $scope.validation_error = "";
-        console.log($scope.batch);
         if($scope.batch.id == '') {
             $scope.validation_error = 'Please choose batch';
             return false;
