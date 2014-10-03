@@ -429,8 +429,14 @@ class EnquiryReport(View):
         else:
             start_date = datetime.strptime(start_date, '%d/%m/%Y')
             end_date = datetime.strptime(end_date, '%d/%m/%Y')
-        
-        enquiries = Enquiry.objects.filter( saved_date__gte=start_date,saved_date__lte=end_date).order_by('saved_date')
+        try:
+            enquiries = Enquiry.objects.filter( saved_date__gte=start_date,saved_date__lte=end_date).order_by('saved_date')
+        except Exception as ex:
+            print str(ex), 'Exception'
+            res = {
+                    'result': 'error',
+                }
+
         if enquiries:
             if request.is_ajax():
                 enquiry_list = []
