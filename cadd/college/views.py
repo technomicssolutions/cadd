@@ -1,6 +1,7 @@
 import sys
 import simplejson
 import ast
+import pytz
 
 from datetime import datetime
 from django.core.urlresolvers import reverse
@@ -11,6 +12,7 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 from college.models import Software, Course, Batch
 from admission.models import Student
 
+utc=pytz.UTC
 
 class Softwares(View):
 
@@ -204,69 +206,6 @@ class CourseDetails(View):
         response = simplejson.dumps(res)
         return HttpResponse(response, status=200, mimetype='application/json')
 
-# class EditBatch(View): 
-
-#     def get(self, request, *args, **kwargs):
-#         batch_id = kwargs['batch_id']
-#         context = {
-#             'batch_id': batch_id,
-#         }
-#         ctx_data = []
-#         if request.is_ajax():
-#             try:
-#                 batch = Batch.objects.get(id = batch_id)
-#                 ctx_data.append({
-#                     'id': batch.id,
-#                     'software_id':batch.software.id,
-#                     'start':batch.start_time.strftime('%H:%M.%p'),
-#                     'end':batch.end_time.strftime('%H:%M.%p'),
-#                     'allowed_students':batch.allowed_students,                                        
-#                     'name': batch.name,
-#                 })
-#                 res = {
-#                     'result': 'ok',
-#                     'batch': ctx_data,
-#                 }
-#                 status = 200
-#             except Exception as ex:
-#                 print "Exception == ", str(ex)
-#                 res = {
-#                     'result': 'error: ' + str(ex),
-#                     'batch': ctx_data,
-#                 }
-#                 status = 200
-#             response = simplejson.dumps(res)
-#             return HttpResponse(response, status=status, mimetype='application/json')
-#         return render(request, 'edit_batch.html',context)
-
-#     def post(self, request, *args, **kwargs):        
-#         batch_id = kwargs['batch_id']
-#         batch = Batch.objects.get(id = batch_id)
-#         batch_details = ast.literal_eval(request.POST['batch'])
-#         try:
-#             print batch
-#             batch.name = batch['name']
-#             software = Software.objects.get(id=batch['software'])
-#             batch.software = software
-#             batch.start_time = batch['start']
-#             batch.end_time = batch['end']
-#             batch.allowed_students = batch['allowed_students']
-#             batch.save()
-#             res = {
-#                 'result': 'ok',
-#             }
-#             status = 200
-#         except Exception as Ex:
-#             print "Exception == ", str(Ex)
-#             res = {
-#                 'result': 'error: '+ str(Ex),
-#                 'message': 'Batch with this name is already existing'
-#             }
-#             status = 500
-#         response = simplejson.dumps(res)
-#         return HttpResponse(response, status=status, mimetype='application/json')
-
-
 class Batches(View):
     
     def get(self, request, *args, **kwargs):
@@ -304,8 +243,8 @@ class Batches(View):
                     batch = Batch()
                 batch.name = batch_details['name']
                 batch.software = software
-                batch.start_time = batch_details['start']
-                batch.end_time = batch_details['end']
+                batch.start_time = utc.localize(datetime.strptime(batch_details['start'], '%I:%M%p'))
+                batch.end_time = utc.localize(datetime.strptime(batch_details['end'], '%I:%M%p'))
                 batch.allowed_students = batch_details['allowed_students']
                 batch.save()
                 res = {
