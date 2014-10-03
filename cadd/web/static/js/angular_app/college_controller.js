@@ -106,6 +106,7 @@ function CollegeController($scope, $element, $http, $timeout, share, $location)
                 'duration_unit': '',
                 'amount': '',
                 'softwares': [],
+                'fine': '',
             };
             $scope.softwares = [];
             get_course_list($scope, $http);
@@ -195,7 +196,6 @@ function CollegeController($scope, $element, $http, $timeout, share, $location)
     }
     $scope.validate_course = function(){
         $scope.validation_error = "";
-        console.log($scope.course.softwares);
         if($scope.course.name == ''){
             $scope.validation_error = 'Please enter course name';
             return false;
@@ -219,6 +219,12 @@ function CollegeController($scope, $element, $http, $timeout, share, $location)
             return false;
         } else if($scope.course.amount !== '' && !Number($scope.course.amount)){
             $scope.validation_error = 'Please enter a valid amount';
+            return false;
+        } else if($scope.course.fine == ''){
+            $scope.validation_error = 'Please enter fine of the course';
+            return false;
+        } else if($scope.course.fine != 0 && !Number($scope.course.fine)){
+            $scope.validation_error = 'Please enter a valid fine';
             return false;
         } return true;
     }
