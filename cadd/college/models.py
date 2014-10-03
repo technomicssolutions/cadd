@@ -22,8 +22,8 @@ class Batch(models.Model):
 	software = models.ForeignKey(Software)
 	start_time = models.TimeField('Start Date', null=True, blank=True)
 	end_time = models.TimeField('End Date', null=True, blank=True)
-	no_of_students = models.IntegerField('No of Students', null=True,blank=True)
-	allowed_students = models.IntegerField('Allowed No of Students', null=True, blank=True)
+	no_of_students = models.IntegerField('No of Students', default=0, null=True,blank=True)
+	allowed_students = models.IntegerField('Allowed No of Students', default=0, null=True, blank=True)
 
 	def __unicode__(self):
 		return (self.name + ' ' + str(self.start_time) + '-' + str(self.end_time))
