@@ -418,6 +418,7 @@ function EnquiryController($scope, $http) {
         'follow_up_date' : '',
         'remarks_for_follow_up_date' : '',
         'discount' : '',
+        'date': '',
     }
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
@@ -429,11 +430,18 @@ function EnquiryController($scope, $http) {
             useFadeInOut: !Browser.ie,
             format:'%d/%m/%Y',
         });
+        new Picker.Date($$('#date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
     }
     $scope.validate_enquiry = function() {
         $scope.validation_error = '';
         $scope.enquiry.follow_up_date = $$('#follow_up_date')[0].get('value');
-        
+        $scope.enquiry.date = $$('#date')[0].get('value');
         if($scope.enquiry.student_name == '' || $scope.enquiry.student_name == undefined) {
             $scope.validation_error = "Please Enter the Name" ;
             return false;

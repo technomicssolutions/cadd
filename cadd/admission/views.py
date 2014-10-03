@@ -325,6 +325,7 @@ class EnquiryView(View):
                     enquiry.discount = 0
                 else:
                     enquiry.discount = enquiry_details['discount']
+                enquiry.saved_date = datetime.strptime(enquiry_details['date'], '%d/%m/%Y')
                 enquiry.save()
                 enquiry.auto_generated_num = 'ENQ' + str(Enquiry.objects.latest('id').id)
                 enquiry.save()
