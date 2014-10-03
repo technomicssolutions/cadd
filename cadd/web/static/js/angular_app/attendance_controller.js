@@ -1,5 +1,5 @@
 
-function get_attendance_list($scope, $http) {
+/*function get_attendance_list($scope, $http) {
     var height = $(document).height();
     height = height + 'px';
     
@@ -20,21 +20,26 @@ function get_attendance_list($scope, $http) {
         $('#spinner').css('height', '0px');
         console.log(data || "Request failed");
     });
-}
+}*/
 function AttendanceController($scope, $http, $element){
     $scope.batch_id = "";
     $scope.students = {}
     $scope.is_edit = false;   
     $scope.init = function(csrf_token) {
         $scope.csrf_token = csrf_token;
-        get_attendance_list($scope, $http);
         get_batches($scope, $http);
         $scope.show_buttons = true;
+        $scope.batch = {
+            'id': '',
+            'topics': '',
+            'remarks': '',
+        }
     }
     $scope.get_batch_details = function(batch){
         var url = '/attendance/batch_students/'+batch.id;
         $http.get(url).success(function(data)
         {
+            console.log(data);
             $scope.students = data.students;
             $scope.current_month = data.current_month;
             $scope.current_year = data.current_year;
@@ -44,6 +49,14 @@ function AttendanceController($scope, $http, $element){
                     $scope.students[i].is_presented = true;
                 else 
                     $scope.students[i].is_presented = false;
+            }
+            if($scope.students.length == 0)
+                $scope.validation_error = "No students in this batch";
+            else{
+                    $scope.batch.topics = data.students[0].topics;
+                    $scope.batch.remarks = data.students[0].remarks;
+                    $scope.batch.staff = data.students[0].staff;
+                    $scope.validation_error = "";
             }
         }).error(function(data, status){
 
@@ -60,8 +73,12 @@ function AttendanceController($scope, $http, $element){
 
     $scope.attendance_validation = function() {
         $scope.validation_error = "";
-        if($scope.batch_id == '') {
+        console.log($scope.batch);
+        if($scope.batch.id == '') {
             $scope.validation_error = 'Please choose batch';
+            return false;
+        } if($scope.batch.topics == '') {
+            $scope.validation_error = 'Please enter the topics covered';
             return false;
         } else if($scope.is_holiday == true || $scope.is_holiday == "true"){
             $scope.validation_error = 'Attendance cannot be marked on holidays';
@@ -81,14 +98,13 @@ function AttendanceController($scope, $http, $element){
                     $scope.students[i].is_presented = 'false';
            }
             params = { 
-                'batch_id': $scope.batch_id,
+                'batch': angular.toJson($scope.batch),
                 'students': angular.toJson($scope.students),
                 'current_month': $scope.current_month,
                 'current_year': $scope.current_year,
                 'current_date': $scope.current_date,
                 "csrfmiddlewaretoken" : $scope.csrf_token
             }
-            console.log($scope.students, $scope.current_month, $scope.current_year, $scope.current_date);
             show_spinner();
             $http({
                 method : 'post',
