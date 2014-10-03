@@ -162,8 +162,6 @@ validate_new_student = function($scope) {
         return true;
     }     
 }   
-
-
 function EditStudentController($scope, $http, $element, $location, $timeout) {
     $scope.init = function(csrf_token, student_id){
 
@@ -508,50 +506,46 @@ function EnquiryController($scope, $http) {
         'remarks_for_follow_up_date' : '',
         'discount' : '',
     }
-    new Picker.Date($$('#follow_up_date'), {
+    $scope.init = function(csrf_token){
+        $scope.csrf_token = csrf_token;
+        get_course_list($scope, $http);
+        new Picker.Date($$('#follow_up_date'), {
             timePicker: false,
             positionOffset: {x: 5, y: 0},
             pickerClass: 'datepicker_bootstrap',
             useFadeInOut: !Browser.ie,
             format:'%d/%m/%Y',
-    });
-    $scope.init = function(csrf_token){
-        $scope.csrf_token = csrf_token;
-        get_course_list($scope, $http);
+        });
     }
     $scope.validate_enquiry = function() {
-    $scope.validation_error = '';
-    $scope.enquiry.follow_up_date = $$('#follow_up_date')[0].get('value');
-    
-
-    if($scope.enquiry.student_name == '' || $scope.enquiry.student_name == undefined) {
-        $scope.validation_error = "Please Enter the Name" ;
-        return false;
-    }else if($scope.enquiry.course == '' || $scope.enquiry.course == undefined) {
-        $scope.validation_error = "Please Enter Course";
-        return false;
-    } 
-    else if($scope.enquiry.address == '' || $scope.enquiry.address == undefined) {
-        $scope.validation_error = "Please Enter Address";
-        return false;
-    } else if($scope.enquiry.mobile_number == ''|| $scope.enquiry.mobile_number == undefined){
-        $scope.validation_error = "Please enter the Mobile Number";
-        return false;
-    } else if(!(Number($scope.enquiry.mobile_number)) || $scope.enquiry.mobile_number.length > 15) {            
-        $scope.validation_error = "Please enter a Valid Mobile Number";
-        return false;
-    } else if(($scope.enquiry.email != '' && $scope.enquiry.email != undefined) && (!(validateEmail($scope.enquiry.email)))){
-        $scope.validation_error = "Please enter a Valid Email Id";
-        return false;
-    } else if($scope.enquiry.follow_up_date == '' || $scope.enquiry.follow_up_date == undefined) {
-        $scope.validation_error = "Please Enter follow up date";
-        return false;
-    }else {
-        return true;
-    }     
-}   
+        $scope.validation_error = '';
+        $scope.enquiry.follow_up_date = $$('#follow_up_date')[0].get('value');
+        
+        if($scope.enquiry.student_name == '' || $scope.enquiry.student_name == undefined) {
+            $scope.validation_error = "Please Enter the Name" ;
+            return false;
+        } else if($scope.enquiry.course == '' || $scope.enquiry.course == undefined) {
+            $scope.validation_error = "Please Enter Course";
+            return false;
+        } else if($scope.enquiry.address == '' || $scope.enquiry.address == undefined) {
+            $scope.validation_error = "Please Enter Address";
+            return false;
+        } else if($scope.enquiry.mobile_number == ''|| $scope.enquiry.mobile_number == undefined){
+            $scope.validation_error = "Please enter the Mobile Number";
+            return false;
+        } else if(!(Number($scope.enquiry.mobile_number)) || $scope.enquiry.mobile_number.length > 15) {            
+            $scope.validation_error = "Please enter a Valid Mobile Number";
+            return false;
+        } else if(($scope.enquiry.email != '' && $scope.enquiry.email != undefined) && (!(validateEmail($scope.enquiry.email)))){
+            $scope.validation_error = "Please enter a Valid Email Id";
+            return false;
+        } else if($scope.enquiry.follow_up_date == '' || $scope.enquiry.follow_up_date == undefined) {
+            $scope.validation_error = "Please Enter follow up date";
+            return false;
+        } return true;
+    }   
     $scope.save_enquiry = function(){
-         if ($scope.validate_enquiry()) {
+        if ($scope.validate_enquiry()) {
             params = {
                 'enquiry': angular.toJson($scope.enquiry),
                 'csrfmiddlewaretoken': $scope.csrf_token,
@@ -565,7 +559,6 @@ function EnquiryController($scope, $http) {
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data){
-               
                 if (data.result == 'ok') {
                     document.location.href = '/admission/enquiry/'    
                 } 
@@ -577,33 +570,31 @@ function EnquiryController($scope, $http) {
 }
 function AdmissionController($scope, $http) {
     $scope.show_enquiry_search =  false;
-    // $scope.show_admission_form = false;
-    // $scope.enquiry_num_exists = false;
     $scope.admission_type = 'Admission';
     $scope.photo_img = {};
     $scope.search = {
         'student_name': '',
         'enquiry_num': '',
     }
-    new Picker.Date($$('#dob'), {
-        timePicker: false,
-        positionOffset: {x: 5, y: 0},
-        pickerClass: 'datepicker_bootstrap',
-        useFadeInOut: !Browser.ie,
-        format:'%d/%m/%Y',
-    });
-    new Picker.Date($$('#doj'), {
-        timePicker: false,
-        positionOffset: {x: 5, y: 0},
-        pickerClass: 'datepicker_bootstrap',
-        useFadeInOut: !Browser.ie,
-        format:'%d/%m/%Y',
-    });
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
         $scope.no_enquiries = false;
         get_course_list($scope, $http);
         get_batch_list($scope,$http);
+        new Picker.Date($$('#dob'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
+        new Picker.Date($$('#doj'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
     }
     $scope.enquiry_search  = function() {    
         var url = '/admission/enquiry_search/?student_name='+$scope.search.student_name;
@@ -611,13 +602,10 @@ function AdmissionController($scope, $http) {
         {
             $scope.enquiries = data.enquiries; 
             $scope.count = data.count;
-            if(data.enquiries.length <= 0){
-              $scope.no_enquiries = true;
-
+            if(data.enquiries.length == 0){
+                $scope.no_enquiries = true;
             } else {
-              $scope.no_enquiries = false;
-              // $scope.show_admission_form = true;
-              // $scope.enquiry_num_exists = true;
+                $scope.no_enquiries = false;
             }
         }).error(function(data, status)
         {
@@ -627,9 +615,7 @@ function AdmissionController($scope, $http) {
     $scope.change_admission_type = function(admission_type){
         if(admission_type=='Enquiry'){
             $scope.show_enquiry_search =  true;
-            // $scope.show_admission_form = false;
         }else{
-            // $scope.show_admission_form = true;
             $scope.show_enquiry_search =  false;
         }
     }
@@ -646,5 +632,26 @@ function AdmissionController($scope, $http) {
     $scope.save_new_student = function(){
         save_new_student($http, $scope);
     }
-    
+    $scope.load_installments = function() {
+        $scope.installments = [];
+        for (var i=0; i<$scope.no_installments; i++) {
+            due_date_id = 'due_date_'+i;
+            $scope.installments.push({
+                'amount': '',
+                'fine': '',
+                'due_date': '',
+                'due_date_id': due_date_id,
+            })
+        }
+    }
+    $scope.attach_date_picker = function(installment) {
+        id_name = '#' +installment.due_date_id;
+        new Picker.Date($$(id_name), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
+    }
 }
