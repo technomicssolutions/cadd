@@ -56,13 +56,22 @@ class AddStudent(View):
                         student.doj = datetime.strptime(request.POST['doj'], '%d/%m/%Y')
                         student.photo = request.FILES.get('photo_img', '')                       
                         student.certificates_submitted = request.POST['certificates_submitted']
-                        student.certificates_remarks = request.POST['certificates_remarks']
                         student.id_proofs_submitted = request.POST['id_proofs_submitted']
                         student.guardian_name = request.POST['guardian_name']
                         student.relationship = request.POST['relationship']
                         student.guardian_mobile_number = request.POST['guardian_mobile_number']
-                        student.is_rolled = True                 
+                        student.fees = request.POST['fees']           
+                        student.no_installments = request.POST['no_installments']
+                        installments = request.POST['installments']
+                        for installment in installments:
+                            installment = Installment()
+                            installment.amount = installment['amount']
+                            installment.fine_amount = installment['fine']
+                            installment.due_date = datetime.strptime(installment['due_date'], '%d/%m/%Y')
+                            installment.save()
+                            student.installments.add(installment)
                     except Exception as ex:
+                        print str(ex)
                         res = {
                             'result': 'error',
                             'message': str(ex)
@@ -320,6 +329,7 @@ class EnquiryDetails(View):
                 if enquiry_num :
                     enquiry = Enquiry.objects.get(auto_generated_num=enquiry_num)
                     enquiry_list.append({
+                        'id': enquiry.id,
                         'student_name': enquiry.student_name,
                         'address': enquiry.address,
                         'mobile_number' : enquiry.mobile_number,

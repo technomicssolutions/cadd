@@ -51,9 +51,9 @@ class AddAttendance(View):
             student = Student.objects.get(id=student_details['id'])
             student_attendance, created =  StudentAttendance.objects.get_or_create(student=student, attendance=attendance)
             if student_details['is_presented'] == 'true':
-                student_attendance.status = "Present"
+                student_attendance.status = "P"
             else:
-                student_attendance.status = "Absent"
+                student_attendance.status = "A"
             student_attendance.save()                
         res = {
             'result': 'ok',
@@ -149,6 +149,8 @@ class AttendanceDetails(View):
             ctx_batch = []
             period_nos = []
             day_details = []
+            day_list = []
+            batch_list = []
             holiday_calendar = None
             year = request.GET.get('batch_year', '')
             month = request.GET.get('batch_month', '')
@@ -156,61 +158,42 @@ class AttendanceDetails(View):
             if(request.GET.get('batch_day')):
                 day = request.GET.get('batch_day')
                 students = Student.objects.filter(batch=batch).order_by('roll_number')
+                students_list = []
+                date = dt.date(int(year), int(month), int(day))
+                try:
+                    attendance = Attendance.objects.get(batch=batch, date=date)
+                    if attendance.user.username == 'admin':
+                        staff = attendance.user.username
+                    else:
+                        staff_obj = Staff.objects.get(user=attendance.user)
+                        staff = staff_obj.user.first_name + " " + staff_obj.user.last_name
+                except Exception as ex:
+                    print str(ex)
+                    attendance = Attendance()
+                    staff = ''
                 for student in students:
-                    day_details = []
-                    period_list = []
-                    date = dt.date(int(year), int(month), int(day))
-                    holiday_calendar, created = HolidayCalendar.objects.get_or_create(date=date)
-                    if created:
-                        if date.strftime("%A") == 'Sunday' :
-                            holiday_calendar.is_holiday = True             
-                        holiday_calendar.save()
-                    periods = int(batch.periods)
                     try:
-                        attendance = Attendance.objects.get(date=date, student=student, batch=batch)
-                        for period in attendance.presented:                          
-                            period_list.append({
-                            'count': period['period'],
-                            'is_presented': 'true' if period['is_presented'] else 'false',
-                            'is_future_date': "false",
-                            'is_holiday': 'true' if holiday_calendar and holiday_calendar.is_holiday else 'false',
-                            'status': 'P' if period['is_presented'] else 'A',
-                            })
+                        student_attendance = StudentAttendance.objects.get(attendance=attendance, student=student)
                     except:
-                        for period in range(1, periods + 1):                   
-                            period_list.append({
-                            'count': period,
-                            'is_presented': "true",
-                            'is_future_date': "true" if datetime(int(year),int(month),int(day)) > datetime.now() else "false",
-                            'is_holiday': 'true' if holiday_calendar and holiday_calendar.is_holiday else 'false',
-                            'status': '',
-                            })
-                    student_list.append({
-                        'student_id': student.id,
-                        'name': student.student_name, 
-                        'roll_no': student.roll_number, 
-                        'counts': period_list          
+                        student_attendance = StudentAttendance()
+                    students_list.append({
+                        'id': student.id,
+                        'name': student.student_name,
+                        'roll_number': student.roll_number,
+                        'status': student_attendance.status if student_attendance.status else 'NA',
+                        'is_presented': 'false' if student_attendance.status == 'A' else 'true',
                     })
-                    period_list = []
-                periods = int(batch.periods)   
-                for period in range(1, periods + 1):
-                    period_nos.append(period)     
-                day_details.append({
-                    'current_month': month,  
-                    'current_date': day,    
-                    'current_year': year,  
-                    'is_future_date': "true" if datetime(int(year),int(month),int(day)) > datetime.now() else "false",
-                    'is_holiday': 'true' if holiday_calendar and holiday_calendar.is_holiday else 'false',       
-                    })         
-                ctx_batch.append({
+                res = {
                     'batch_id': batch.id,
-                    'name': str(batch.start_date) + '-' + str(batch.end_date) + ' ' + (str(batch.branch) if batch.branch else batch.course.course),
-                    'course': batch.course.course if batch.course else '',                    
-                    'column_count':period_nos,
-                    'students': student_list,
-                    'day_details': day_details,                   
-                })             
-                period_nos = []               
+                    'students': students_list,
+                    'current_month': current_date.month,  
+                    'current_date': current_date.day,    
+                    'current_year': current_date.year, 
+                    'topics': attendance.topics_covered if attendance.topics_covered else '',
+                    'remarks': attendance.remarks if attendance.remarks else '',
+                    'staff': staff,
+                    'view': 'daily',
+                }            
             else:  
                 students = Student.objects.filter(batch=batch).order_by('roll_number')
                 no_of_days = calendar.monthrange(int(year), int(month))[1]            
@@ -218,63 +201,42 @@ class AttendanceDetails(View):
                 for day in range(1, no_of_days + 1):
                     calendar_days.append(day)
                 for student in students:
-                    days = []
-                    for day in range(1, no_of_days + 1):
-                        
+                    for day in range(1, no_of_days + 1):       
                         date = dt.date(int(year), int(month), int(day))
-
-                        holiday_calendar, created = HolidayCalendar.objects.get_or_create(date=date)
-
-                        if created:
-                            if date.strftime("%A") == 'Sunday' :
-                                holiday_calendar.is_holiday = True             
-                        holiday_calendar.save()
-
-                        if not request.user.is_superuser:
-                            is_future_date = 'true'
-                        else:
-                            is_future_date = 'false'
                         try:
-                            attendance = Attendance.objects.get(date=date, student=student, batch=batch)
-                            days.append({
-                                'count': day,
-                                'is_presented': "false" if attendance.status == "A" else "true",                      
-                                'is_future_date': "true" if datetime(int(year),int(month),int(day)) > datetime.now() else "false",
-                                'is_holiday': 'true' if holiday_calendar and holiday_calendar.is_holiday else 'false',
-                                'status': attendance.status,
-                            })
+                            attendance = Attendance.objects.get(date=date, batch=batch)
                         except:
-                            days.append({
-                                'count': day,
-                                'is_presented': "true",
-                                'is_future_date': "true" if datetime(int(year),int(month),int(day)) > datetime.now() else "false",
-                                'is_holiday': 'true' if holiday_calendar and holiday_calendar.is_holiday else 'false',
-                                'status': '',
-                            })     
+                            attendance = Attendance()
+                        try:
+                            student_attendance = StudentAttendance.objects.get(attendance=attendance, student=student)
+                        except:
+                            student_attendance = StudentAttendance()
+                        day_list.append({
+                            'count': day,
+                            'status': student_attendance.status if student_attendance.status else '',
+                            'is_future_date': "true" if datetime(int(year),int(month),int(day)) > datetime.now() else "false",
+                            })
                     student_list.append({
-                        'student_id': student.id,
+                        'id': student.id,
                         'name': student.student_name,
-                        'roll_no': student.roll_number,
-                        'counts': days,
-                    })
-                ctx_batch.append({
-                    'batch_id': batch.id,
-                    'name': str(batch.start_date) + '-' + str(batch.end_date) + ' ' + (str(batch.branch) if batch.branch else batch.course.course),
-                    'course': batch.course.course if batch.course else '',
+                        'roll_number': student.roll_number,
+                        'days': day_list,
+                        })
+                    day_list = []
+                batch_list.append({
                     'students': student_list,
-                    'column_count': calendar_days,                   
-                })
-            res = {
-                'batch': ctx_batch,
-                'result': 'ok',
-            }
+                    'column_count': calendar_days,
+                    })
+                res = {
+                    'batch': batch_list,
+                    'result': 'ok',
+                    'view': 'monthly',
+                }
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')
 
-        return render(request, 'attendance/attendance_details.html', {})
-
- 
-
+        return render(request, 'attendance_details.html', {})
+        
 
 class ClearBatchAttendanceDetails(View):
 
@@ -294,95 +256,6 @@ class ClearBatchAttendanceDetails(View):
             return HttpResponseRedirect(reverse('attendance_details'))
         return render(request, 'attendance/clear_batch_details.html', {})
 
-class HolidayCalendarView(View):
-
-    def get(self, request, *args, **kwargs):
-
-        if request.is_ajax():
-
-            status = 200
-            year = request.GET.get('year', '')
-            month = request.GET.get('month', '')
-
-            no_of_days = calendar.monthrange(int(year), int(month))[1]
-            
-            calendar_days = []
-
-            for day in range(1, no_of_days + 1):
-                date = dt.date(int(year), int(month), int(day))
-                
-                holiday_calendar, created = HolidayCalendar.objects.get_or_create(date=date)
-                if created:
-                    if date.strftime("%A") == 'Sunday' :
-                        holiday_calendar.is_holiday = True             
-                holiday_calendar.save()
-                
-                calendar_days.append({
-                    'day': day,
-                    'is_holiday': "true" if holiday_calendar and holiday_calendar.is_holiday else "false",
-                    'status': "H" if holiday_calendar and holiday_calendar.is_holiday else "W",
-                })
-            res = {
-                'days': calendar_days,
-            }
-
-            response = simplejson.dumps(res)
-
-            return HttpResponse(response, status=status, mimetype='application/json')
-
-        return render(request, 'attendance/holiday_calendar.html', {})
-
-    def post(self, request, *args, **kwargs):
-
-        if request.is_ajax():
-
-            year = request.POST['year']
-            month = request.POST['month']
-
-            status = 200
-
-            holiday_calendar_details = ast.literal_eval(request.POST['holiday_calendar'])
-            
-            for details in holiday_calendar_details:
-                date = dt.date(int(year), int(month), int(details['day']))
-
-                holiday_calendar, created = HolidayCalendar.objects.get_or_create(date=date)
-
-                if details['is_holiday'] == 'true':
-                    holiday_calendar.is_holiday = True
-                else:
-                    holiday_calendar.is_holiday = False
-
-                holiday_calendar.save()
-
-            res = {
-                'result': 'ok'
-            }  
-            response = simplejson.dumps(res)
-
-            return HttpResponse(response, status=status, mimetype='application/json')
-
-class ClearHolidayCalendar(View):
-
-    def get(self, request, *args, **kwargs):
-
-        year = request.GET.get('year', '')
-        month = request.GET.get('month', '')
-        status = 200
-        if year and month:
-            holiday_calendar = HolidayCalendar.objects.filter(date__year=year, date__month=month)
-
-            for calendar in holiday_calendar:
-
-                calendar.delete()
-
-            res = {
-                'result': 'ok',
-            }
-            response = simplejson.dumps(res)
-            return HttpResponseRedirect(reverse('clear_holiday_calendar'))
-        return render(request, 'attendance/clear_holiday_calendar.html', {})
-
 
 class BatchStudents(View):
 
@@ -397,7 +270,6 @@ class BatchStudents(View):
         students = Student.objects.filter(batch=batch).order_by('roll_number')
         students_list = []
         date = dt.date(int(year), int(month), int(day))
-        holiday_calendar, created = HolidayCalendar.objects.get_or_create(date=date)
         try:
             attendance = Attendance.objects.get(batch=batch, date=date)
             if attendance.user.username == 'admin':
@@ -419,7 +291,7 @@ class BatchStudents(View):
                 'name': student.student_name,
                 'roll_number': student.roll_number,
                 'status': student_attendance.status if student_attendance.status else 'NA',
-                'is_presented': 'false' if student_attendance.status == 'Absent' else 'true',
+                'is_presented': 'false' if student_attendance.status == 'A' else 'true',
             })
         res = {
             'students': students_list,

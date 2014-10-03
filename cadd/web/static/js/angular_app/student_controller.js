@@ -19,24 +19,22 @@ function add_new_student($http, $scope){
 }
 
 function save_new_student($http, $scope) {
-    if(validate_new_student($scope)) {
-        
-        var height = $(document).height();
-        height = height + 'px';
-        
-        $('#overlay').css('height', height);
-        $('#spinner').css('height', height);
+    // if(validate_new_student($scope)) {
 
         $scope.dob = $$('#dob')[0].get('value');
         $scope.doj = $$('#doj')[0].get('value');
+        for (var i=0; i<$scope.installments.length; i++) {
+            id_name = '#'+$scope.installments[i].due_date_id;
+            $scope.installments[i].due_date = $$(id_name)[0].get('value');
+        }
         params = { 
+            'enquiry': $scope.enquiry,
             'student_name':$scope.student_name,
             'roll_number': $scope.roll_number,
             'cadd_registration_no' : $scope.cadd_registration_no,
             'course': $scope.course,
-            'batch': $scope.batch,
-            'semester': $scope.semester,           
-            'qualified_exam': $scope.qualified_exam,
+            'batch': $scope.batch,        
+            'qualifications': $scope.qualifications,
             'dob': $scope.dob,
             'address': $scope.address,
             'mobile_number': $scope.mobile_number,
@@ -48,6 +46,9 @@ function save_new_student($http, $scope) {
             'guardian_name': $scope.guardian_name,
             'relationship': $scope.relationship,
             'guardian_mobile_number': $scope.guardian_mobile_number,
+            'fees': $scope.fees,
+            'installments': $scope.installments,
+            'no_installments': $scope.no_installments,
             "csrfmiddlewaretoken" : $scope.csrf_token
         }
         var fd = new FormData();
@@ -77,7 +78,7 @@ function save_new_student($http, $scope) {
             $scope.validation_error = data.message;
             $('#spinner').css('height', '0px');
         });
-    }
+    // }
 }
 
 function reset_student($scope) {
@@ -542,6 +543,12 @@ function AdmissionController($scope, $http) {
                 console.log(data.enquiry);
                 $scope.student_name = data.enquiry[0].student_name;
                 $scope.course = data.enquiry[0].course;
+                $scope.address = data.enquiry[0].address;
+                $scope.qualifications = data.enquiry[0].educational_qualification;
+                $scope.email = data.enquiry[0].email;
+                $scope.mobile_number = data.enquiry[0].mobile_number;
+                $scope.enquiry = data.enquiry[0].id;
+                $scope.get_fees();
             }
         }).error(function(data, status)
         {
@@ -580,6 +587,13 @@ function AdmissionController($scope, $http) {
             useFadeInOut: !Browser.ie,
             format:'%d/%m/%Y',
         });
+    }
+    $scope.get_fees = function() {
+        for(var i=0; i<$scope.courses.length; i++) {
+            if ($scope.course == $scope.courses[i].id) {
+                $scope.fees = $scope.courses[i].amount;
+            }
+        }
     }
 }
 function EnquiryReportController($scope, $http) {

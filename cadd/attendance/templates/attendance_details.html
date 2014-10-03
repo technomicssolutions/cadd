@@ -73,10 +73,10 @@
 							<label for="batch">Batch</label>
 						</div>
 						<div class="forminput">
-							<select name="batch_select" ng-model="batch_id" ng-change="get_attendance_details()">
-								<option value="">Select</option>
-								<option ng-repeat="batch in batches" value="[[batch.batch_id]]" ng-click="get_batch_details(batch)">[[batch.name]]</option>
-							</select>
+							<select ng-model="batch_id" >
+							<option value="">Select</option>
+							<option ng-repeat="batch in batches" value="[[batch.id]]" ng-click="get_attendance_details()">[[batch.name]]</option>
+						</select>					
 						</div>	
 					</div>
 					<div class="view_flags" ng-show="show_data">
@@ -88,22 +88,57 @@
 				</div>
 				<div class="clear"></div>
 				<div ng-show="show_data">
-					<div class="section_1_attendance" ng-show="is_edit">
+					<div class="section_1_attendance" ng-show="view=='daily'">
 						<table border="0" class="table table-striped" cellpadding="0" cellspacing="0" ng-show="students.length > 0">
-							<tr>
-								<th class="days">Roll No</th>
-								<th class="days">Name</th>
-								<th class="days allign_center" ng-repeat="column in columns">[[column]]</th>
-							</tr>
-							<tr ng-repeat="student in students">
-								<td class="days">[[ student.roll_no ]]</td>
-								<td class="days">[[student.name]]</td>
-								<td class="days allign_center" ng-repeat="day in student.counts" ng-class="appliedClass(day)"><input type="checkbox" ng-model="day.is_presented" ng-disabled="day.is_holiday == 'true'||day.is_future_date == 'true'"></td>
-							</tr>			                        
+
+
+						<tr>
+							<th>Roll No</th>
+							<th>Name</th>
+							<th>Absent/Present</th>
+						</tr>
+						<tr ng-repeat="student in students">
+							<td>[[ student.roll_number ]]</td>
+							<td>[[student.name]]</td>
+							<td><span ng-show="!is_edit">
+									<span class="red_font" ng-hide="student.status=='P'">[[ student.status ]]</span>
+									<span class="bold_font" ng-show="student.status=='P'">[[student.status]]</span>
+								</span>
+								<span ng-hide="!is_edit">
+									<input type="checkbox" ng-model="student.is_presented">
+								</span>
+							</td>
+
+
+							<td class="days" ng-repeat="day in student.days" ng-class="appliedClass(day)"><span class="red_font" ng-hide="day.status=='P'">[[day.status]]</span><span class="bold_font" ng-show="day.status=='P'">[[day.status]]</span></td>
+
+
+						</tr>			                   
 						</table>
+
+						<div class="" ng-show="students.length > 0">
+							 <div class="form_text">
+			                    <label> Staff</label>
+			                </div>
+			                 <div class="form_input">
+			                    <input type="text" ng-model="batch.staff" readonly>
+			                </div>
+							<div class="form_text">
+			                    <label> Topics*</label>  
+			                </div>
+			                <div class="form_input">
+			                    <textarea ng-model="batch.topics" ng-disabled="!is_edit"></textarea>
+			                </div>
+			                <div class="form_text">
+			                    <label> Remarks</label>
+			                </div>
+			                 <div class="form_input">
+			                    <textarea ng-model="batch.remarks" ng-disabled="!is_edit"></textarea>
+			                </div>
+						</div>
 					</div>
 
-					<div class="section_1_attendance" ng-hide="is_edit">
+					<div class="section_1_attendance" ng-show="view=='monthly'">
 						<table border="0" class="table table-striped" cellpadding="0" cellspacing="0" ng-show="students.length > 0">
 							<tr>
 								<th class="days">Roll No</th>
@@ -111,10 +146,9 @@
 								<th class="days allign_center" ng-repeat="column in columns">[[column]]</th>
 							</tr>
 							<tr ng-repeat="student in students">
-								<td class="days">[[ student.roll_no ]]</td>
+								<td class="days">[[ student.roll_number ]]</td>
 								<td class="days">[[student.name]]</td>
-								<td class="days allign_center" ng-repeat="day in student.counts" ng-class="appliedClass(day)"><span class="red_font" ng-hide="day.is_presented">[[ day.status ]]</span>
-													<span class="bold_font" ng-show="day.is_presented">[[ day.status ]]</span></td>
+								<td class="days" ng-repeat="day in student.days" ng-class="appliedClass(day)"><span class="red_font" ng-hide="day.status=='P'">[[day.status]]</span><span class="bold_font" ng-show="day.status=='P'">[[day.status]]</span></td>
 								
 							</tr>			                        
 						</table>
@@ -124,11 +158,8 @@
 				<div  align="Center">
 					<p class="error_message"> [[validation_error]] </p>
 					<div class="buttons" ng-show="show_buttons">						
-						{% if user.is_superuser %}						
 							<input type="button" value="Submit" ng-click="save_attendance();" class="btn btn-info"/>
 							<input type="button" value="Edit" ng-click="edit_attendance();" class="btn btn-info"/>							
-						{% endif %}		
-						
 						<a href="{% url 'attendance_details' %}"><input type="button" value="Cancel" class="btn btn-info"></a>
 					</div>
 				</div>	
