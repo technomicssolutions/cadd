@@ -5,7 +5,6 @@
 	<div class="menu_div">
 		{% if user.is_authenticated %}
 			<ul>
-				
 				<li class="menu"> <img src="/static/images/user.png" width="24px" >
 					<span class="user_name"> 
 						{% if user.is_authenticated %}
@@ -22,7 +21,6 @@
 						
 					</ul>
 				</li>
-				
 				{% if user.is_superuser or user.staff_set.all.0.permission.master_module %}
 					<li class="menu"> <a href=""> Masters </a> 
 						<ul> 
