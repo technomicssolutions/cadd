@@ -217,8 +217,8 @@ class Batches(View):
                 batch_list.append({
                     'software':batch.software.name,
                     'software_id': batch.software.id,
-                    'start':batch.start_time.strftime('%H:%M.%p'),
-                    'end':batch.end_time.strftime('%H:%M.%p'),
+                    'start':batch.start_time.strftime('%H:%M%p'),
+                    'end':batch.end_time.strftime('%H:%M%p'),
                     'allowed_students':batch.allowed_students,                                        
                     'name': batch.name,
                     'id': batch.id
