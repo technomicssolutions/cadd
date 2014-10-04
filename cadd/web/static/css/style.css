@@ -801,9 +801,10 @@ label.block{
     width: 46%;
     border-bottom: none;
     right: 0;
-    top: 80%;
-    width: 50%;
+    top: 35%;
+    width: 16%;
     z-index: 1;
+    margin-right: 34%;
     float: left;
 }
 
