@@ -512,14 +512,15 @@ class StudentSearch(View):
             student_name = request.GET.get('name')
             batch = Batch.objects.get(id=batch_id)
             students_list = []
-            students = Student.objects.all()
+            students = batch.student_set.filter(student_name__istartswith=student_name)
             for student in students:
-                batches = students.batches.all()
-                print batches
-            print students
+                students_list.append({
+                    'id': student.id,
+                    'name': student.student_name,
+                })
             res = {
                     'result': 'ok',
-                    'enquiries': enquiry_list,
+                    'students': students_list,
                 }
             response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype='application/json')

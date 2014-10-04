@@ -13,10 +13,11 @@ function attendance_validation($scope, $http){
 }
 function student_search($scope, $http){
     $http.get('/admission/search_student/?name='+$scope.student_name+'&batch='+$scope.batch_id).success(function(data){
-        if(data.result == 'ok')
+        if(data.result == 'ok'){
             $scope.students_list = data.students;
-        else
-            $scope.message = data.message;
+            if($scope.students_list.length == 0)
+                $scope.message = "No Students found";
+        }            
         }).error(function(data, status){
             console.log('Request failed'|| data);
         });
@@ -339,6 +340,38 @@ function JobCardController($scope, $http){
             'student_id': '',
         };
     }
+    $scope.focusIndex = 0;
+    $scope.keys = [];
+    $scope.keys.push({ code: 13, action: function() { $scope.select_list_item( $scope.focusIndex ); }});
+    $scope.keys.push({ code: 38, action: function() { 
+        if($scope.focusIndex > 0){
+            $scope.focusIndex--; 
+        }
+    }});
+    $scope.keys.push({ code: 40, action: function() { 
+        if($scope.focusIndex < $scope.students_list.length-1){
+            $scope.focusIndex++; 
+        }
+    }});
+    $scope.$on('keydown', function( msg, code ) {
+        $scope.keys.forEach(function(o) {
+          if ( o.code !== code ) { return; }
+          o.action();
+          $scope.$apply();
+        });
+    });
+    $scope.select_list_item = function(index) {
+        console.log("insiude");
+        student = $scope.students_list[index];
+        $scope.get_student_details(student);
+    }
+    $scope.get_student_details = function(student) {
+        $scope.student_name = student.name;
+        $scope.job_card.student_id = student.id;
+        $scope.students_list = [];
+        $scope.no_student_msg = "";
+        console.log($scope.job_card);
+    }
     $scope.student_search = function(){
         if($scope.student_name.length > 0){
             $scope.message = "";
@@ -347,13 +380,18 @@ function JobCardController($scope, $http){
             else
                 $scope.message = "Please select a Batch";
         }
+        else
+            $scope.students_list = ""
     }
     $scope.select_batch = function(){
         $scope.student_name = "";
         $scope.message = "";
         $scope.job_card = {
-            'batch_id': '',
+            'batch_id': $scope.batch_id,
             'student_id': '',
         };
+    }
+    $scope.show_jobcard = function(){
+
     }
 }
