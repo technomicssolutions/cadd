@@ -227,6 +227,8 @@ class EditStudentDetails(View):
                 installment_list.append({
                     'id': installment.id,
                     'amount': installment.amount,
+                    'due_date': installment.due_date.strftime('%d/%m/%Y'),
+                    'fine': installment.fine_amount if installment.fine_amount else '',
                 })
             #print installments
             ctx_student_data.append({

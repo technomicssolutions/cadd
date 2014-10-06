@@ -195,7 +195,6 @@ validate_new_student = function($scope) {
 }   
 function EditStudentController($scope, $http, $element, $location, $timeout) {
     $scope.init = function(csrf_token, student_id){
-
         $scope.csrf_token = csrf_token;
         $scope.student_id = student_id;
         $scope.get_student_details(student_id);
@@ -225,7 +224,29 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         {
             $scope.student = data.student[0];
             console.log($scope.student);
-            //$scope.no_installments
+            $scope.student_name = data.student[0].student_name;
+            $scope.roll_number = data.student[0].roll_number;
+            $scope.cadd_registration_no = data.student[0].cadd_registration_no;
+            $scope.course = data.student[0].course;
+            $scope.batch = data.student[0].batch;
+            $scope.semester = data.student[0].semester;
+            $scope.qualifications = data.student[0].qualifications;
+            $scope.dob = data.student[0].dob;
+            $scope.address = data.student[0].address;
+            $scope.mobile_number = data.student[0].mobile_number;
+            $scope.email = data.student[0].email;
+            $scope.blood_group = data.student[0].blood_group;
+            $scope.doj = data.student[0].doj;
+            $scope.certificates_submitted = data.student[0].certificates_submitted;
+            $scope.id_proof = data.student[0].id_proof;
+            $scope.guardian_name = data.student[0].guardian_name;
+            $scope.relationship = data.student[0].relationship;
+            $scope.fees = data.student[0].fees;
+            $scope.photo_img = {};
+            $scope.no_installments = data.student[0].no_installments;
+            $scope.guardian_mobile_number = data.student[0].guardian_mobile_number;
+            $scope.installments = $scope.student.installments;
+            console.log($scope.no_installments);
             //$scope.load_installments();
             
         }).error(function(data, status)
@@ -252,6 +273,9 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
                 $scope.installments.splice(index, 1);
             }
         }
+    }
+    $scope.save_student = function(){
+        save_new_student($http, $scope);
     }
     $scope.validate_edit_student = function() {
         $scope.validation_error = '';
