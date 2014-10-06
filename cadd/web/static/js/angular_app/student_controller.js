@@ -186,7 +186,7 @@ validate_new_student = function($scope) {
             } else if($scope.installments[i].due_date == ''){
                 $scope.validation_error = "Please enter the due date for installment";
                 return false;
-            } else if($scope.installments[i].fine != 0 && !Number($scope.installments.fine)){
+            } else if($scope.installments[i].fine != 0 && $scope.installments[i].fine != Number($scope.installments.fine)){
                 $scope.validation_error = "Please enter a valid fine amount for installment";
                 return false;
             } 
@@ -376,18 +376,7 @@ function StudentListController($scope, $http, $element, $location, $timeout) {
             console.log(data || "Request failed");
         });
     }
-    $scope.delete_students = function(student){
-        $scope.student_id = student.id;
-        var url = '/admission/delete_student_details/?batch_id=/'+ $scope.student_id+ '/';
-        $http.get(url).success(function(data)
-        {
-            $scope.students = data.students;
-            paginate(data.students, $scope);
-        }).error(function(data, status)
-        {
-            console.log(data || "Request failed");
-        });
-    }
+    
     
     $scope.edit_student_details = function(student){
         $scope.student_id = student.id;
