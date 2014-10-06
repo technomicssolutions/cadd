@@ -388,8 +388,8 @@ class JobCard(View):
                                 ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
                                 
                                 ])   
-                    elements.append(table)
-                    p.build(elements)        
+            elements.append(table)
+            p.build(elements)        
             return response
         return render(request, 'job_card.html', {})
 
