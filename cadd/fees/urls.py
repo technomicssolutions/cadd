@@ -3,7 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
 from fees.views import CreateFeesStructure, EditFeesStructure, DeleteFeesStructure, ListFeesStructure, AddFeesHead, EditFeesHead, \
-	DeleteFeesHead, FeesHeadList, FeesPaymentSave, GetFeeStructureHeadList, ListOutStandingFees, CommonFeesPaymentSave, GetFeesHeadList,GetOutStandingFeesDetails
+	DeleteFeesHead, FeesHeadList, FeesPaymentSave, GetFeeStructureHeadList, ListOutStandingFees, CommonFeesPaymentSave, \
+	GetFeesHeadList, GetOutStandingFeesDetails, PrintOutstandingFeesReport
 
 urlpatterns = patterns('',
 	url(r'^fees_heads/$',login_required(FeesHeadList.as_view()), name='fees_heads'),
@@ -25,4 +26,5 @@ urlpatterns = patterns('',
 	url(r'^list_outstanding_fees/$',login_required(ListOutStandingFees.as_view()), name='list_outstanding_fees'),
 	url(r'^get_outstanding_fees_details/$',login_required(GetOutStandingFeesDetails.as_view()), name='get_outstanding_fees_details'),
 	
+	url(r'^print_outstanding_fees_details/$', login_required(PrintOutstandingFeesReport.as_view()), name='print_outstanding_fees_details')
 )
