@@ -31,7 +31,7 @@ class AddStudent(View):
         if request.is_ajax():
             try:
                 course = Course.objects.get(id = request.POST['course'])
-                
+                print course
                 enquiry = None
                 if request.POST.get('enquiry', ''):
                     if request.POST.get('enquiry', '') != 'undefined':
@@ -45,6 +45,7 @@ class AddStudent(View):
                     }
                 else:
                     try:
+                        print request.POST['batch']
                         batches = request.POST['batch'].split(',')
                         print batches, 'higasdkgdf'
                         for batch in batches:
@@ -97,6 +98,7 @@ class AddStudent(View):
                         'result': 'ok',
                     }                     
             except Exception as ex:
+                print ex
                 res = {
                     'result': 'error',
                     'message': str(ex)
@@ -523,6 +525,7 @@ class StudentSearch(View):
                 students_list.append({
                     'id': student.id,
                     'name': student.student_name,
+                    'roll_number': student.roll_number,
                 })
             res = {
                     'result': 'ok',

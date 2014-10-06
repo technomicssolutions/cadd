@@ -443,6 +443,14 @@ form {
   float: right;
   position: relative;
 }
+#enquiry_search .close_pop {
+  width: 32px;
+  height: 32px;
+  background: url('../images/close_pop.png');
+  display: block;
+  float: right;
+  position: relative;
+}
 /******************************  Popup box end **********************/
 
 
@@ -811,6 +819,10 @@ label.block{
 .search_list_item {
 	border-bottom: 1px solid #C3C3C3;
     padding: 5px;
+}
+#attendance_details .search_list{
+	margin-right: 19.5%;
+	top: 30%;
 }
 .highlight {
 	border: 2px solid #707070;

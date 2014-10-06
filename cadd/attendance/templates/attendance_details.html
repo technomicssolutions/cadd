@@ -20,7 +20,8 @@
 							<select ng-model="attendance_view" ng-change="attendance_view_by()">
 								<option value="">Select</option>
 								<option value="1">Monthly</option>
-								<option value="2">Daily</option>							
+								<option value="2">Daily</option>						
+								<option value="3">Student Wise</option>	
 							</select>
 						</div>						
 					</div>
@@ -79,6 +80,20 @@
 						</select>					
 						</div>	
 					</div>
+					<div class="formrow_view_attendance" ng-show="student_attendance">
+						<div class="formtext_attendance">
+							<label>Select Student</label>
+						</div>			
+						<div class="forminput">
+							<input type="text" ng-model="student_name" ng-change="student_search()" autocomplete="off">
+							<div ng-show="students_list.length > 0" class="search_list">
+								<div ng-repeat="student in students_list" class="search_list_item" ng-click="get_student_details(student)">
+								<span>[[student.roll_number]]-[[student.name]]</span>
+								</div>
+							</div>
+							<p class="error_msg">[[no_student_msg]]</p>
+						</div>
+					</div>
 					<div class="view_flags" ng-show="view=='monthly'">
 						<div class="blue_box"></div>
 						<label class="flag_label">Coming Day</label>
@@ -88,8 +103,6 @@
 				<div ng-show="show_data">
 					<div class="section_1_attendance" ng-show="view=='daily'">
 						<table border="0" class="table table-striped" cellpadding="0" cellspacing="0" ng-show="students.length > 0">
-
-
 						<tr>
 							<th>Roll No</th>
 							<th>Name</th>
@@ -146,6 +159,25 @@
 							</tr>			                        
 						</table>
 					</div>	
+
+					<div class="section_1_attendance" ng-show="view=='student'">
+						<table border="0" class="table table-striped" cellpadding="0" cellspacing="0" ng-show="attendance_list.length > 0">
+							<tr>
+								<th class="days">Date</th>
+								<th class="days">Status</th>
+								<th class="days">Topics Covered</th>
+							</tr>
+							<tr ng-repeat="attendance in attendance_list">
+								<td class="days">[[ attendance.date ]]</td>
+								<td class="days">
+									<span class="red_font" ng-hide="attendance.status=='P'">[[ attendance.status ]]</span>
+									<span class="bold_font" ng-show="attendance.status=='P'">[[attendance.status]]</span>
+								</td>
+								<td class="days">[[ attendance.topics_covered]] </td>				
+							</tr>			                        
+						</table>
+					</div>	
+
 				</div>
 
 				<div  align="Center">
