@@ -17,7 +17,8 @@ this.DatePicker = Picker.Date = new Class({
 
 	options: {
 		onSelect: function(date){
-			calculate_total_fee_amount();
+			if ($('#fees_payment').length > 0)
+				calculate_total_fee_amount();
 		},
 		/*
 		onSelect: function(date){},
