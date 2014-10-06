@@ -239,6 +239,13 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         console.log($scope.batches);
        
     }
+    $scope.get_fees = function() {
+        for(var i=0; i<$scope.courses.length; i++) {
+            if ($scope.student.course == $scope.courses[i].id) {
+                $scope.student.fees = $scope.courses[i].amount;
+            }
+        }
+    }
     $scope.get_student_details  = function(student_id){
         $scope.url = '/admission/edit_student_details/' + student_id+ '/';
         $http.get($scope.url).success(function(data)
@@ -258,7 +265,9 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         });
     }
     $scope.load_installments = function() {
+        console.log($scope.student.no_installments);
         if ($scope.student.no_installments.length > 0) {
+            console.log($scope.student.no_installments, $scope.installments.length);
             if ($scope.student.no_installments > $scope.installments.length) {
                 diff = $scope.student.no_installments - $scope.installments.length;
                 for (var i=0; i<diff; i++) {
@@ -270,6 +279,7 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
                         'due_date_id': due_date_id,
                     })
                 }
+                console.log($scope.installments);
             } else {
                 diff = $scope.installments.length - $scope.student.no_installments;
                 for (var i=diff; i>0; i--) {
@@ -293,8 +303,8 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
     }
     $scope.validate_edit_student = function() {
         $scope.validation_error = '';
-        $scope.dob = $$('#dob')[0].get('value');
-        $scope.doj = $$('#doj')[0].get('value');
+        $scope.student.dob = $$('#dob')[0].get('value');
+        $scope.student.doj = $$('#doj')[0].get('value');
         var total = 0;
         console.log($scope.student.batch);
         for (var i=0; i<$scope.installments.length; i++) {
