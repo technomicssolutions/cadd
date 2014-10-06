@@ -418,19 +418,6 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
     }
 }
 
-
-
-
-        
-        
-        $http.post(url, fd, {
-            transformRequest: angular.identity,
-            headers: {'Content-Type': undefined
-            }
-        })
-
-
-
 function StudentListController($scope, $http, $element, $location, $timeout) {
 
     $scope.init = function(csrf_token,student_id){
