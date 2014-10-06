@@ -62,7 +62,6 @@ class FeesPaymentInstallment(models.Model):
 
 class FeesPayment(models.Model):
 	
-	fee_structure = models.ForeignKey(FeesStructure, null=True, blank=True)
 	student = models.ForeignKey(Student, null=True, blank=True)
 	payment_installment = models.ManyToManyField(FeesPaymentInstallment, null=True, blank=True)
 	

@@ -285,9 +285,8 @@ class FeesPaymentSave(View):
             status_code = 200 
             try:
                 fees_payment_details = ast.literal_eval(request.POST['fees_payment'])
-                fees_structure = FeesStructure.objects.filter(course__id=fees_payment_details['course_id'], batch__id=fees_payment_details['batch_id'])
                 student = Student.objects.get(id=fees_payment_details['student'])
-                fees_payment, created = FeesPayment.objects.get_or_create(fee_structure=fees_structure[0], student=student)
+                fees_payment, created = FeesPayment.objects.get_or_create(student=student)
                 installment = Installment.objects.get(id=fees_payment_details['installment_id'])
                 fee_payment_installment, installment_created = FeesPaymentInstallment.objects.get_or_create(installment=installment, student=student)
                 fee_payment_installment.installment_amount = installment.amount
