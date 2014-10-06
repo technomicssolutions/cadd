@@ -483,7 +483,10 @@ function EnquiryController($scope, $http) {
         } else if($scope.enquiry.follow_up_date == '' || $scope.enquiry.follow_up_date == undefined) {
             $scope.validation_error = "Please Enter follow up date";
             return false;
-        } return true;
+        }  else if($scope.enquiry.date == '' || $scope.enquiry.date == undefined) {
+            $scope.validation_error = "Please Enter  date of enquiry";
+            return false;
+        }return true;
     }   
     $scope.save_enquiry = function(){
         if ($scope.validate_enquiry()) {
