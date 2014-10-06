@@ -334,13 +334,15 @@ class JobCard(View):
             attendances = Attendance.objects.filter(batch=batch).order_by('date')
             attendance_list = []
             for attendance in attendances:
-                student_attendance = StudentAttendance.objects.get(attendance=attendance, student=student)
-                attendance_list.append({
-                    'date': student_attendance.attendance.date.strftime('%d/%m/%Y'),
-                    'topics_covered': student_attendance.attendance.topics_covered,
-                    'status': student_attendance.status,
-
-                })
+                try:
+                    student_attendance = StudentAttendance.objects.get(attendance=attendance, student=student)
+                    attendance_list.append({
+                        'date': student_attendance.attendance.date.strftime('%d/%m/%Y'),
+                        'topics_covered': student_attendance.attendance.topics_covered,
+                        'status': student_attendance.status,
+                    })
+                except:
+                    pass
             res = {
                 'attendance_list': attendance_list,
                 'result': 'ok',
@@ -355,17 +357,28 @@ class JobCard(View):
             batch = Batch.objects.get(id=batch_id)
             student = Student.objects.get(id=student_id)
             attendances = Attendance.objects.filter(batch=batch).order_by('date')
+            flag = 0
             response = HttpResponse(content_type='application/pdf')
             p = SimpleDocTemplate(response, pagesize=A4)
             elements = []        
-            d = [['Job Card of'+ student.student_name]]
-            t = Table(d, colWidths=(450), rowHeights=25, style=style)
+            d = [['Job Card of '+ student.student_name]]
+            t = Table(d, colWidths=(450), rowHeights=35, style=style)
             t.setStyle([('ALIGN',(0,0),(-1,-1),'CENTER'),
                         ('TEXTCOLOR',(0,0),(-1,-1),colors.HexColor('#699AB7')),
                         ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
                         ('BACKGROUND',(0, 0),(-1,-1),colors.HexColor('#EEEEEE')),
-                        ('FONTSIZE', (0,0), (0,0), 20),
-                        ('FONTSIZE', (1,0), (-1,-1), 17),
+                        ('FONTSIZE', (0,0), (0,0), 16),
+                        ('FONTSIZE', (1,0), (-1,-1), 15),
+                        ])   
+            elements.append(t)
+            elements.append(Spacer(4, 5))
+            batch_name = batch.name + ' - '+ str(batch.start_time.strftime('%H:%M%p')) + ' to ' + str(batch.end_time.strftime('%H:%M%p'))
+            d = [['Batch : '+ batch_name]]
+            t = Table(d, colWidths=(450), rowHeights=35, style=style)
+            t.setStyle([('ALIGN',(0,0),(-1,-1),'CENTER'),
+                        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                        ('FONTSIZE', (0,0), (0,0), 16),
+                        ('FONTSIZE', (1,0), (-1,-1), 15),
                         ])   
             elements.append(t)
             elements.append(Spacer(4, 5))
@@ -373,24 +386,27 @@ class JobCard(View):
             data_list = []
             data.append(['Date','Topics Covered'])
             for attendance in attendances:
-                student_attendance = StudentAttendance.objects.get(attendance=attendance, student=student)
-                if student_attendance.status == 'P':
-                    date = student_attendance.attendance.date.strftime('%d/%m/%Y')
-                    topics_covered = student_attendance.attendance.topics_covered
-                    data.append([date ,topics_covered])
-                    table = Table(data, colWidths=(100,100),  style=style)
-                    table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
-                                ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
-                                ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-                                ('BACKGROUND',(0, 0),(-1,-1),colors.white),
-                                ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
-                                ('BOX', (0,0), (-1,-1), 0.25, colors.black),
-                                ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
-                                
-                                ])
-            if len(attendances) > 0:   
+                try:
+                    student_attendance = StudentAttendance.objects.get(attendance=attendance, student=student)
+                    if student_attendance.status == 'P':
+                        date = student_attendance.attendance.date.strftime('%d/%m/%Y')
+                        topics_covered = student_attendance.attendance.topics_covered
+                        data.append([date ,topics_covered])
+                        table = Table(data, colWidths=(100,250),  style=style)
+                        table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
+                                    ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
+                                    ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                                    ('BACKGROUND',(0, 0),(-1,-1),colors.white),
+                                    ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+                                    ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+                                    ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
+                                    ])
+                    flag = 1
+                except:
+                    pass
+            if flag == 1:   
                 elements.append(table)
-                p.build(elements)        
+            p.build(elements)
             return response
         return render(request, 'job_card.html', {})
 

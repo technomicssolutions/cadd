@@ -9,12 +9,20 @@ function get_software_list($scope, $http){
         console.log(data || "Request failed");
     });
 }
-function get_batches($scope, $http){
+function get_batches($scope, $http, from){
     $scope.url = '/college/batches/';
     $http.get($scope.url).success(function(data)
     {        
-        $scope.batches = data.batches; 
-        console.log($scope.batches);
+        $scope.batches = data.batches;
+        if(from == 'edit_student'){
+            for(var i = 0; i < $scope.batches.length; i++){
+                for(var j = 0; j < $scope.student.batches.length; j++){
+                    if($scope.batches[i].id == $scope.student.batches[j].id){
+                        $scope.batches[i].selected = 'true';
+                    }
+                }
+            }
+        } 
     }).error(function(data, status)
     {
         console.log(data || "Request failed");

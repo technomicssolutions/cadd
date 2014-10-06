@@ -235,7 +235,7 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
             format:'%d/%m/%Y',
         });
         get_course_list($scope, $http);
-        get_batch_list($scope, $http, 'edit_student');
+        get_batches($scope, $http, 'edit_student');
         console.log($scope.batches);
        
     }
@@ -421,7 +421,7 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
 function StudentListController($scope, $http, $element, $location, $timeout) {
 
     $scope.init = function(csrf_token,student_id){
-        get_batch_list($scope, $http);
+        get_batches($scope, $http);
         $scope.page_interval = 10;
         $scope.visible_list = [];
         $scope.students = [];
