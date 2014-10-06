@@ -13,7 +13,7 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
         'balance': '',
     }
     $scope.course = '';
-    $scope.payment_installment.student = 'select';
+    $scope.payment_installment.student = '';
     $scope.head = '';
     $scope.init = function(csrf_token)
     {
@@ -95,8 +95,11 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
         } else if($scope.payment_installment.student == '' || $scope.payment_installment.student == undefined) {
             $scope.validation_error = "Please select a student" ;
             return false;
+        } else if($scope.installments.length == 0) {
+            $scope.validation_error = "Payment completed" ;
+            return false;
         } else if($scope.installment == '' || $scope.installment == undefined) {
-            $scope.validation_error = "Please enter an installment" ;
+            $scope.validation_error = "Please choose an installment" ;
             return false;
         } else if ($scope.payment_installment.paid_amount == '' || $scope.payment_installment.paid_amount == undefined) {
             $scope.validation_error = "Please enter paid amount" ;

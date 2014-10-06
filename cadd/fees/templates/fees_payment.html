@@ -27,7 +27,7 @@
 			<div class="control">
 				<label> Student</label>
 				<select name="student" ng-model="payment_installment.student" ng-change="get_installment()">
-					<option value="select">Select</option>
+					<option value="">Select</option>
 					<option ng-repeat="student in students" value="[[student.id]]" ng-selected="">[[student.student]]
 					</option>
 				</select>
@@ -75,13 +75,13 @@
 				<label>Paid Amount</label>
 				<input type="text" name="paid_amount" ng-model="payment_installment.paid_amount"/> 
 			</div>
-			<div  align="Center">
-				<div class="buttons">
-					<p class="error_message"> [[validation_error]] </p>
-					<input type="button" class="btn btn-info" value="Cancel" onClick="document.location.href = '/'">
-					<input type="submit" value="Submit" ng-click="save_fees_payment()" class="btn btn-info">
-				</div>
+			<!-- <div  align="Center"> -->
+			<div class="control buttons">
+				<p class="error_message"> [[validation_error]] </p>
+				<input type="button" class="btn btn-info" value="Cancel" onClick="document.location.href = '/'">
+				<input type="submit" value="Submit" ng-click="save_fees_payment()" class="btn btn-info">
 			</div>
+			<!-- </div> -->
 		</form>
 	</div>	
 
