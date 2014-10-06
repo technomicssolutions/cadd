@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block body_id %}enquiry{% endblock %}
+{% block title %} Enquiry {% endblock title%}
+{% block controller %} ng-controller="EnquiryListController" ng-init="init('{{csrf_token}}')"{% endblock controller %}
+{% block dialogue_popup %}
+	{% include 'view_enquiry_details.html' %} 
+	           	
+{% endblock %}
+{% block content %}
+<table ng-show="enquiries.length > 0" class="table list_table">
+		<tr>
+			<th>#</th>
+			<th>Date</th>
+			<th>Enquiry Number</th>
+			<th>Name</th>
+			<th>Course</th>
+			<th></th>
+			<th></th>
+			
+		</tr>
+		<tr ng-repeat="enquiry in enquiries">
+			<td>[[$index+1]]</td>
+			<td>[[enquiry.saved_date]]</td>
+			<td>[[enquiry.auto_generated_num]]</td>
+			<td>[[enquiry.student_name]]</td>
+			<td>[[enquiry.course]]</td>
+			<td><a href=""ng-click="display_enquiry_details(enquiry)">View</a></td>
+			<td><a href="/admission/delete_enquiry/[[enquiry.id]]/">Delete</a></td>
+		</tr>
+		
+</table>
+{% include 'pagination_div.html' %}
+{% endblock content %}

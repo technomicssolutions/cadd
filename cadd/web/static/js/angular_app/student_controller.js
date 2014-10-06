@@ -777,3 +777,56 @@ function EnquiryReportController($scope, $http) {
         document.location.href = '/admission/enquiry_report?start_date='+$scope.start_date+'&end_date='+$scope.end_date+'&report_type=pdf';
     }  
 }
+function EnquiryListController($scope, $http) {
+    $scope.init = function(csrf_token){
+        $scope.csrf_token = csrf_token;
+        var url = '/admission/all_enquiries/';
+        $http.get(url).success(function(data)
+        {   
+            $scope.no_enquiry_msg = '';
+            if (data.enquiry.length == 0)
+                $scope.no_enquiry_msg = 'No such enquiry';
+            else {
+               $scope.enquiries = data.enquiry;
+            }
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+    }
+    $scope.display_enquiry_details = function(enquiry) {
+        $scope.enquiry_id = enquiry.id;
+        $scope.url = '/admission/enquiry_details?enquiry_id='+$scope.enquiry_id;
+        $http.get($scope.url).success(function(data)
+        {
+            $scope.enquiry = data.enquiry[0];
+            paginate(data.enquiry, $scope);
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+
+
+        $('#enquiry_details_view')[0].setStyle('display', 'block');
+        
+        $scope.popup = new DialogueModelWindow({                
+            'dialogue_popup_width': '78%',
+            'message_padding': '0px',
+            'left': '28%',
+            'top': '182px',
+            'height': 'auto',
+            'content_div': '#enquiry_details_view'
+        });
+        
+        var height = $(document).height();
+        $scope.popup.set_overlay_height(height);
+        $scope.popup.show_content();
+    }
+    $scope.select_page = function(page){
+        select_page(page, $scope.enquiry, $scope);
+    }
+    $scope.range = function(n) {
+        return new Array(n);
+    }
+    
+}
