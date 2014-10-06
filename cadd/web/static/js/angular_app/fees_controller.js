@@ -56,17 +56,31 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
                 console.log(data || "Request failed");
             });
     }
-    $scope.get_installment = function(head) {
-        if (head.installments.length == 0) {
-            $scope.no_installment_error = 'Payment completed';
-        } else {
-            $scope.no_installment_error = '';
-        }
-        $scope.installments = head.installments;
-        $('#due_date').val('');
-        $('#fine_amount').val(0);
-        $('#fee_amount').val(0);
-        $('#total_fee_amount').val(0);
+    $scope.get_installment = function() {
+        $http.get('/admission/get_installment_details/?student='+$scope.payment_installment.student).success(function(data){
+            if (data.installments.length == 0)
+                $scope.no_installment_error = 'Payment completed';
+            else
+                $scope.no_installment_error = '';
+            $scope.installments = data.installments;
+            $('#due_date').val('');
+            $('#fine_amount').val(0);
+            $('#fee_amount').val(0);
+            $('#total_fee_amount').val(0);
+        }).error(function(data, status){
+            console.log('Request failed', data);
+        })
+        // if (head.installments.length == 0) {
+        //     $scope.no_installment_error = 'Payment completed';
+        // } else {
+        //     $scope.no_installment_error = '';
+        // }
+        // $scope.installments = head.installments;
+        // $('#due_date').val('');
+        // $('#fine_amount').val(0);
+        // $('#fee_amount').val(0);
+        // $('#total_fee_amount').val(0);
+
     }
     $scope.calculate_total_amount = function() {
         calculate_total_fee_amount();

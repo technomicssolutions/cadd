@@ -5,7 +5,7 @@ from django.conf import settings
 
 from admission.views import GetStudent,AddStudent,ListStudent,ViewStudentDetails,EditStudentDetails,\
 DeleteStudentDetails, EnquiryView, SearchEnquiry, EnquiryDetails, StudentAdmission, EnquiryReport, \
-StudentSearch
+StudentSearch, GetInstallmentDetails
 
 urlpatterns = patterns('',
 	url(r'^get_student/(?P<course_id>\d+)/$',login_required(GetStudent.as_view()), name="get_student"),
@@ -22,5 +22,5 @@ urlpatterns = patterns('',
 	url(r'^student_admission/$', login_required(StudentAdmission.as_view()), name='student_admission'),
 	url(r'^enquiry_report/$',login_required(EnquiryReport.as_view()), name='enquiry_report'),
 	url(r'^search_student/$',login_required(StudentSearch.as_view()), name='search_student'),
-
+	url(r'^get_installment_details/$', login_required(GetInstallmentDetails.as_view()), name='get_installment_details'),
 )

@@ -26,13 +26,13 @@
 			</div>
 			<div class="control">
 				<label> Student</label>
-				<select name="student" ng-model="payment_installment.student" ng-change="get_fees_head()">
+				<select name="student" ng-model="payment_installment.student" ng-change="get_installment()">
 					<option value="select">Select</option>
 					<option ng-repeat="student in students" value="[[student.id]]" ng-selected="">[[student.student]]
 					</option>
 				</select>
 			</div>
-			<div class"error_message">
+			<!-- <div class"error_message">
 				<p class='error_message'>[[no_head_error]]</p>
 			</div>
 			<div class="control">
@@ -42,7 +42,7 @@
 					<option ng-repeat="head in heads" value="[[head.id]]" ng-click="get_installment(head)">[[head.head]]
 					</option>
 				</select>
-			</div>
+			</div> -->
 			<div class"error_message">
 				<p class='error_message'>[[no_installment_error]]</p>
 			</div>
