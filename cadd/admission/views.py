@@ -392,6 +392,7 @@ class EnquiryDetails(View):
         if request.is_ajax():
             enquiry_list = []
             enquiry_num = request.GET.get('enquiry_num', '')
+            enquiry_id = request.GET.get('enquiry_id', '')
             try:
                 if enquiry_num :
                     enquiry = Enquiry.objects.get(auto_generated_num=enquiry_num)
@@ -406,6 +407,26 @@ class EnquiryDetails(View):
                         'land_mark': enquiry.land_mark,
                         'course' : enquiry.course.id,
                         'remarks': enquiry.remarks,
+                        'saved_date':enquiry.saved_date.strftime('%d/%m/%Y') if enquiry.saved_date else '',
+                        'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
+                        'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,
+                        'discount': enquiry.discount,
+                        'auto_generated_num': enquiry.auto_generated_num,
+                    })
+                elif enquiry_id :
+                    enquiry = Enquiry.objects.get(id=enquiry_id)
+                    enquiry_list.append({
+                        'id': enquiry.id,
+                        'student_name': enquiry.student_name,
+                        'address': enquiry.address,
+                        'mobile_number' : enquiry.mobile_number,
+                        'email' : enquiry.email,
+                        'details_about_clients_enquiry' : enquiry.details_about_clients_enquiry,
+                        'educational_qualification': enquiry.educational_qualification,
+                        'land_mark': enquiry.land_mark,
+                        'course' : enquiry.course.name,
+                        'remarks': enquiry.remarks,
+                        'saved_date':enquiry.saved_date.strftime('%d/%m/%Y') if enquiry.saved_date else '',
                         'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
                         'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,
                         'discount': enquiry.discount,
@@ -420,6 +441,43 @@ class EnquiryDetails(View):
             })    
             return HttpResponse(response, status=200, mimetype='application/json')
 
+class AllEnquiries(View):
+    def get(self, request, *args, **kwargs): 
+        if request.is_ajax():
+            enquiry_list = []
+            enquiries = Enquiry.objects.all()
+            for enquiry in enquiries:
+                enquiry_list.append({
+                    'id': enquiry.id,
+                    'student_name': enquiry.student_name,
+                    'address': enquiry.address,
+                    'mobile_number' : enquiry.mobile_number,
+                    'email' : enquiry.email,
+                    'details_about_clients_enquiry' : enquiry.details_about_clients_enquiry,
+                    'educational_qualification': enquiry.educational_qualification,
+                    'land_mark': enquiry.land_mark,
+                    'saved_date':enquiry.saved_date.strftime('%d/%m/%Y') if enquiry.saved_date else '',
+                    'course' : enquiry.course.id,
+                    'remarks': enquiry.remarks,
+                    'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
+                    'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,
+                    'discount': enquiry.discount,
+                    'auto_generated_num': enquiry.auto_generated_num,
+                })
+            
+            
+            response = simplejson.dumps({
+                'enquiry': enquiry_list,
+            })    
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'enquiry_list.html', {})
+
+class DeleteEnquiry(View):
+    def get(self, request, *args, **kwargs):
+        enquiry_id = kwargs['enquiry_id']       
+        enquiry = Enquiry.objects.filter(id=enquiry_id)                          
+        enquiry.delete()
+        return HttpResponseRedirect(reverse('all_enquiries'))
             
 class SearchEnquiry(View):
 

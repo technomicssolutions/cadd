@@ -239,6 +239,13 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         console.log($scope.batches);
        
     }
+    $scope.get_fees = function() {
+        for(var i=0; i<$scope.courses.length; i++) {
+            if ($scope.student.course == $scope.courses[i].id) {
+                $scope.student.fees = $scope.courses[i].amount;
+            }
+        }
+    }
     $scope.get_student_details  = function(student_id){
         $scope.url = '/admission/edit_student_details/' + student_id+ '/';
         $http.get($scope.url).success(function(data)
@@ -258,7 +265,9 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         });
     }
     $scope.load_installments = function() {
+        console.log($scope.student.no_installments);
         if ($scope.student.no_installments.length > 0) {
+            console.log($scope.student.no_installments, $scope.installments.length);
             if ($scope.student.no_installments > $scope.installments.length) {
                 diff = $scope.student.no_installments - $scope.installments.length;
                 for (var i=0; i<diff; i++) {
@@ -270,6 +279,7 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
                         'due_date_id': due_date_id,
                     })
                 }
+                console.log($scope.installments);
             } else {
                 diff = $scope.installments.length - $scope.student.no_installments;
                 for (var i=diff; i>0; i--) {
@@ -293,8 +303,8 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
     }
     $scope.validate_edit_student = function() {
         $scope.validation_error = '';
-        $scope.dob = $$('#dob')[0].get('value');
-        $scope.doj = $$('#doj')[0].get('value');
+        $scope.student.dob = $$('#dob')[0].get('value');
+        $scope.student.doj = $$('#doj')[0].get('value');
         var total = 0;
         console.log($scope.student.batch);
         for (var i=0; i<$scope.installments.length; i++) {
@@ -820,4 +830,57 @@ function EnquiryReportController($scope, $http) {
         $scope.end_date = $$('#end_date')[0].get('value');
         document.location.href = '/admission/enquiry_report?start_date='+$scope.start_date+'&end_date='+$scope.end_date+'&report_type=pdf';
     }  
+}
+function EnquiryListController($scope, $http) {
+    $scope.init = function(csrf_token){
+        $scope.csrf_token = csrf_token;
+        var url = '/admission/all_enquiries/';
+        $http.get(url).success(function(data)
+        {   
+            $scope.no_enquiry_msg = '';
+            if (data.enquiry.length == 0)
+                $scope.no_enquiry_msg = 'No such enquiry';
+            else {
+               $scope.enquiries = data.enquiry;
+            }
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+    }
+    $scope.display_enquiry_details = function(enquiry) {
+        $scope.enquiry_id = enquiry.id;
+        $scope.url = '/admission/enquiry_details?enquiry_id='+$scope.enquiry_id;
+        $http.get($scope.url).success(function(data)
+        {
+            $scope.enquiry = data.enquiry[0];
+            paginate(data.enquiry, $scope);
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+
+
+        $('#enquiry_details_view')[0].setStyle('display', 'block');
+        
+        $scope.popup = new DialogueModelWindow({                
+            'dialogue_popup_width': '78%',
+            'message_padding': '0px',
+            'left': '28%',
+            'top': '182px',
+            'height': 'auto',
+            'content_div': '#enquiry_details_view'
+        });
+        
+        var height = $(document).height();
+        $scope.popup.set_overlay_height(height);
+        $scope.popup.show_content();
+    }
+    $scope.select_page = function(page){
+        select_page(page, $scope.enquiry, $scope);
+    }
+    $scope.range = function(n) {
+        return new Array(n);
+    }
+    
 }
