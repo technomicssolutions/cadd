@@ -31,7 +31,6 @@ class AddStudent(View):
         if request.is_ajax():
             try:
                 course = Course.objects.get(id = request.POST['course'])
-                
                 enquiry = None
                 if request.POST.get('enquiry', ''):
                     if request.POST.get('enquiry', '') != 'undefined':
@@ -46,7 +45,6 @@ class AddStudent(View):
                 else:
                     try:
                         batches = request.POST['batch'].split(',')
-                        print batches, 'higasdkgdf'
                         for batch in batches:
                             batch_obj = Batch.objects.get(id = batch)
                             if batch_obj.no_of_students == None:

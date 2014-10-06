@@ -50,7 +50,6 @@
 				{% if user.is_superuser or user.staff_set.all.0.permission.fees_module %}
 					<li class="menu"> <a href=""> Fees </a>
 						<ul>
-							<li> <a href="{% url 'list_fees_structure' %}">Fees Structure</a> </li>
 							<li> <a href="">Fees Payment</a> </li>
 							<li> <a href="">Outstanding Fees </a> </li>
 						</ul>
