@@ -51,6 +51,7 @@ function save_new_student($http, $scope) {
             'no_installments': $scope.no_installments,
             "csrfmiddlewaretoken" : $scope.csrf_token
         }
+        console.log($scope.batch);
         var fd = new FormData();
 
         fd.append('photo_img', $scope.photo_img.src)
@@ -106,8 +107,11 @@ validate_new_student = function($scope) {
     $scope.dob = $$('#dob')[0].get('value');
     $scope.doj = $$('#doj')[0].get('value');
     var total = 0;
+    console.log($scope.installments.length);
     for (var i=0; i<$scope.installments.length; i++) {
-        total = parseFloat(total) + parseFloat($scope.installments[i].amount)
+        if ($scope.installments[i].amount == Number($scope.installments[i].amount)) {
+            total = parseFloat(total) + parseFloat($scope.installments[i].amount)
+        }
     }
     if($scope.student_name == '' || $scope.student_name == undefined) {
         $scope.validation_error = "Please Enter the Name" ;
@@ -155,7 +159,7 @@ validate_new_student = function($scope) {
         $scope.validation_error = "Please Enter Relationship";
         return false;
     } else if($scope.guardian_mobile_number == ''|| $scope.guardian_mobile_number == undefined){
-        $scope.validation_error = "Please enter the Mobile Number";
+        $scope.validation_error = "Please enter the Guardian Mobile Number";
         return false;
     } else if($scope.guardian_mobile_number.length < 9 || $scope.guardian_mobile_number.length > 15) {            
         $scope.validation_error = "Please enter a Valid Mobile Number";
@@ -166,6 +170,27 @@ validate_new_student = function($scope) {
     } else if ($scope.no_installments == '' || $scope.no_installments == undefined) {
         $scope.validation_error = "Please enter no of installments";
         return false;
+    } else if ($scope.fees != total) {
+        $scope.validation_error = 'Please check the installment amount with the total';
+        return false;
+    } else if ($scope.installments.length > 0) {
+        for(var i = 0; i < $scope.installments.length; i++){
+            id_name = '#'+$scope.installments[i].due_date_id;
+            $scope.installments[i].due_date = $$(id_name)[0].get('value');
+            if($scope.installments[i].amount == ''){
+                $scope.validation_error = "Please enter the amount for installment";
+                return false;
+            } else if($scope.installments[i].amount && !Number($scope.installments[i].amount)){
+                $scope.validation_error = "Please enter a valid amount for installment";
+                return false;
+            } else if($scope.installments[i].due_date == ''){
+                $scope.validation_error = "Please enter the due date for installment";
+                return false;
+            } else if($scope.installments[i].fine != 0 && !Number($scope.installments.fine)){
+                $scope.validation_error = "Please enter a valid fine amount for installment";
+                return false;
+            } 
+        }
     } return true;
 }   
 function EditStudentController($scope, $http, $element, $location, $timeout) {
@@ -568,6 +593,63 @@ function AdmissionController($scope, $http) {
             console.log(data || "Request failed");
         });
     }
+/*    $scope.validate_student = function(){
+        $scope.validation_error = "";
+        $scope.dob = $$('#dob')[0].get('value');
+        if($scope.student_name == '' || $scope.student_name == undefined){
+            $scope.validation_error = "Please enter the name of Student";
+            return false;
+        } else if($scope.course == '' || $scope.course == undefined){
+            $scope.validation_error = "Please select the course";
+            return false;
+        } else if($scope.batch == '' || $scope.batch == undefined){
+            $scope.validation_error = "Please select the batch";
+            return false;
+        } else if($scope.dob == '' || $scope.dob == undefined){
+            $scope.validation_error = "Please enter the date of birth";
+            return false;
+        } else if($scope.address == '' || $scope.address == undefined){
+            $scope.validation_error = "Please enter the address";
+            return false;
+        } else if($scope.mobile_number == '' || $scope.mobile_number == undefined){
+            $scope.validation_error = "Please enter the mobile number";
+            return false;
+        } else if($scope.mobile_number && (!Number($scope.mobile_number) || $scope.mobile_number.length != 10)){
+            $scope.validation_error = "Please enter a valid mobile number";
+            return false;
+        } else if($scope.blood_group == '' || $scope.blood_group == undefined){
+            $scope.validation_error = "Please select the blood group";
+            return false;
+        } else if($scope.guardian_name == '' || $scope.guardian_name == undefined){
+            $scope.validation_error = "Please enter the guardian name";
+            return false;
+        } else if($scope.relationship == '' || $scope.relationship == undefined){
+            $scope.validation_error = "Please enter the relationship with guardian";
+            return false;
+        } else if($scope.fees && !Number($scope.fees)){
+            $scope.validation_error = "Please enter a valid amount";
+            return false;
+        } 
+        for(var i = 0; i < $scope.installments.length; i++){
+            id_name = '#'+$scope.installments[i].due_date_id;
+            $scope.installments[i].due_date = $$(id_name)[0].get('value');
+            if($scope.installments[i].amount == ''){
+                $scope.validation_error = "Please enter the amount for installment";
+                return false;
+            } else if($scope.installments[i].amount && !Number($scope.installments[i].amount)){
+                $scope.validation_error = "Please enter a valid amount for installment";
+                return false;
+            } else if($scope.installments[i].due_date == ''){
+                $scope.validation_error = "Please enter the due date for installment";
+                return false;
+            } else if($scope.installments[i].fine && !Number($scope.installments.fine)){
+                $scope.validation_error = "Please enter a valid fine amount for installment";
+                return false;
+            } 
+
+        }
+        return true;      
+    }*/
     $scope.save_new_student = function(){
         save_new_student($http, $scope);
     }

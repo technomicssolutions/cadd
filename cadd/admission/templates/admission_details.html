@@ -21,7 +21,9 @@
                 <label>Direct Admission</label>
             </div>
             <div class="control" ng-show="show_enquiry_search" id="search_box">
-                <h4> Search Enquiry </h4>
+                <a class="close_pop" ng-click="show_enquiry_search='false'"></a>
+                <h4> Search Enquiry</h4>
+
                 <label>Student Name</label>
                 <input class="form-control" type="text" name="student_name" ng-model="search.student_name" id="student_name" ng-change="enquiry_search()" autocomplete="off"/>
                 <p  class="error_message">[[error_message]]</p> 
@@ -41,27 +43,27 @@
                     <br>
                     <br>
                 </div>
-                <div class="control" ng-show="show_enquiry_search">
+                <div class="control" ng-show="admission_type=='Enquiry'">
                     <label> Enquiry Number</label>  
                     <input type="text" name="enquiry_num" ng-change="get_enquiry_details()" ng-model="enquiry_num" />
                     <p class="error_message">[[no_enquiry_msg]]</p>
                 </div>
                 <div class="control">
-                    <label>Student Name</label>
+                    <label>Student Name*</label>
                     <input type="text" name="student_name" value="" ng-model="student_name" />
                 </div>
                 <div class="control">
-                    <label > Roll No</label>  
+                    <label > Roll No*</label>  
                     <input type="text" name="roll_number" value="" ng-model="roll_number"/>
                 </div>
                 <div class="control">
-                    <label> Course</label>  
+                    <label> Course*</label>  
                     <select name="course" ng-model="course" ng-options="course.id as course.course_name for course in courses" ng-change="get_fees()">
                         <option value="">Select</option>
                     </select>
                 </div>
                 <div class="control">
-                    <label> Batch</label>  
+                    <label> Batch*</label>  
                     <select name="batch" ng-model="batch" ng-change="get_fees_head()" ng-options="batch.id as batch.batch_name for batch in batches" multiple>
                         <option value="">Select</option>
                     </select>
@@ -71,15 +73,15 @@
                     <input type="text" name="qualifications" value="" ng-model="qualifications" />
                 </div>
                 <div class="control">
-                    <label> DOB</label>  
+                    <label> DOB*</label>  
                     <input type="text"name="dob" value="" ng-model="dob" id="dob" />
                 </div>
                 <div class="control">
-                    <label>Address</label> 
+                    <label>Address*</label> 
                     <textarea name="address" value="" ng-model="address"></textarea>
                 </div>
                 <div class="control">
-                    <label> Mobile </label>  
+                    <label> Mobile* </label>  
                     <input type="text"  name="mobile_number" value=""  ng-model="mobile_number" />
                 </div>
                 <div class="control">
@@ -87,7 +89,7 @@
                     <input type="text"name="email" value="" ng-model="email">
                 </div>
                 <div class="control">
-                    <label>Blood Group</label> 
+                    <label>Blood Group*</label> 
                     <select ng-model="blood_group">
                         <option value="">Select</option>
                         <option value="A-">A-</option>
@@ -101,7 +103,7 @@
                     </select>
                 </div>
                 <div class="control">
-                    <label> Date of join</label>
+                    <label> Date of join*</label>
                     <input type="text"name="doj" value="" ng-model="doj" id="doj" />
                 </div>
                 <div class="control">
@@ -114,23 +116,23 @@
                     <input type="text"name="cadd_registration_no" value="" ng-model="cadd_registration_no" />
                 </div>
                 <div class="control">
-                    <label>Certificates </label>
+                    <label>Certificates*</label>
                     <textarea name="certificates_submitted" value="" ng-model="certificates_submitted"> </textarea>
                 </div>
                 <div class="control">
-                    <label>ID Proofs </label>
+                    <label>ID Proofs* </label>
                     <textarea name="id_proof" value="" ng-model="id_proof"></textarea> 
                 </div>
                 <div class="control">
-                    <label> Guardian's Name</label>   
+                    <label> Guardian's Name*</label>   
                     <input type="text" name="guardian_name" value="" ng-model="guardian_name">
                 </div>
                 <div class="control">
-                    <label> Relationship</label>
+                    <label> Relationship*</label>
                     <input type="text" ng-model="relationship" />
                 </div>
                 <div class="control">
-                    <label > Mobile </label> 
+                    <label > Guardian Mobile* </label> 
                     <input type="text"  name="guardian_mobile_number" value=""  ng-model="guardian_mobile_number" />
                 </div>
                 <div class="control">
@@ -155,9 +157,10 @@
                             <td><input type="text" ng-model="installment.fine" /></td>
                         </tr>
                     </table>
-                </div>
-                <div>
-                    <input type="button" value="Create" ng-click="save_new_student()"/>
+                </div>               
+                <div class="buttons" align="Center">
+                    <p class="error_message">[[validation_error]]</p>
+                    <input type="button" class="btn btn-info" value="Create" ng-click="save_new_student()"/>
                 </div>
             </div>
         </form>

@@ -24,7 +24,8 @@ function get_course_list($scope, $http){
     $scope.url = '/college/courses/';
     $http.get($scope.url).success(function(data)
     {        
-        $scope.courses = data.courses;  
+        $scope.courses = data.courses; 
+        console.log($scope.courses) ;
     }).error(function(data, status)
     {
         console.log(data || "Request failed");

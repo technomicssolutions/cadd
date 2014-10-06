@@ -15,6 +15,7 @@ function student_search($scope, $http){
     $http.get('/admission/search_student/?name='+$scope.student_name+'&batch='+$scope.batch_id).success(function(data){
         if(data.result == 'ok'){
             $scope.students_list = data.students;
+            console.log($scope.students_list);
             if($scope.students_list.length == 0)
                 $scope.message = "No Students found";
         }            
@@ -168,6 +169,10 @@ function AttendanceDetailsController($scope, $element, $http) {
                 $scope.validation_error = 'Please choose the Date';
                 return false;
             } return true;
+        } else if($scope.attendance_view == "3"){
+            $scope.attendance_list = "";
+            $scope.student_name = "";
+            return false;
         }
 
     }
@@ -188,6 +193,7 @@ function AttendanceDetailsController($scope, $element, $http) {
             $scope.show_buttons = false;
             $scope.show_data = false;
             $scope.batch_id = "";
+            $scope.student_attendance = false;
         }
         else if($scope.attendance_view == "2"){            
             $scope.show_batch_select = true;       
@@ -196,7 +202,46 @@ function AttendanceDetailsController($scope, $element, $http) {
             $scope.monthly_attendance = false;  
             $scope.show_data = false;         
             $scope.batch_id = "";
+            $scope.student_attendance = false;
+        } else if($scope.attendance_view == "3"){            
+            $scope.show_batch_select = true;       
+            $scope.daily_attendance = false;
+            $scope.show_buttons = false;
+            $scope.monthly_attendance = false;  
+            $scope.show_data = false;         
+            $scope.batch_id = "";
+            $scope.student_attendance = true;
+        } 
+    }
+    $scope.student_search = function(){
+        if($scope.student_name.length > 0){
+            $scope.validation_error = "";
+            if($scope.batch_id != ''){
+                student_search($scope, $http);
+            }                
+            else
+                $scope.validation_error = "Please select a Batch";
         }
+        else
+            $scope.students_list = ""
+    }
+    $scope.get_student_details = function(student) {
+        $scope.student_name = student.name;
+        $scope.students_list = [];
+        $scope.no_student_msg = "";
+        var url = '/attendance/job_card/?batch='+$scope.batch_id+'&student='+student.id;
+        $http.get(url).success(function(data)
+        {
+            $scope.view = data.view;
+            $scope.attendance_list = data.attendance_list;
+            $scope.show_data = true;
+            console.log($scope.attendance_list);
+        }).error(function(data, status)
+        {
+            $('#overlay').css('height', '0px');
+            $('#spinner').css('height', '0px');
+            console.log(data || "Request failed");
+        });
     }
     $scope.get_attendance_details = function() {
         if ($scope.attendance_validation()) {
@@ -210,12 +255,11 @@ function AttendanceDetailsController($scope, $element, $http) {
             if($scope.attendance_view == "1" || $scope.attendance_view == undefined){
                 var url = '/attendance/attendance_details/?batch_id='+$scope.batch_id+'&batch_year='+$scope.batch_year+'&batch_month='+$scope.batch_month;                
             }
-            else{
+            else {
                 $scope.attendance_date = $$('#attendance_date')[0].get('value');
                 $scope.date_array = $scope.attendance_date.split('/')
                 var url = '/attendance/attendance_details/?batch_id='+$scope.batch_id+'&batch_year='+$scope.date_array[2]+'&batch_month='+$scope.date_array[1]+'&batch_day='+$scope.date_array[0];
-            }
-            
+            }            
             
             $http.get(url).success(function(data)
             {

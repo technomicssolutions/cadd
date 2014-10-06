@@ -27,21 +27,7 @@
 					</div>
 				</div>
 				<div class="clear"></div>
-				<div class="section_1_attendance" ng-show="is_edit">
-					<table border="0" class="table table-striped" cellpadding="0" cellspacing="0" ng-show="students.length > 0">
-						<tr>
-							<th>Roll No</th>
-							<th>Name</th>
-							<th>Absent/Present</th>
-						</tr>
-						<tr ng-repeat="student in students">
-							<td>[[student.roll_number ]]</td>
-							<td>[[student.name]]</td>
-							<td><input type="checkbox" ng-model="student.is_presented"></td>
-						</tr>			                        
-					</table>
-				</div>
-				<div class="section_1_attendance" ng-hide="is_edit">
+				<div class="section_1_attendance">
 					<table border="0" class="table table-striped" cellpadding="0" cellspacing="0" ng-show="students.length > 0">
 						<tr>
 							<th>Roll No</th>
@@ -51,8 +37,15 @@
 						<tr ng-repeat="student in students">
 							<td>[[ student.roll_number ]]</td>
 							<td>[[student.name]]</td>
-							<td>[[ student.status ]]</td>
-						</tr>			                        
+							<td><span ng-show="!is_edit">
+									<span class="red_font" ng-hide="student.status=='P'">[[ student.status ]]</span>
+									<span class="bold_font" ng-show="student.status=='P'">[[student.status]]</span>
+								</span>
+								<span ng-hide="!is_edit">
+									<input type="checkbox" ng-model="student.is_presented">
+								</span>
+							</td>
+						</tr>	                        
 					</table>
 				</div>
 			</div>

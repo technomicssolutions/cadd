@@ -326,7 +326,30 @@ class BatchStudents(View):
 class JobCard(View):
 
      def get(self, request, *args, **kwargs):
-        if request.GET.get('batch'):
+        if request.is_ajax():
+            batch_id = request.GET.get('batch')
+            student_id = request.GET.get('student')
+            batch = Batch.objects.get(id=batch_id)
+            student = Student.objects.get(id=student_id)
+            attendances = Attendance.objects.filter(batch=batch).order_by('date')
+            attendance_list = []
+            for attendance in attendances:
+                student_attendance = StudentAttendance.objects.get(attendance=attendance, student=student)
+                attendance_list.append({
+                    'date': student_attendance.attendance.date.strftime('%d/%m/%Y'),
+                    'topics_covered': student_attendance.attendance.topics_covered,
+                    'status': student_attendance.status,
+
+                })
+            res = {
+                'attendance_list': attendance_list,
+                'result': 'ok',
+                'view': 'student',
+            }
+            status_code = 200
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status = status_code, mimetype="application/json")
+        elif request.GET.get('batch'):
             batch_id = request.GET.get('batch')
             student_id = request.GET.get('student')
             batch = Batch.objects.get(id=batch_id)
