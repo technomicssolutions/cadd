@@ -3,6 +3,11 @@ import ast
 import datetime as dt
 from datetime import datetime
 import calendar
+from reportlab.pdfgen import canvas
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.platypus import Paragraph, Table, TableStyle, SimpleDocTemplate, Spacer
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter, A4
 
 from django.core.urlresolvers import reverse
 from django.views.generic.base import View
@@ -13,6 +18,16 @@ from attendance.models import Attendance, HolidayCalendar, StudentAttendance
 from college.models import Batch
 from admission.models import Student
 from staff.models import Staff
+
+style = [
+    ('FONTSIZE', (0,0), (-1, -1), 12),
+    ('FONTNAME',(0,0),(-1,-1),'Helvetica') 
+]
+
+para_style = ParagraphStyle('fancy')
+para_style.fontSize = 12
+para_style.fontName = 'Helvetica'
+
 
 class AddAttendance(View):
 
@@ -157,7 +172,7 @@ class AttendanceDetails(View):
             current_date = datetime.now()
             if(request.GET.get('batch_day')):
                 day = request.GET.get('batch_day')
-                students = Student.objects.filter(batch=batch).order_by('roll_number')
+                students = batch.student_set.all().order_by('roll_number')
                 students_list = []
                 date = dt.date(int(year), int(month), int(day))
                 try:
@@ -196,7 +211,7 @@ class AttendanceDetails(View):
                     'is_future_date': "true" if datetime(int(year),int(month),int(day)) > datetime.now() else "false",
                 }            
             else:  
-                students = Student.objects.filter(batch=batch).order_by('roll_number')
+                students = batch.student_set.all().order_by('roll_number')
                 no_of_days = calendar.monthrange(int(year), int(month))[1]            
                 calendar_days = []
                 for day in range(1, no_of_days + 1):
@@ -268,7 +283,7 @@ class BatchStudents(View):
         day = current_date.day  
         batch_id = kwargs['batch_id']
         batch = Batch.objects.get(id=batch_id)
-        students = Student.objects.filter(batch=batch).order_by('roll_number')
+        students = batch.student_set.all().order_by('roll_number')
         students_list = []
         date = dt.date(int(year), int(month), int(day))
         try:
@@ -311,7 +326,50 @@ class BatchStudents(View):
 class JobCard(View):
 
      def get(self, request, *args, **kwargs):
-
+        if request.GET.get('batch'):
+            batch_id = request.GET.get('batch')
+            student_id = request.GET.get('student')
+            batch = Batch.objects.get(id=batch_id)
+            student = Student.objects.get(id=student_id)
+            attendances = Attendance.objects.filter(batch=batch).order_by('date')
+            response = HttpResponse(content_type='application/pdf')
+            p = SimpleDocTemplate(response, pagesize=A4)
+            elements = []        
+            d = [['Job Card of'+ student.student_name]]
+            t = Table(d, colWidths=(450), rowHeights=25, style=style)
+            t.setStyle([('ALIGN',(0,0),(-1,-1),'CENTER'),
+                        ('TEXTCOLOR',(0,0),(-1,-1),colors.HexColor('#699AB7')),
+                        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                        ('BACKGROUND',(0, 0),(-1,-1),colors.HexColor('#EEEEEE')),
+                        ('FONTSIZE', (0,0), (0,0), 20),
+                        ('FONTSIZE', (1,0), (-1,-1), 17),
+                        ])   
+            elements.append(t)
+            elements.append(Spacer(4, 5))
+            data = []
+            data_list = []
+            data.append(['Date','Topics Covered'])
+            for attendance in attendances:
+                student_attendance = StudentAttendance.objects.get(attendance=attendance, student=student)
+                if student_attendance.status == 'P':
+                    date = student_attendance.attendance.date.strftime('%d/%m/%Y')
+                    topics_covered = student_attendance.attendance.topics_covered
+                    data.append([date ,topics_covered])
+                    table = Table(data, colWidths=(100,100),  style=style)
+                    table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
+                                ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
+                                ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                                ('BACKGROUND',(0, 0),(-1,-1),colors.white),
+                                ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+                                ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+                                ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
+                                
+                                ])   
+                    elements.append(table)
+                    p.build(elements)        
+            return response
         return render(request, 'job_card.html', {})
+
+
 
 

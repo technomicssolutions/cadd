@@ -427,8 +427,14 @@ class EnquiryReport(View):
         else:
             start_date = datetime.strptime(start_date, '%d/%m/%Y')
             end_date = datetime.strptime(end_date, '%d/%m/%Y')
-        
-        enquiries = Enquiry.objects.filter( saved_date__gte=start_date,saved_date__lte=end_date).order_by('saved_date')
+        try:
+            enquiries = Enquiry.objects.filter( saved_date__gte=start_date,saved_date__lte=end_date).order_by('saved_date')
+        except Exception as ex:
+            print str(ex), 'Exception'
+            res = {
+                    'result': 'error',
+                }
+
         if enquiries:
             if request.is_ajax():
                 enquiry_list = []
@@ -499,5 +505,28 @@ class EnquiryReport(View):
                 return render(request, 'enquiry_report.html',{'message':'No enquiries founds'})
         else:
             return render(request, 'enquiry_report.html',{})
+
+
+class StudentSearch(View):
+
+    def get(self, request, *args, **kwargs):
+
+        if request.is_ajax():
+            batch_id = request.GET.get('batch')
+            student_name = request.GET.get('name')
+            batch = Batch.objects.get(id=batch_id)
+            students_list = []
+            students = batch.student_set.filter(student_name__istartswith=student_name)
+            for student in students:
+                students_list.append({
+                    'id': student.id,
+                    'name': student.student_name,
+                })
+            res = {
+                    'result': 'ok',
+                    'students': students_list,
+                }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
 
 

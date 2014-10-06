@@ -643,10 +643,12 @@ function EnquiryReportController($scope, $http) {
     $scope.view_enquiry = function(){
         if($scope.validate()){
             $http.get('/admission/enquiry_report?start_date='+$scope.start_date+'&end_date='+$scope.end_date).success(function(data){
-                if( data.enquiries.length == 0)
-                    $scope.validate_error_msg = "No enquiries  found";
-                else
+                if(data.result=='ok'){
+                    
                     $scope.enquiries = data.enquiries;
+                }else{
+                    $scope.validate_error_msg = "No enquiries  found";
+                }
             }).error(function(data, status){
                 $scope.message = data.message;
             })

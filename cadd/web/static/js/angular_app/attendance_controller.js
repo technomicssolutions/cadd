@@ -12,7 +12,15 @@ function attendance_validation($scope, $http){
     } return true;
 }
 function student_search($scope, $http){
-    console.log($scope.batch_id);
+    $http.get('/admission/search_student/?name='+$scope.student_name+'&batch='+$scope.batch_id).success(function(data){
+        if(data.result == 'ok'){
+            $scope.students_list = data.students;
+            if($scope.students_list.length == 0)
+                $scope.message = "No Students found";
+        }            
+        }).error(function(data, status){
+            console.log('Request failed'|| data);
+        });
 }
 function AttendanceController($scope, $http, $element){
     $scope.batch_id = "";
@@ -327,26 +335,80 @@ function JobCardController($scope, $http){
         get_batches($scope, $http);
         $scope.batch_id = "";
         $scope.student_name = "";
+        $scope.keyboard_control();
         $scope.job_card = {
             'batch_id': '',
             'student_id': '',
         };
+    }
+    $scope.keyboard_control = function(){
+        $scope.focusIndex = 0;
+        $scope.keys = [];
+        $scope.keys.push({ code: 13, action: function() { $scope.select_list_item( $scope.focusIndex ); }});        
+        $scope.keys.push({ code: 38, action: function() { 
+            if($scope.focusIndex > 0){
+                $scope.focusIndex--; 
+            }
+        }});
+        $scope.keys.push({ code: 40, action: function() { 
+            $scope.item_list = $scope.students_list;
+            if($scope.focusIndex < $scope.item_list.length-1){
+                $scope.focusIndex++; 
+            }
+        }});
+        $scope.$on('keydown', function( msg, code ) {
+            $scope.keys.forEach(function(o) {
+              if ( o.code !== code ) { return; }
+              o.action();
+              $scope.$apply();
+            });
+        });
+    }
+    $scope.select_list_item = function(index) {
+        student = $scope.students_list[index];
+        $scope.get_student_details(student);
+    }
+    $scope.get_student_details = function(student) {
+        $scope.student_name = student.name;
+        $scope.job_card.student_id = student.id;
+        $scope.students_list = [];
+        $scope.no_student_msg = "";
     }
     $scope.student_search = function(){
         if($scope.student_name.length > 0){
             $scope.message = "";
-            if($scope.batch_id != '')
+            if($scope.batch_id != ''){
+                $scope.job_card.student_id = "";
                 student_search($scope, $http);
+            }                
             else
                 $scope.message = "Please select a Batch";
         }
+        else
+            $scope.students_list = ""
     }
     $scope.select_batch = function(){
         $scope.student_name = "";
         $scope.message = "";
+        $scope.students_list = "";
         $scope.job_card = {
-            'batch_id': '',
+            'batch_id': $scope.batch_id,
             'student_id': '',
         };
+    }
+    $scope.validate_jobcard = function(){
+        $scope.message = "";
+        if($scope.job_card.batch_id == ''){
+            $scope.message = "Please select a batch from the list";
+            return false;
+        } else if($scope.job_card.student_id == ''){
+            $scope.message = "Please select a student form the list";
+            return false;
+        } return true;
+    }
+    $scope.show_jobcard = function(){
+        if($scope.validate_jobcard()){
+            document.location.href = '/attendance/job_card/?batch='+$scope.job_card.batch_id+'&student='+$scope.job_card.student_id;
+        }
     }
 }
