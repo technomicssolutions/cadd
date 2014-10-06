@@ -161,6 +161,22 @@ function StaffController($scope, $element, $http, $timeout, share, $location) {
     } 
     $scope.add_new_staff = function(){  
         $scope.new_staff = true;
+        $scope.staff = {
+            'first_name': '',
+            'last_name': '',
+            'username': '',
+            'password': '',
+            'dob': '',
+            'address': '',
+            'mobile_number': '',
+            'land_number': '',
+            'email':'',
+            'blood_group': '',
+            'doj': '',
+            'qualifications': '',
+            'experience':'',
+            'role': '',
+        }
         $scope.popup = new DialogueModelWindow({   
             'dialogue_popup_width': '79%',
             'message_padding': '0px',
