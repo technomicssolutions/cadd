@@ -15,7 +15,11 @@ this.DatePicker = Picker.Date = new Class({
 
 	Extends: Picker.Attach,
 
-	options: {/*
+	options: {
+		onSelect: function(date){
+			calculate_total_fee_amount();
+		},
+		/*
 		onSelect: function(date){},
 
 		minDate: new Date('3/4/2010'), // Date object or a string

@@ -169,10 +169,14 @@ function calculate_total_fee_amount() {
     var due_date = date_conversion($$('#due_date')[0].get('value'));
     var paid_date = date_conversion($$('#paid_date')[0].get('value'));
     if (paid_date > due_date) {
-        $('#total_fee_amount').val(parseFloat($('#fee_amount').val()) + parseFloat($('#fine_amount').val()));
-        $('#balance').val(parseFloat($('#balance').val()) + parseFloat($('#fine_amount').val()));
+        diff = paid_date - due_date;
+        diff = parseInt(diff/(24*60*60*1000), 10)
+        fine = parseFloat($('#fine_amount').val())*diff;
+        $('#total_fee_amount').val(parseFloat($('#fee_amount').val()) + parseFloat(fine));
+        $('#balance').val(parseFloat($('#fee_amount').val()) + parseFloat(fine));
     } else {
         $('#total_fee_amount').val(parseFloat($$('#fee_amount')[0].get('value')));
+        $('#balance').val(parseFloat($$('#fee_amount')[0].get('value')));
     }
 }
 
