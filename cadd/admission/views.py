@@ -315,7 +315,7 @@ class EditStudentDetails(View):
                 installment_obj.amount = installment['amount']
                 installment_obj.due_date = datetime.strptime(installment['due_date'], '%d/%m/%Y')
                 if installment.get('fine', ''):
-                    installmet.fine_amount = installment['fine']
+                    installment_obj.fine_amount = installment['fine']
                 installment_obj.save()
                 student.installments.add(installment_obj)
                 student.save()
