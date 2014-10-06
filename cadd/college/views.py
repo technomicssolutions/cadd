@@ -213,6 +213,7 @@ class Batches(View):
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
             batches = Batch.objects.all()
+            print batches
             batch_list = []
             for batch in batches:
                 batch_name = batch.name + ' - '+ str(batch.start_time.strftime('%H:%M%p')) + ' to ' + str(batch.end_time.strftime('%H:%M%p'))
@@ -222,7 +223,7 @@ class Batches(View):
                     'start':batch.start_time.strftime('%H:%M%p'),
                     'end':batch.end_time.strftime('%H:%M%p'),
                     'allowed_students':batch.allowed_students,                                        
-                    'name': batch_name,
+                    'batch_name': batch_name,
                     'id': batch.id
                 })
             res = {

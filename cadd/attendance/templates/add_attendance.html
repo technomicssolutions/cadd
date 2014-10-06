@@ -16,7 +16,7 @@
 					<div class="add_attendance_row">
 						<label class="add_attendance_label">Select Batch</label>				  <select ng-model="batch.id" >
 							<option value="">Select</option>
-							<option ng-repeat="batch in batches" value="[[batch.id]]" ng-click="get_batch_details(batch)">[[batch.name]]</option>
+							<option ng-repeat="batch in batches" value="[[batch.id]]" ng-click="get_batch_details(batch)">[[batch.batch_name]]</option>
 						</select>					
 					</div>
 					<div class="display_date">
