@@ -224,7 +224,7 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         {
             $scope.student = data.student[0];
             console.log($scope.student);
-            $scope.student_name = data.student[0].student_name;
+            /*$scope.student_name = data.student[0].student_name;
             $scope.roll_number = data.student[0].roll_number;
             $scope.cadd_registration_no = data.student[0].cadd_registration_no;
             $scope.course = data.student[0].course;
@@ -244,9 +244,10 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
             $scope.fees = data.student[0].fees;
             $scope.photo_img = {};
             $scope.no_installments = data.student[0].no_installments;
-            $scope.guardian_mobile_number = data.student[0].guardian_mobile_number;
+            $scope.guardian_mobile_number = data.student[0].guardian_mobile_number;*/
+            $scope.no_installments = data.student[0].no_installments;
             $scope.installments = $scope.student.installments;
-            console.log($scope.no_installments);
+            console.log($scope.installments.length);
             //$scope.load_installments();
             
         }).error(function(data, status)
@@ -255,8 +256,9 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         });
     }
     $scope.load_installments = function() {
-        if ($scope.no_installments > $scope.installments.length) {
-            diff = $scope.no_installments - $scope.installments.length;
+        console.log($scope.student.no_installments, $scope.installments.length);
+        if ($scope.student.no_installments > $scope.installments.length) {
+            diff = $scope.student.no_installments - $scope.installments.length;
             for (var i=0; i<diff; i++) {
                 due_date_id = 'due_date_'+$scope.installments.length;
                 $scope.installments.push({
@@ -267,7 +269,7 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
                 })
             }
         } else {
-            diff = $scope.installments.length - $scope.no_installments;
+            diff = $scope.installments.length - $scope.student.no_installments;
             for (var i=diff; i>0; i--) {
                 index = $scope.installments.indexOf($scope.installments[$scope.installments.length])
                 $scope.installments.splice(index, 1);
