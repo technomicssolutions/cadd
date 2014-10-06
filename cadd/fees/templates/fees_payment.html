@@ -16,10 +16,9 @@
 			
 			<div class="control">
 				<label> Course</label> 
-				<select name="course" ng-model="course" ng-change="get_batch()">
-					<option value="select">Select</option>
-					<option ng-repeat="course in courses" value="[[course.id]]" >[[course.course]]
-					</option>
+				<select name="course" ng-model="course" ng-change="get_batch()" ng-options="course.id as course.name in courses">
+					<option value="">Select</option>
+					
 				</select>
 			</div>
 			<div class"error_message">
