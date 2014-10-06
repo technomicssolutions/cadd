@@ -45,7 +45,6 @@ class AddStudent(View):
                     }
                 else:
                     try:
-                        print request.POST['batch']
                         batches = request.POST['batch'].split(',')
                         for batch in batches:
                             batch_obj = Batch.objects.get(id = batch)
@@ -77,11 +76,12 @@ class AddStudent(View):
                         student.guardian_mobile_number = request.POST['guardian_mobile_number']
                         student.fees = request.POST['fees']           
                         student.no_installments = request.POST['no_installments']
-                        installments = ast.literal_eval(request.POST['installments'])
+                        installments = request.POST['installments']
                         for installment in installments:
                             installmet = Installment()
                             installmet.amount = installment['amount']
-                            installmet.fine_amount = installment['fine']
+                            if installment.GET('fine', ''):
+                                installmet.fine_amount = installment['fine']
                             installmet.due_date = datetime.strptime(installment['due_date'], '%d/%m/%Y')
                             installmet.save()
                             student.installments.add(installmet)

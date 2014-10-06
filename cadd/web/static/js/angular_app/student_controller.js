@@ -26,7 +26,6 @@ function save_new_student($http, $scope) {
             id_name = '#'+$scope.installments[i].due_date_id;
             $scope.installments[i].due_date = $$(id_name)[0].get('value');
         }
-        $scope.installments = angular.toJson($scope.installments)
         params = { 
             'enquiry': $scope.enquiry,
             'student_name':$scope.student_name,
@@ -47,7 +46,7 @@ function save_new_student($http, $scope) {
             'relationship': $scope.relationship,
             'guardian_mobile_number': $scope.guardian_mobile_number,
             'fees': $scope.fees,
-            'installments': $scope.installments,
+            'installments': angular.toJson($scope.installments),
             'no_installments': $scope.no_installments,
             "csrfmiddlewaretoken" : $scope.csrf_token
         }
