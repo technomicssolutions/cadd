@@ -277,7 +277,7 @@ class FeesPaymentSave(View):
            'current_date': current_date.strftime('%d/%m/%Y'),
 
         }
-        return render(request, 'fees/fees_payment.html',context)
+        return render(request, 'fees_payment.html',context)
 
     def post(self, request, *args, **kwargs):
 
