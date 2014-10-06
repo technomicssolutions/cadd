@@ -175,14 +175,14 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         $scope.student_id = student_id;
         $scope.get_student_details(student_id);
         $scope.url = '/admission/edit_student_details/' + $scope.student_id+ '/';
-        $http.get($scope.url).success(function(data)
-        {
+        // $http.get($scope.url).success(function(data)
+        // {
             
-            $scope.student = data.student[0];
-        }).error(function(data, status)
-        {
-            console.log(data || "Request failed");
-        });
+        //     $scope.student = data.student[0];
+        // }).error(function(data, status)
+        // {
+        //     console.log(data || "Request failed");
+        // });
         
         new Picker.Date($$('#dob'), {
             timePicker: false,

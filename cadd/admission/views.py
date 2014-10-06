@@ -211,13 +211,18 @@ class EditStudentDetails(View):
         ctx_student_data = []
         student = Student.objects.get(id=student_id)
         if request.is_ajax():
+            for batch in student.batches.all():
+                batch_details.append({
+                    'id': batch.id,
+                    'name': batch.name,
+                })
             ctx_student_data.append({
                 'student_name': student.student_name if student.student_name else '',
                 'roll_number': student.roll_number if student.roll_number else '',
                 'dob': student.dob.strftime('%d/%m/%Y') if student.dob else '',
                 'address': student.address if student.address else '',
                 'course': student.course.id if student.course else '',
-                'batch' :student.batch.id if student.batch else '',
+                'batch' : batch_details,
                 'mobile_number': student.mobile_number if student.mobile_number else '',
                 'email': student.email if student.email else '',
                 'blood_group': student.blood_group if student.blood_group else '',
