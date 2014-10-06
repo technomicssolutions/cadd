@@ -113,20 +113,11 @@ function get_course_list($scope, $http) {
     });
 }
 
-function get_batch_list($scope, $http, from) {
+function get_batch_list($scope, $http) {
     
         $http.get('/college/batch_details/').success(function(data)
         {
             $scope.batches = data.batches;
-            if(from == 'edit_student'){
-                for(var i = 0; i < $scope.batches.length; i++){
-                    for(var j = 0; j < $scope.student.batch.length; j++){
-                        if($scope.batches[i].id == $scope.student.batch[j].id){
-                            $scope.batches[i].selected = 'true';
-                        }
-                    }
-                }
-            }
             if ($scope.batches.length == 0) {
                 $scope.no_batch_error = 'No batch';
             } else {

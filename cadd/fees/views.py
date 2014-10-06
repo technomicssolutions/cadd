@@ -386,208 +386,64 @@ class GetOutStandingFeesDetails(View):
         current_date = datetime.now().date()
         status = 200
         if request.is_ajax():
-            # filtering_option = request.GET.get('filtering_option','')
-            # try:
-            #     fees_structure = FeesStructure.objects.get(course__id=request.GET.get('course', ''), batch__id=request.GET.get('batch', ''))
-            # except:
-            #     res = {
-            #         'result': 'error',
-            #         'message': 'No Fees Structure for this batch',
-            #     }
-            #     response = simplejson.dumps(res)
-            #     return HttpResponse(response, status=status, mimetype='application/json')
             student_id = request.GET.get('student_id', '')
-            ctx_fees_details = []
-            # if request.GET.get('fees_type','') == 'course':
-            #     if filtering_option == 'student_wise':
-            #         student = Student.objects.get(id=student_id)
-            #         heads = fees_structure.head.all()
-            #         ctx_fees_head_details = []
-            #         for head in heads:
-            #             ctx_installments = []
-            #             i = 0
-            #             is_not_paid = False
-            #             for installment in head.installments.all():
-            #                 try:
-            #                     fees_payment = FeesPayment.objects.get(fee_structure=fees_structure, student__id=student_id)
-            #                     fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
-            #                     if fees_payment_installments.count() > 0:
-            #                         if fees_payment_installments[0].installment_amount < installment.amount:
-            #                             is_not_paid = True
-            #                             ctx_installments.append({
-            #                                 'id': installment.id,
-            #                                 'amount':installment.amount,
-            #                                 'due_date': installment.due_date.strftime('%d/%m/%Y'),
-            #                                 'fine_amount': installment.fine_amount,
-            #                                 'name':'installment'+str(i + 1),
-            #                                 'paid_installment_amount': fees_payment_installments[0].installment_amount,
-            #                                 'balance': float(installment.amount) - float(fees_payment_installments[0].installment_amount),
-            #                             })
-            #                     elif fees_payment_installments.count() == 0:
-            #                         is_not_paid = True
-            #                         ctx_installments.append({
-            #                             'id': installment.id,
-            #                             'amount':installment.amount,
-            #                             'due_date': installment.due_date.strftime('%d/%m/%Y'),
-            #                             'fine_amount': installment.fine_amount,
-            #                             'name':'installment'+str(i + 1),
-            #                             'paid_installment_amount': 0,
-            #                             'balance': float(installment.amount),
-            #                         })
-            #                 except Exception as ex:
-            #                     if current_date >= installment.due_date:
-            #                         is_not_paid = True
-            #                         ctx_installments.append({
-            #                             'id': installment.id,
-            #                             'amount':installment.amount,
-            #                             'due_date': installment.due_date.strftime('%d/%m/%Y'),
-            #                             'fine_amount': installment.fine_amount,
-            #                             'name':'installment'+str(i + 1),
-            #                             'paid_installment_amount': 0,
-            #                             'balance': float(installment.amount),
-            #                         })
-            #                 i = i + 1
-            #             if is_not_paid:
-            #                 ctx_fees_head_details.append({
-            #                     'head': head.name,
-            #                     'amount': head.amount,
-            #                     'no_installments': head.no_installments,
-            #                     'installments': ctx_installments,
-            #                 })
-            #         ctx_fees_details.append({
-            #             'head_details': ctx_fees_head_details,
-            #             'student_name': student.student_name,
-            #             'roll_no': student.roll_number,
-            #         })
-            #     else:
-            #         students = Student.objects.filter(course__id=request.GET.get('course', ''), batch__id=request.GET.get('batch', '')).order_by('roll_number')
-            #         ctx_student_fees_details = []
-            #         for student in students:
-            #             heads = fees_structure.head.all()
-            #             ctx_fees_head_details = []
-            #             for head in heads:
-            #                 is_not_paid = False
-            #                 ctx_installments = []
-            #                 i = 0
-            #                 for installment in head.installments.all():
-            #                     try:
-            #                         fees_payment = FeesPayment.objects.get(fee_structure=fees_structure, student=student)
-            #                         fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
-            #                         if fees_payment_installments.count() > 0:
-            #                             if fees_payment_installments[0].installment_amount < installment.amount:
-            #                                 is_not_paid = True
-            #                                 ctx_installments.append({
-            #                                     'id': installment.id,
-            #                                     'amount':installment.amount,
-            #                                     'due_date': installment.due_date.strftime('%d/%m/%Y'),
-            #                                     'fine_amount': installment.fine_amount,
-            #                                     'name':'installment'+str(i + 1),
-            #                                     'paid_installment_amount': fees_payment_installments[0].installment_amount,
-            #                                     'balance': float(installment.amount) - float(fees_payment_installments[0].installment_amount),
-            #                                 })
-            #                         elif fees_payment_installments.count() == 0:
-            #                             is_not_paid = True
-            #                             ctx_installments.append({
-            #                                 'id': installment.id,
-            #                                 'amount':installment.amount,
-            #                                 'due_date': installment.due_date.strftime('%d/%m/%Y'),
-            #                                 'fine_amount': installment.fine_amount,
-            #                                 'name':'installment'+str(i + 1),
-            #                                 'paid_installment_amount': 0,
-            #                                 'balance': float(installment.amount),
-            #                             })
-            #                     except Exception:
-            #                         if current_date >= installment.due_date:
-            #                             is_not_paid = True
-            #                             ctx_installments.append({
-            #                                 'id': installment.id,
-            #                                 'amount':installment.amount,
-            #                                 'due_date': installment.due_date.strftime('%d/%m/%Y'),
-            #                                 'fine_amount': installment.fine_amount,
-            #                                 'name':'installment'+str(i + 1),
-            #                                 'paid_installment_amount': 0,
-            #                                 'balance': float(installment.amount),
-            #                             })
-            #                     i = i + 1
-            #                 if is_not_paid:
-            #                     ctx_fees_head_details.append({
-            #                         'head': head.name,
-            #                         'amount': head.amount,
-            #                         'no_installments': head.no_installments,
-            #                         'installments': ctx_installments,
-            #                     })
-            #             ctx_student_fees_details.append({
-            #                 'head_details':ctx_fees_head_details,
-            #                 'name': student.student_name,
-            #                 'roll_no': student.roll_number,
-            #             })
-            #         ctx_fees_details.append({
-            #             'students': ctx_student_fees_details,
-            #         })    
-            # else:
-            #     heads = FeesHead.objects.all()
-            #     if filtering_option == 'student_wise':
-            #         ctx_fees_head_details = []
-            #         for head in heads:
-            #             try:
-            #                 student = Student.objects.get(id=student_id)
-            #                 fees_payment = CommonFeesPayment.objects.get(head=head, student__id=student_id)
-            #                 if fees_payment.paid_amount < head.amount:
-            #                     ctx_fees_head_details.append({
-            #                         'id': head.id,
-            #                         'name': head.name,
-            #                         'amount': head.amount,
-            #                         'balance': float(head.amount) - float(fees_payment.paid_amount),
-            #                         'paid_head_amount': fees_payment.paid_amount,
-            #                     })
-            #             except:
-            #                 ctx_fees_head_details.append({
-            #                     'id': head.id,
-            #                     'name': head.name,
-            #                     'amount': head.amount,
-            #                     'balance': float(head.amount),
-            #                     'paid_head_amount': 0,
-            #                 })
-            #         ctx_fees_details.append({
-            #             'head_details': ctx_fees_head_details,
-            #             'student_name': student.student_name,
-            #             'roll_no': student.roll_number
-            #         })
-            #     else:
-            #         students = Student.objects.filter(course__id=request.GET.get('course', ''), batch__id=request.GET.get('batch', '')).order_by('roll_number')
-            #         ctx_student_fees_details = []
-            #         for student in students:
-            #             ctx_fees_head_details = []
-            #             for head in heads:
-            #                 try:
-            #                     fees_payment = CommonFeesPayment.objects.get(head=head, student__id=student_id)
-            #                     if fees_payment.paid_amount < head.amount:
-            #                         ctx_fees_head_details.append({
-            #                             'id': head.id,
-            #                             'name': head.name,
-            #                             'amount': head.amount,
-            #                             'balance': float(head.amount) - float(fees_payment.paid_amount),
-            #                             'paid_head_amount': fees_payment.paid_amount,
-            #                         })
-            #                 except:
-            #                     ctx_fees_head_details.append({
-            #                         'id': head.id,
-            #                         'name': head.name,
-            #                         'amount': head.amount,
-            #                         'balance': float(head.amount),
-            #                         'paid_head_amount': 0,
-            #                     })
-            #             ctx_student_fees_details.append({
-            #                 'head_details':ctx_fees_head_details,
-            #                 'name': student.student_name,
-            #                 'roll_no': student.roll_number,
-            #             })
-            #         ctx_fees_details.append({
-            #             'students': ctx_student_fees_details,
-            #         })
+            fees_details = []
+            student = Student.objects.get(id=student_id)
+            i = 0
+            is_not_paid = False
+            ctx_installments = []
+            for installment in student.installments.all():
+                try:
+                    fees_payment = FeesPayment.objects.get(student__id=student_id)
+                    fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
+                    if fees_payment_installments.count() > 0:
+                        if fees_payment_installments[0].installment_amount < installment.amount:
+                            is_not_paid = True
+                            ctx_installments.append({
+                                'id': installment.id,
+                                'amount':installment.amount,
+                                'due_date': installment.due_date.strftime('%d/%m/%Y'),
+                                'fine_amount': installment.fine_amount,
+                                'name':'installment'+str(i + 1),
+                                'paid_installment_amount': fees_payment_installments[0].installment_amount,
+                                'balance': float(installment.amount) - float(fees_payment_installments[0].installment_amount),
+                            })
+                    elif fees_payment_installments.count() == 0:
+                        is_not_paid = True
+                        ctx_installments.append({
+                            'id': installment.id,
+                            'amount':installment.amount,
+                            'due_date': installment.due_date.strftime('%d/%m/%Y'),
+                            'fine_amount': installment.fine_amount,
+                            'name':'installment'+str(i + 1),
+                            'paid_installment_amount': 0,
+                            'balance': float(installment.amount),
+                        })
+                except Exception as ex:
+                    if current_date >= installment.due_date:
+                        is_not_paid = True
+                        ctx_installments.append({
+                            'id': installment.id,
+                            'amount':installment.amount,
+                            'due_date': installment.due_date.strftime('%d/%m/%Y'),
+                            'fine_amount': installment.fine_amount,
+                            'name':'installment'+str(i + 1),
+                            'paid_installment_amount': 0,
+                            'balance': float(installment.amount),
+                        })
+                i = i + 1
+            if is_not_paid:
+                fees_details.append({
+                    'no_installments': student.no_installments,
+                    'installments': ctx_installments,
+                    'student_name': student.student_name,
+                    'roll_no': student.roll_number,
+                })
             res = {
                 'result':'ok',
-                'fees_details': ctx_fees_details,
+                'fees_details': fees_details,
+                'student_name': student.student_name,
+                'roll_no': student.roll_number,
             }
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')
@@ -658,6 +514,29 @@ class GetFeesHeadList(View):
             status = 200
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')
+
+class PrintOutstandingFeesReport(View):
+
+    def get(self, request, *args, **kwargs):
+
+        response = HttpResponse(content_type='application/pdf')
+        p = SimpleDocTemplate(response, pagesize=A4)
+        elements = []  
+        student = Student.objects.get(id=request.GET.get('student', ''))
+        d = [['Outstanding fees details - '+ student.student_name]]
+        t = Table(d, colWidths=(450), rowHeights=25, style=style)
+        t.setStyle([('ALIGN',(0,0),(-1,-1),'CENTER'),
+                    ('TEXTCOLOR',(0,0),(-1,-1),colors.HexColor('#699AB7')),
+                    ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                    ('BACKGROUND',(0, 0),(-1,-1),colors.HexColor('#EEEEEE')),
+                    ('FONTSIZE', (0,0), (0,0), 20),
+                    ('FONTSIZE', (1,0), (-1,-1), 17),
+                    ])   
+        elements.append(t)
+        elements.append(Spacer(4, 5))
+        p.build(elements)        
+        return response
+
 
 
             

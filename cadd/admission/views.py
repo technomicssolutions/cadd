@@ -229,9 +229,11 @@ class EditStudentDetails(View):
                     'amount': installment.amount,
                     'due_date': installment.due_date.strftime('%d/%m/%Y'),
                     'fine': installment.fine_amount if installment.fine_amount else '',
+                    'due_date_id': installment.id,
                 })
             #print installments
             ctx_student_data.append({
+                'student_id': student.id,
                 'student_name': student.student_name if student.student_name else '',
                 'roll_number': student.roll_number if student.roll_number else '',
                 'unique_id': student.unique_id if student.unique_id else '',
@@ -239,7 +241,7 @@ class EditStudentDetails(View):
                 'dob': student.dob.strftime('%d/%m/%Y') if student.dob else '',
                 'address': student.address if student.address else '',
                 'course': student.course.id if student.course else '',
-                'batch' : batch_details,
+                'batches' : batch_details,
                 'mobile_number': student.mobile_number if student.mobile_number else '',
                 'email': student.email if student.email else '',
                 'blood_group': student.blood_group if student.blood_group else '',
@@ -266,31 +268,57 @@ class EditStudentDetails(View):
 
     def post(self, request, *args, **kwargs):
 
-        student_id = kwargs['student_id']
-        student = Student.objects.get(id = student_id)
         student_data = ast.literal_eval(request.POST['student'])
+        student_id = student_data['student_id']
+        student = Student.objects.get(id = student_id)
         try:
             student.student_name = student_data['student_name']
             student.roll_number = student_data['roll_number']
             student.address = student_data['address']
-            course = Course.objects.get(course = student_data['course'])
+            course = Course.objects.get(id = student_data['course'])
             student.course=course
-            batch = Batch.objects.get(batch = student_data['batch'])
-            student.batch=batch
+            student.batches.clear()
+            batches = student_data['batch']
+            for batch in batches:
+                batch_obj = Batch.objects.get(id = batch)
+                if batch_obj.no_of_students == None:
+                    batch_obj.no_of_students = 1
+                else:
+                    batch_obj.no_of_students = batch_obj.no_of_students + 1
+                batch_obj.save()
+                student.batches.add(batch_obj)
 
             student.dob = datetime.strptime(student_data['dob'], '%d/%m/%Y')
             student.address = student_data['address']
             student.mobile_number = student_data['mobile_number']
+            student.cadd_registration_no = student_data['cadd_registration_no']
             
             student.email = student_data['email']
             student.blood_group = student_data['blood_group']
             student.doj = datetime.strptime(student_data['doj'], '%d/%m/%Y')
-            student.photo = request.FILES.get('photo_img', '')                       
+            if request.FILES.get('photo_img', ''):
+                student.photo = request.FILES.get('photo_img', '')                       
             student.certificates_submitted = student_data['certificates_submitted']
             student.id_proofs_submitted = student_data['id_proofs_submitted']
             student.guardian_name = student_data['guardian_name']
             student.relationship = student_data['relationship']
             student.guardian_mobile_number = student_data['guardian_mobile_number']
+            student.fees = student_data['fees']
+            student.no_installments = student_data['no_installments']
+            installments = student_data['installments']
+            print student_data['installments']
+            for installment in installments:
+                try:
+                    installment_obj = Installment.objects.get(id=installment['id'])
+                except:
+                    installment_obj = Installment()
+                installment_obj.amount = installment['amount']
+                installment_obj.due_date = datetime.strptime(installment['due_date'], '%d/%m/%Y')
+                if installment.get('fine', ''):
+                    installmet.fine_amount = installment['fine']
+                installment_obj.save()
+                student.installments.add(installment_obj)
+                student.save()
             student.save()
             res = {
                 'result': 'ok',
