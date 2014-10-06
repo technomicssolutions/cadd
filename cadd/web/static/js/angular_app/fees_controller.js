@@ -180,19 +180,23 @@ function FeesController($scope, $element, $http, $timeout, share, $location)
         $scope.url = '';
         if (($scope.fees_type != '' || $scope.fees_type != undefined) && ($scope.filtering_option != '' || $scope.filtering_option != undefined)) {
             if ($scope.course != 'select' && $scope.batch != 'select') {
-                if ($scope.filtering_option == 'student_wise' && $scope.student_id != 'select') {
-                    $scope.url = '/fees/get_outstanding_fees_details/?course='+$scope.course+ '&batch='+ $scope.batch+ '&student_id='+$scope.student_id+'&filtering_option='+$scope.filtering_option+'&fees_type='+$scope.fees_type;
-                } else {
-                    $scope.url = '/fees/get_outstanding_fees_details/?course='+$scope.course+ '&batch='+ $scope.batch+ '&filtering_option='+$scope.filtering_option+'&fees_type='+$scope.fees_type;
-                }
+                // if ($scope.filtering_option == 'student_wise' && $scope.student_id != 'select') {
+                //     $scope.url = '/fees/get_outstanding_fees_details/?course='+$scope.course+ '&batch='+ $scope.batch+ '&student_id='+$scope.student_id+'&filtering_option='+$scope.filtering_option+'&fees_type='+$scope.fees_type;
+                // } else {
+                //     $scope.url = '/fees/get_outstanding_fees_details/?course='+$scope.course+ '&batch='+ $scope.batch+ '&filtering_option='+$scope.filtering_option+'&fees_type='+$scope.fees_type;
+                // }
+                $scope.url = '/fees/get_outstanding_fees_details/?course='+$scope.course+'&student_id='+$scope.student_id;
             }
         }
         $http.get($scope.url).success(function(data)
         {
             if (data.result == 'ok') {
-                $scope.fees_details = data.fees_details[0];
-                if($scope.fees_details.students)
-                    paginate($scope.fees_details.students, $scope, 2);
+                console.log(data);
+                if (data.fees_details.length > 0) {
+                    $scope.fees_details = data.fees_details[0];
+                    if($scope.fees_details.students)
+                        paginate($scope.fees_details.students, $scope, 2);
+                }
             } else {
                 $scope.no_student_error = data.message;
             }
