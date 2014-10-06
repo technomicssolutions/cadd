@@ -80,7 +80,7 @@ class AddStudent(View):
                         for installment in installments:
                             installmet = Installment()
                             installmet.amount = installment['amount']
-                            if installment.GET('fine', ''):
+                            if installment.get('fine', ''):
                                 installmet.fine_amount = installment['fine']
                             installmet.due_date = datetime.strptime(installment['due_date'], '%d/%m/%Y')
                             installmet.save()
