@@ -200,15 +200,6 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         $scope.student_id = student_id;
         $scope.get_student_details(student_id);
         $scope.url = '/admission/edit_student_details/' + $scope.student_id+ '/';
-        // $http.get($scope.url).success(function(data)
-        // {
-            
-        //     $scope.student = data.student[0];
-        // }).error(function(data, status)
-        // {
-        //     console.log(data || "Request failed");
-        // });
-        
         new Picker.Date($$('#dob'), {
             timePicker: false,
             positionOffset: {x: 5, y: 0},
@@ -224,6 +215,8 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
             format:'%d/%m/%Y',
         });
         get_course_list($scope, $http);
+        get_batch_list($scope, $http, 'edit_student');
+        console.log($scope.batches);
        
     }
     $scope.get_student_details  = function(student_id){
@@ -231,6 +224,7 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         $http.get($scope.url).success(function(data)
         {
             $scope.student = data.student[0];
+            console.log($scope.student);
             
         }).error(function(data, status)
         {

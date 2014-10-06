@@ -30,15 +30,15 @@
                 </div>
                 <div class="control">
                     <label> Course</label>  
-                    <select name="course" ng-model="student.course" ng-selected="course.id == student.course_id" ng-options="course.id as course.course for course in courses">
+                    <select name="course" ng-model="student.course" ng-selected="course.id == student.course_id" ng-options="course.id as course.course_name for course in courses">
 					<option value="">Select</option>
 				</select>
                 </div>
                 <div class="control">
-                    <label> Batch</label>  
-                   <select name="batch" ng-model="student.batch"  ng-selected="batch.id == student.batch" ng-options="batch.id as batch.name for batch in batches">
-					<option value="">Select</option>
-				</select>
+                    <label> Batch*</label>  
+                    <select name="batch" ng-model="batch" ng-change="get_fees_head()"  multiple>
+                         <option ng-repeat="batch in batches" value="[[batch.id]]" ng-selected="batch.selected=='true'">[[batch.batch_name]]</option>
+                    </select>
                 </div>
                 <div class="control">
                     <label> Qualification</label>  
@@ -128,8 +128,11 @@
                             <td><input type="text" ng-model="installment.due_date" /></td>
                             <td><input type="text" ng-model="installment.fine" /></td>
                         </tr>
-                    </table>
-
+                    </table>        
+                </div>
+                      <div class="buttons" align="Center">
+                    <p class="error_message">[[validation_error]]</p>
+                    <input type="button" class="btn btn-info" value="Save" ng-click="save_new_student()"/>
                 </div>
             </div>
         </form>
