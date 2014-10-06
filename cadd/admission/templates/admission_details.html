@@ -144,7 +144,7 @@
                     <input type="text" name="no_installments" value="" ng-model="no_installments" ng-change="load_installments()" />
                 </div>
 
-                <div class="control" ng-show="no_installments > 0">
+                <div class="control" ng-show="installments.length > 0">
                     <table>
                         <tr>
                             <th>Amount</th>
