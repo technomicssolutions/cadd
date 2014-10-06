@@ -26,7 +26,6 @@ function save_new_student($http, $scope) {
             id_name = '#'+$scope.installments[i].due_date_id;
             $scope.installments[i].due_date = $$(id_name)[0].get('value');
         }
-        $scope.installments = angular.toJson($scope.installments)
         params = { 
             'enquiry': $scope.enquiry,
             'student_name':$scope.student_name,
@@ -47,7 +46,7 @@ function save_new_student($http, $scope) {
             'relationship': $scope.relationship,
             'guardian_mobile_number': $scope.guardian_mobile_number,
             'fees': $scope.fees,
-            'installments': $scope.installments,
+            'installments': angular.toJson($scope.installments),
             'no_installments': $scope.no_installments,
             "csrfmiddlewaretoken" : $scope.csrf_token
         }
@@ -174,6 +173,7 @@ validate_new_student = function($scope) {
         $scope.validation_error = 'Please check the installment amount with the total';
         return false;
     } else if ($scope.installments.length > 0) {
+
         for(var i = 0; i < $scope.installments.length; i++){
             id_name = '#'+$scope.installments[i].due_date_id;
             $scope.installments[i].due_date = $$(id_name)[0].get('value');
@@ -186,7 +186,7 @@ validate_new_student = function($scope) {
             } else if($scope.installments[i].due_date == ''){
                 $scope.validation_error = "Please enter the due date for installment";
                 return false;
-            } else if($scope.installments[i].fine != 0 && $scope.installments[i].fine != Number($scope.installments.fine)){
+            } else if($scope.installments[i].fine != 0 && parseFloat($scope.installments[i].fine) != Number($scope.installments[i].fine)){
                 $scope.validation_error = "Please enter a valid fine amount for installment";
                 return false;
             } 

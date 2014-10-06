@@ -16,6 +16,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from admission.models import Student, Enquiry, Installment
 from college.models import Course, Batch
 from datetime import datetime
+from fees.models import FeesPayment
 
 style = [
     ('FONTSIZE', (0,0), (-1, -1), 12),
@@ -44,7 +45,6 @@ class AddStudent(View):
                     }
                 else:
                     try:
-                        print request.POST['batch']
                         batches = request.POST['batch'].split(',')
                         for batch in batches:
                             batch_obj = Batch.objects.get(id = batch)
@@ -80,7 +80,8 @@ class AddStudent(View):
                         for installment in installments:
                             installmet = Installment()
                             installmet.amount = installment['amount']
-                            installmet.fine_amount = installment['fine']
+                            if installment.GET('fine', ''):
+                                installmet.fine_amount = installment['fine']
                             installmet.due_date = datetime.strptime(installment['due_date'], '%d/%m/%Y')
                             installmet.save()
                             student.installments.add(installmet)
@@ -137,10 +138,9 @@ class GetStudent(View):
 
     def get(self, request, *args, **kwargs):
         course_id = kwargs['course_id']
-        batch_id = kwargs['batch_id']
         if request.is_ajax():
             try:
-                students = Student.objects.filter(course__id=course_id, batch__id=batch_id)
+                students = Student.objects.filter(course__id=course_id)
                 student_list = []
                 for student in students:
                     student_list.append({
@@ -537,4 +537,53 @@ class StudentSearch(View):
             response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype='application/json')
 
+class GetInstallmentDetails(View):
 
+    def get(self, request, *args, **kwargs):
+
+        student = Student.objects.get(id=request.GET.get('student', ''))
+        ctx_installments = []
+        i = 0
+        for installment in student.installments.all():
+            try:
+                fees_payment = FeesPayment.objects.get(student__id=student.id)
+                fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
+                if fees_payment_installments.count() > 0:
+                    if fees_payment_installments[0].installment_amount < installment.amount:
+                        ctx_installments.append({
+                            'id': installment.id,
+                            'amount':installment.amount,
+                            'due_date': installment.due_date.strftime('%d/%m/%Y'),
+                            'fine_amount': installment.fine_amount,
+                            'name':'installment'+str(i + 1),
+                            'paid_installment_amount': fees_payment_installments[0].installment_amount,
+                            'balance': float(installment.amount) - float(fees_payment_installments[0].installment_amount),
+                        })
+                elif fees_payment_installments.count() == 0:
+                    ctx_installments.append({
+                        'id': installment.id,
+                        'amount':installment.amount,
+                        'due_date': installment.due_date.strftime('%d/%m/%Y'),
+                        'fine_amount': installment.fine_amount,
+                        'name':'installment'+str(i + 1),
+                        'paid_installment_amount': 0,
+                        'balance': float(installment.amount),
+                    })
+            except Exception as ex:
+                print str(ex)
+                ctx_installments.append({
+                    'id': installment.id,
+                    'amount':installment.amount,
+                    'due_date': installment.due_date.strftime('%d/%m/%Y'),
+                    'fine_amount': installment.fine_amount,
+                    'name':'installment'+str(i + 1),
+                    'paid_installment_amount': 0,
+                    'balance': float(installment.amount),
+                })
+            i = i + 1
+        res = {
+            'result': 'ok',
+            'installments': ctx_installments,
+        }
+        response = simplejson.dumps(res)
+        return HttpResponse(response, status=200, mimetype='application/json')
