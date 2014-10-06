@@ -211,16 +211,31 @@ class EditStudentDetails(View):
             'student_id': student_id,
         }
         ctx_student_data = []
+        batch_details = []
+        installment_list = []
         student = Student.objects.get(id=student_id)
+        print student
         if request.is_ajax():
             for batch in student.batches.all():
                 batch_details.append({
                     'id': batch.id,
                     'name': batch.name,
                 })
+            print batch_details
+            installments = student.installments.all()
+            for installment in installments:
+                installment_list.append({
+                    'id': installment.id,
+                    'amount': installment.amount,
+                    'due_date': installment.due_date.strftime('%d/%m/%Y'),
+                    'fine': installment.fine_amount if installment.fine_amount else '',
+                })
+            #print installments
             ctx_student_data.append({
                 'student_name': student.student_name if student.student_name else '',
                 'roll_number': student.roll_number if student.roll_number else '',
+                'unique_id': student.unique_id if student.unique_id else '',
+                'cadd_registration_no': student.cadd_registration_no if student.cadd_registration_no else '',
                 'dob': student.dob.strftime('%d/%m/%Y') if student.dob else '',
                 'address': student.address if student.address else '',
                 'course': student.course.id if student.course else '',
@@ -230,14 +245,15 @@ class EditStudentDetails(View):
                 'blood_group': student.blood_group if student.blood_group else '',
                 'doj': student.doj.strftime('%d/%m/%Y') if student.doj else '',
                 'photo': student.photo.name if student.photo.name else '',
+                'qualifications': student.qualifications if student.qualifications else '',
                 'certificates_submitted': student.certificates_submitted if student.certificates_submitted else '',
                 'id_proofs_submitted': student.id_proofs_submitted if student.id_proofs_submitted else '',
-        
                 'guardian_name': student.guardian_name if student.guardian_name else '',
-                
                 'relationship': student.relationship if student.relationship else '',
                 'guardian_mobile_number': student.guardian_mobile_number if student.guardian_mobile_number else '',
-        
+                'fees': student.fees if student.fees else '',
+                'no_installments': student.no_installments if student.no_installments else '',
+                'installments': installment_list,
                 })
             res = {
                 'result': 'ok',

@@ -387,9 +387,10 @@ class JobCard(View):
                                 ('BOX', (0,0), (-1,-1), 0.25, colors.black),
                                 ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
                                 
-                                ])   
-            elements.append(table)
-            p.build(elements)        
+                                ])
+            if len(attendances) > 0:   
+                elements.append(table)
+                p.build(elements)        
             return response
         return render(request, 'job_card.html', {})
 
