@@ -44,6 +44,7 @@ class FeesStructure(models.Model):
 		verbose_name_plural = 'Fees Structure'
 
 class FeesPaymentInstallment(models.Model):
+	student = models.ForeignKey(Student, null=True, blank=True)
 	total_amount = models.DecimalField('Total Amount', max_digits=14, decimal_places=2, default=0)
 	installment = models.ForeignKey(Installment, null=True, blank=True)
 	paid_date = models.DateField('Paid Date', null=True, blank=True)
