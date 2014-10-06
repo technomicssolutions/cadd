@@ -212,6 +212,7 @@ class EditStudentDetails(View):
         }
         ctx_student_data = []
         batch_details = []
+        installment_list = []
         student = Student.objects.get(id=student_id)
         print student
         if request.is_ajax():
@@ -222,7 +223,12 @@ class EditStudentDetails(View):
                 })
             print batch_details
             installments = student.installments.all()
-            print installments
+            for installment in installments:
+                installment_list.append({
+                    'id': installment.id,
+                    'amount': installment.amount,
+                })
+            #print installments
             ctx_student_data.append({
                 'student_name': student.student_name if student.student_name else '',
                 'roll_number': student.roll_number if student.roll_number else '',
@@ -245,7 +251,7 @@ class EditStudentDetails(View):
                 'guardian_mobile_number': student.guardian_mobile_number if student.guardian_mobile_number else '',
                 'fees': student.fees if student.fees else '',
                 'no_installments': student.no_installments if student.no_installments else '',
-                
+                'installments': installment_list,
                 })
             res = {
                 'result': 'ok',

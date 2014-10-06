@@ -226,13 +226,34 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         {
             $scope.student = data.student[0];
             console.log($scope.student);
+            //$scope.no_installments
+            //$scope.load_installments();
             
         }).error(function(data, status)
         {
             console.log(data || "Request failed");
         });
     }
-    
+    $scope.load_installments = function() {
+        if ($scope.no_installments > $scope.installments.length) {
+            diff = $scope.no_installments - $scope.installments.length;
+            for (var i=0; i<diff; i++) {
+                due_date_id = 'due_date_'+$scope.installments.length;
+                $scope.installments.push({
+                    'amount': '',
+                    'fine': '',
+                    'due_date': '',
+                    'due_date_id': due_date_id,
+                })
+            }
+        } else {
+            diff = $scope.installments.length - $scope.no_installments;
+            for (var i=diff; i>0; i--) {
+                index = $scope.installments.indexOf($scope.installments[$scope.installments.length])
+                $scope.installments.splice(index, 1);
+            }
+        }
+    }
     $scope.validate_edit_student = function() {
         $scope.validation_error = '';
         $scope.dob = $$('#dob')[0].get('value');
