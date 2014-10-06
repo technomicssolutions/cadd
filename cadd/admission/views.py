@@ -80,7 +80,7 @@ class AddStudent(View):
                         for installment in installments:
                             installmet = Installment()
                             installmet.amount = installment['amount']
-                            if installment.GET('fine', ''):
+                            if installment.get('fine', ''):
                                 installmet.fine_amount = installment['fine']
                             installmet.due_date = datetime.strptime(installment['due_date'], '%d/%m/%Y')
                             installmet.save()
@@ -505,7 +505,7 @@ class EnquiryReport(View):
                 data_list = []
                 data.append(['Date','Enquiry Number','Name','Course'])
                 for enquiry in enquiries:
-                    data.append([enquiry.saved_date.strftime('%d/%m/%Y') ,enquiry.auto_generated_num,Paragraph(enquiry.student_name,para_style), enquiry.course.name])
+                    data.append([enquiry.saved_date.strftime('%d/%m/%Y') ,enquiry.auto_generated_num,Paragraph(enquiry.student_name,para_style), Paragraph(enquiry.course.name,para_style)])
                 table = Table(data, colWidths=(100,100,100,100),  style=style)
                 table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
                             ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
