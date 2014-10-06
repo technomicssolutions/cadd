@@ -120,8 +120,8 @@ function get_batch_list($scope, $http, from) {
             $scope.batches = data.batches;
             if(from == 'edit_student'){
                 for(var i = 0; i < $scope.batches.length; i++){
-                    for(var j = 0; j < $scope.student.batch.length; j++){
-                        if($scope.batches[i].id == $scope.student.batch[j].id){
+                    for(var j = 0; j < $scope.student.batches.length; j++){
+                        if($scope.batches[i].id == $scope.student.batches[j].id){
                             $scope.batches[i].selected = 'true';
                         }
                     }

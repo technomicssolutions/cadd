@@ -125,7 +125,7 @@
                         </tr>
                         <tr ng-repeat="installment in installments">
                             <td><input type="text" ng-model="installment.amount" /></td>
-                            <td><input type="text" ng-model="installment.due_date" /></td>
+                            <td><input type="text" ng-model="installment.due_date" id="[[installment.due_date_id]]"ng-click="attach_date_picker(installment)"/></td>
                             <td><input type="text" ng-model="installment.fine" /></td>
                         </tr>
                     </table>        

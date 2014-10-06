@@ -198,6 +198,27 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         $scope.csrf_token = csrf_token;
         $scope.student_id = student_id;
         $scope.get_student_details(student_id);
+        $scope.student = {
+            'student_name': '',
+            'roll_number': '',
+            'course': '',
+            'batch': [],
+            'qualifications': '',            
+            'dob': '',
+            'address': '',
+            'mobile_number': '',
+            'email': '',
+            'blood_group': '',            
+            'doj': '',
+            'cadd_registration_no': '',
+            'id_proofs_submitted': '',
+            'guardian_name': '',
+            'relationship': '',
+            'guardian_mobile_number': '',            
+            'fees': '',
+            'no_installments': '',
+        }
+        $scope.photo_img = {};
         $scope.url = '/admission/edit_student_details/' + $scope.student_id+ '/';
         new Picker.Date($$('#dob'), {
             timePicker: false,
@@ -224,31 +245,12 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         {
             $scope.student = data.student[0];
             console.log($scope.student);
-            /*$scope.student_name = data.student[0].student_name;
-            $scope.roll_number = data.student[0].roll_number;
-            $scope.cadd_registration_no = data.student[0].cadd_registration_no;
-            $scope.course = data.student[0].course;
-            $scope.batch = data.student[0].batch;
-            $scope.semester = data.student[0].semester;
-            $scope.qualifications = data.student[0].qualifications;
-            $scope.dob = data.student[0].dob;
-            $scope.address = data.student[0].address;
-            $scope.mobile_number = data.student[0].mobile_number;
-            $scope.email = data.student[0].email;
-            $scope.blood_group = data.student[0].blood_group;
-            $scope.doj = data.student[0].doj;
-            $scope.certificates_submitted = data.student[0].certificates_submitted;
-            $scope.id_proof = data.student[0].id_proof;
-            $scope.guardian_name = data.student[0].guardian_name;
-            $scope.relationship = data.student[0].relationship;
-            $scope.fees = data.student[0].fees;
-            $scope.photo_img = {};
-            $scope.no_installments = data.student[0].no_installments;
-            $scope.guardian_mobile_number = data.student[0].guardian_mobile_number;*/
+            $scope.student.batch = [];
             $scope.no_installments = data.student[0].no_installments;
             $scope.installments = $scope.student.installments;
-            console.log($scope.installments.length);
-            //$scope.load_installments();
+            for(var i = 0; i < $scope.student.batches.length; i++){
+                $scope.student.batch.push($scope.student.batches[i].id);
+            }
             
         }).error(function(data, status)
         {
@@ -256,48 +258,63 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         });
     }
     $scope.load_installments = function() {
-        console.log($scope.student.no_installments, $scope.installments.length);
-        if ($scope.student.no_installments > $scope.installments.length) {
-            diff = $scope.student.no_installments - $scope.installments.length;
-            for (var i=0; i<diff; i++) {
-                due_date_id = 'due_date_'+$scope.installments.length;
-                $scope.installments.push({
-                    'amount': '',
-                    'fine': '',
-                    'due_date': '',
-                    'due_date_id': due_date_id,
-                })
-            }
-        } else {
-            diff = $scope.installments.length - $scope.student.no_installments;
-            for (var i=diff; i>0; i--) {
-                index = $scope.installments.indexOf($scope.installments[$scope.installments.length])
-                $scope.installments.splice(index, 1);
-            }
+        if ($scope.student.no_installments.length > 0) {
+            if ($scope.student.no_installments > $scope.installments.length) {
+                diff = $scope.student.no_installments - $scope.installments.length;
+                for (var i=0; i<diff; i++) {
+                    due_date_id = 'due_date_'+$scope.installments.length;
+                    $scope.installments.push({
+                        'amount': '',
+                        'fine': '',
+                        'due_date': '',
+                        'due_date_id': due_date_id,
+                    })
+                }
+            } else {
+                diff = $scope.installments.length - $scope.student.no_installments;
+                for (var i=diff; i>0; i--) {
+                    index = $scope.installments.indexOf($scope.installments[$scope.installments.length])
+                    $scope.installments.splice(index, 1);
+                }
+            }   
         }
+
     }
-    $scope.save_student = function(){
-        save_new_student($http, $scope);
+    $scope.attach_date_picker = function(installment) {
+        console.log(installment);
+        id_name = '#' +installment.due_date_id;
+        new Picker.Date($$(id_name), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
     }
     $scope.validate_edit_student = function() {
         $scope.validation_error = '';
         $scope.dob = $$('#dob')[0].get('value');
         $scope.doj = $$('#doj')[0].get('value');
-
+        var total = 0;
+        console.log($scope.student.batch);
+        for (var i=0; i<$scope.installments.length; i++) {
+            if ($scope.installments[i].amount == Number($scope.installments[i].amount)) {
+                total = parseFloat(total) + parseFloat($scope.installments[i].amount)
+            }
+        }
         if($scope.student.student_name == '' || $scope.student.student_name == undefined) {
             $scope.validation_error = "Please Enter the Name" ;
             return false;
-        }   
-        else if($scope.student.roll_number == '' || $scope.student.roll_number == undefined) {
+        } else if($scope.student.roll_number == '' || $scope.student.roll_number == undefined) {
             $scope.validation_error = "Please Enter the Roll Number" ;
             return false;
-        }else if($scope.student.course == '' || $scope.student.course == undefined) {
+        } else if($scope.student.course == '' || $scope.student.course == undefined) {
             $scope.validation_error = "Please Enter Course";
             return false;
-        }else if($scope.student.batch == '' || $scope.student.batch == undefined) {
+        } else if($scope.student.batch == '' || $scope.student.batch == undefined) {
             $scope.validation_error = "Please Enter Batch";
             return false;
-        }else if($scope.student.dob == '' || $scope.student.dob == undefined) {
+        } else if($scope.student.dob == '' || $scope.student.dob == undefined) {
             $scope.validation_error = "Please Enter DOB";
             return false;
         } else if($scope.student.address == '' || $scope.student.address == undefined) {
@@ -306,12 +323,12 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         } else if($scope.student.mobile_number == ''|| $scope.student.mobile_number == undefined){
             $scope.validation_error = "Please enter the Mobile Number";
             return false;
-        } else if(!(Number($scope.student.mobile_number)) || $scope.student.mobile_number.length > 15) {            
+        } else if($scope.student.mobile_number.length < 9 || $scope.student.mobile_number.length > 15) {            
             $scope.validation_error = "Please enter a Valid Mobile Number";
             return false;
-        }  else if(($scope.student.email != '' && $scope.student.email != undefined) && (!(validateEmail($scope.student.email)))){
-                $scope.validation_error = "Please enter a Valid Email Id";
-                return false;
+        } else if(($scope.student.email != '' && $scope.student.email != undefined) && (!(validateEmail($scope.student.email)))){
+            $scope.validation_error = "Please enter a Valid Email Id";
+            return false;
         } else if($scope.student.blood_group == '' || $scope.student.blood_group == undefined) {
             $scope.validation_error = "Please Enter Blood Group";
             return false; 
@@ -321,41 +338,67 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         }else if($scope.student.certificates_submitted == '' || $scope.student.certificates_submitted == undefined) {
             $scope.validation_error = "Please enter certificates submitted";
             return false;
-         } else if($scope.student.id_proofs_submitted == '' || $scope.student.id_proofs_submitted == undefined) {
+        } else if($scope.student.id_proofs_submitted == '' || $scope.student.id_proofs_submitted == undefined) {
              $scope.validation_error = "Please enter id proofs submitted";
             return false; 
         } else if($scope.student.guardian_name == '' || $scope.student.guardian_name == undefined) {
             $scope.validation_error = "Please Enter the Guardian Name" ;
             return false;
-        
         }  else if($scope.student.relationship == '' || $scope.student.relationship == undefined) {
             $scope.validation_error = "Please Enter Relationship";
             return false;
         } else if($scope.student.guardian_mobile_number == ''|| $scope.student.guardian_mobile_number == undefined){
-            $scope.validation_error = "Please enter the Mobile Number";
+            $scope.validation_error = "Please enter the Guardian Mobile Number";
             return false;
-        } else if(!(Number($scope.student.guardian_mobile_number)) || $scope.student.guardian_mobile_number.length > 15) {            
+        } else if($scope.student.guardian_mobile_number.length < 9 || $scope.student.guardian_mobile_number.length > 15) {            
             $scope.validation_error = "Please enter a Valid Mobile Number";
             return false;
-        }  else {
-            return true;
-        } 
+        } else if ($scope.student.fees == '' || $scope.student.fees == undefined) {
+            $scope.validation_error = "Please enter fees";
+            return false;
+        } else if ($scope.student.no_installments == '' || $scope.student.no_installments == undefined) {
+            $scope.validation_error = "Please enter no of installments";
+            return false;
+        } else if ($scope.student.fees != total) {
+            $scope.validation_error = 'Please check the installment amount with the total';
+            return false;
+        } else if ($scope.installments.length > 0) {
+            for(var i = 0; i < $scope.installments.length; i++){
+                id_name = '#'+$scope.installments[i].due_date_id;
+                $scope.installments[i].due_date = $$(id_name)[0].get('value');
+                if($scope.installments[i].amount == ''){
+                    $scope.validation_error = "Please enter the amount for installment";
+                    return false;
+                } else if($scope.installments[i].amount && !Number($scope.installments[i].amount)){
+                    $scope.validation_error = "Please enter a valid amount for installment";
+                    return false;
+                } else if($scope.installments[i].due_date == ''){
+                    $scope.validation_error = "Please enter the due date for installment";
+                    return false;
+                } else if($scope.installments[i].fine != 0 && parseFloat($scope.installments[i].fine) != Number($scope.installments[i].fine)){
+                    $scope.validation_error = "Please enter a valid fine amount for installment";
+                    return false;
+                } 
+            }
+        } return true;
     }   
-    $scope.edit_student = function() {
+    $scope.save_student = function() {
         if ($scope.validate_edit_student()){
             $scope.error_flag=false;
             $scope.message = '';
-           
+            $scope.url = '/admission/edit_student_details/' + $scope.student.student_id+ '/';
             params = { 
                 'student': angular.toJson($scope.student),
                 "csrfmiddlewaretoken" : $scope.csrf_token
             }
-            $http({
-                method : 'post',
-                url : $scope.url,
-                data : $.param(params),
-                headers : {
-                    'Content-Type' : 'application/x-www-form-urlencoded'
+            var fd = new FormData();
+            fd.append('photo_img', $scope.photo_img.src)
+            for(var key in params){
+                fd.append(key, params[key]);          
+            }
+            $http.post($scope.url, fd, {
+                transformRequest: angular.identity,
+                headers: {'Content-Type': undefined
                 }
             }).success(function(data, status) {
                 
@@ -374,6 +417,18 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         }
     }
 }
+
+
+
+
+        
+        
+        $http.post(url, fd, {
+            transformRequest: angular.identity,
+            headers: {'Content-Type': undefined
+            }
+        })
+
 
 
 function StudentListController($scope, $http, $element, $location, $timeout) {
