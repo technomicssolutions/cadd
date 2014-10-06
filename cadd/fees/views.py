@@ -3,6 +3,12 @@ import simplejson
 import ast
 import datetime as dt
 
+from reportlab.pdfgen import canvas
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.platypus import Paragraph, Table, TableStyle, SimpleDocTemplate, Spacer
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter, A4
+
 from django.core.urlresolvers import reverse
 from django.views.generic.base import View
 from django.shortcuts import render
@@ -10,6 +16,15 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 from fees.models import *
 from datetime import datetime
+
+style = [
+    ('FONTSIZE', (0,0), (-1, -1), 12),
+    ('FONTNAME',(0,0),(-1,-1),'Helvetica') 
+]
+
+para_style = ParagraphStyle('fancy')
+para_style.fontSize = 12
+para_style.fontName = 'Helvetica'
 
 # Fees structure start
 
@@ -521,19 +536,78 @@ class PrintOutstandingFeesReport(View):
 
         response = HttpResponse(content_type='application/pdf')
         p = SimpleDocTemplate(response, pagesize=A4)
-        elements = []  
-        student = Student.objects.get(id=request.GET.get('student', ''))
+        current_date = datetime.now().date()
+        elements = []
+        try:  
+            student = Student.objects.get(id=request.GET.get('student', ''))
+        except:
+            return render(request, 'list_outstanding_fees.html', {})
         d = [['Outstanding fees details - '+ student.student_name]]
         t = Table(d, colWidths=(450), rowHeights=25, style=style)
         t.setStyle([('ALIGN',(0,0),(-1,-1),'CENTER'),
-                    ('TEXTCOLOR',(0,0),(-1,-1),colors.HexColor('#699AB7')),
                     ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-                    ('BACKGROUND',(0, 0),(-1,-1),colors.HexColor('#EEEEEE')),
-                    ('FONTSIZE', (0,0), (0,0), 20),
-                    ('FONTSIZE', (1,0), (-1,-1), 17),
+                    ('FONTSIZE', (0,0), (-1,-1), 17),
                     ])   
         elements.append(t)
         elements.append(Spacer(4, 5))
+        data_list = []
+        i = 0
+        is_not_paid = False
+        for installment in student.installments.all():
+            try:
+                fees_payment = FeesPayment.objects.get(student__id=student.id)
+                fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
+                if fees_payment_installments.count() > 0:
+                    if fees_payment_installments[0].installment_amount < installment.amount:
+                        is_not_paid = True
+                        data_list.append({
+                            'id': installment.id,
+                            'amount':installment.amount,
+                            'due_date': installment.due_date.strftime('%d/%m/%Y'),
+                            'fine_amount': installment.fine_amount,
+                            'name':'installment'+str(i + 1),
+                            'paid_installment_amount': fees_payment_installments[0].installment_amount,
+                            'balance': float(installment.amount) - float(fees_payment_installments[0].installment_amount),
+                        })
+                elif fees_payment_installments.count() == 0:
+                    is_not_paid = True
+                    data_list.append({
+                        'id': installment.id,
+                        'amount':installment.amount,
+                        'due_date': installment.due_date.strftime('%d/%m/%Y'),
+                        'fine_amount': installment.fine_amount,
+                        'name':'installment'+str(i + 1),
+                        'paid_installment_amount': 0,
+                        'balance': float(installment.amount),
+                    })
+            except Exception as ex:
+                print str(ex)
+                if current_date >= installment.due_date:
+                    is_not_paid = True
+                    data_list.append({
+                        'id': installment.id,
+                        'amount':installment.amount,
+                        'due_date': installment.due_date.strftime('%d/%m/%Y'),
+                        'fine_amount': installment.fine_amount,
+                        'name':'installment'+str(i + 1),
+                        'paid_installment_amount': 0,
+                        'balance': float(installment.amount),
+                    })
+            i = i + 1
+        d = []
+        d.append(['Name', 'Amount', 'Due Date', 'Fine', 'Paid', 'Balance'])
+        if is_not_paid:
+            for data in data_list:
+                d.append([data['name'], data['amount'], data['due_date'], data['fine_amount'], data['paid_installment_amount'], data['balance']])
+        table = Table(d, colWidths=(100, 100, 75, 100, 100,100),  style=style)
+        table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
+                    ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
+                    ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                    ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+                    ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+                    ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
+                    ])
+        elements.append(table)
         p.build(elements)        
         return response
 
