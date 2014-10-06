@@ -31,7 +31,6 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
     //     get_course_batch_list($scope, $http);
     // }
     $scope.get_student = function(){
-        console.log('hiii');
         get_course_batch_student_list($scope, $http);
     }
     $scope.get_fees_head = function(){
@@ -147,9 +146,9 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
 }
 function FeesController($scope, $element, $http, $timeout, share, $location)
 {
-    $scope.student_id = 'select';
-    $scope.course = 'select';
-    $scope.batch = 'select';
+    $scope.student_id = '';
+    $scope.course = '';
+    $scope.batch = '';
     $scope.fees_type = '';
     $scope.filtering_option = '';
     $scope.url = '';
@@ -190,11 +189,11 @@ function FeesController($scope, $element, $http, $timeout, share, $location)
         }
         $http.get($scope.url).success(function(data)
         {
-            if (data.result == 'ok') 
+            if (data.result == 'ok') {
                 $scope.fees_details = data.fees_details[0];
                 if($scope.fees_details.students)
                     paginate($scope.fees_details.students, $scope, 2);
-            else {
+            } else {
                 $scope.no_student_error = data.message;
             }
         }).error(function(data, status)

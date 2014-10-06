@@ -131,6 +131,7 @@ function get_batch_list($scope, $http) {
 }
 
 function get_course_batch_student_list($scope, $http) {
+    console.log($scope.course, $scope.batch);
     if (($scope.course != 'select') && (($scope.batch != 'select'))) {
         $http.get('/admission/get_student/'+ $scope.course+ '/').success(function(data)
         {
@@ -158,14 +159,12 @@ function date_conversion(date_val) {
 function calculate_total_fee_amount() {
     var due_date = date_conversion($$('#due_date')[0].get('value'));
     var paid_date = date_conversion($$('#paid_date')[0].get('value'));
-    console.log($('#balance').val());
     if (paid_date > due_date) {
         $('#total_fee_amount').val(parseFloat($('#fee_amount').val()) + parseFloat($('#fine_amount').val()));
         $('#balance').val(parseFloat($('#balance').val()) + parseFloat($('#fine_amount').val()));
     } else {
         $('#total_fee_amount').val(parseFloat($$('#fee_amount')[0].get('value')));
     }
-    console.log($('#balance').val());
 }
 
 function get_fees_head_details($scope, $http, fees_head_id) {
