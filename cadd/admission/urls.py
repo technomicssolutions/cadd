@@ -8,7 +8,7 @@ DeleteStudentDetails, EnquiryView, SearchEnquiry, EnquiryDetails, StudentAdmissi
 StudentSearch
 
 urlpatterns = patterns('',
-	url(r'^get_student/(?P<course_id>\d+)/(?P<batch_id>\d+)/$',login_required(GetStudent.as_view()), name="get_student"),
+	url(r'^get_student/(?P<course_id>\d+)/$',login_required(GetStudent.as_view()), name="get_student"),
 	url(r'^add_student/$',login_required(AddStudent.as_view()), name='add_student'),
 	# # url(r'^edit_student/$', Editstudent.as_view(), name='edit_student'),
 	url(r'^list_student/$',login_required(ListStudent.as_view()), name='list_student'),

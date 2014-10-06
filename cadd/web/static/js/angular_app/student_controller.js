@@ -174,6 +174,7 @@ validate_new_student = function($scope) {
         $scope.validation_error = 'Please check the installment amount with the total';
         return false;
     } else if ($scope.installments.length > 0) {
+
         for(var i = 0; i < $scope.installments.length; i++){
             id_name = '#'+$scope.installments[i].due_date_id;
             $scope.installments[i].due_date = $$(id_name)[0].get('value');
@@ -186,7 +187,7 @@ validate_new_student = function($scope) {
             } else if($scope.installments[i].due_date == ''){
                 $scope.validation_error = "Please enter the due date for installment";
                 return false;
-            } else if($scope.installments[i].fine != 0 && !Number($scope.installments.fine)){
+            } else if($scope.installments[i].fine != 0 && parseFloat($scope.installments[i].fine) != Number($scope.installments[i].fine)){
                 $scope.validation_error = "Please enter a valid fine amount for installment";
                 return false;
             } 
@@ -370,18 +371,7 @@ function StudentListController($scope, $http, $element, $location, $timeout) {
             console.log(data || "Request failed");
         });
     }
-    $scope.delete_students = function(student){
-        $scope.student_id = student.id;
-        var url = '/admission/delete_student_details/?batch_id=/'+ $scope.student_id+ '/';
-        $http.get(url).success(function(data)
-        {
-            $scope.students = data.students;
-            paginate(data.students, $scope);
-        }).error(function(data, status)
-        {
-            console.log(data || "Request failed");
-        });
-    }
+    
     
     $scope.edit_student_details = function(student){
         $scope.student_id = student.id;
@@ -486,7 +476,10 @@ function EnquiryController($scope, $http) {
         } else if($scope.enquiry.follow_up_date == '' || $scope.enquiry.follow_up_date == undefined) {
             $scope.validation_error = "Please Enter follow up date";
             return false;
-        } return true;
+        }  else if($scope.enquiry.date == '' || $scope.enquiry.date == undefined) {
+            $scope.validation_error = "Please Enter  date of enquiry";
+            return false;
+        }return true;
     }   
     $scope.save_enquiry = function(){
         if ($scope.validate_enquiry()) {
