@@ -442,6 +442,8 @@ class GetOutStandingFeesDetails(View):
             res = {
                 'result':'ok',
                 'fees_details': fees_details,
+                'student_name': student.student_name,
+                'roll_no': student.roll_number,
             }
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')
@@ -512,6 +514,29 @@ class GetFeesHeadList(View):
             status = 200
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')
+
+class PrintOutstandingFeesReport(View):
+
+    def get(self, request, *args, **kwargs):
+
+        response = HttpResponse(content_type='application/pdf')
+        p = SimpleDocTemplate(response, pagesize=A4)
+        elements = []  
+        student = Student.objects.get(id=request.GET.get('student', ''))
+        d = [['Outstanding fees details - '+ student.student_name]]
+        t = Table(d, colWidths=(450), rowHeights=25, style=style)
+        t.setStyle([('ALIGN',(0,0),(-1,-1),'CENTER'),
+                    ('TEXTCOLOR',(0,0),(-1,-1),colors.HexColor('#699AB7')),
+                    ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                    ('BACKGROUND',(0, 0),(-1,-1),colors.HexColor('#EEEEEE')),
+                    ('FONTSIZE', (0,0), (0,0), 20),
+                    ('FONTSIZE', (1,0), (-1,-1), 17),
+                    ])   
+        elements.append(t)
+        elements.append(Spacer(4, 5))
+        p.build(elements)        
+        return response
+
 
 
             
