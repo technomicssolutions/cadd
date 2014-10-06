@@ -184,7 +184,6 @@ class CourseDetails(View):
         ctx_software = []
         
         for course in courses:
-            print str(course.duration), course.duration
             course_name = course.name + str(course.duration) + str(course.duration_unit)
             course_list.append({
                 'software':course.software.name,
@@ -213,7 +212,6 @@ class Batches(View):
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
             batches = Batch.objects.all()
-            print batches
             batch_list = []
             for batch in batches:
                 batch_name = batch.name + ' - '+ str(batch.start_time.strftime('%I:%M%p')) + ' to ' + str(batch.end_time.strftime('%I:%M%p'))
