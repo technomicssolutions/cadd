@@ -12,8 +12,7 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
         'paid_installment_amount': '',
         'balance': '',
     }
-    $scope.course = 'select';
-    $scope.batch = 'select';
+    $scope.course = '';
     $scope.payment_installment.student = 'select';
     $scope.head = '';
     $scope.init = function(csrf_token)
@@ -28,10 +27,11 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
         });
         get_course_list($scope, $http);
     }
-    $scope.get_batch = function(){
-        get_course_batch_list($scope, $http);
-    }
+    // $scope.get_batch = function(){
+    //     get_course_batch_list($scope, $http);
+    // }
     $scope.get_student = function(){
+        console.log('hiii');
         get_course_batch_student_list($scope, $http);
     }
     $scope.get_fees_head = function(){

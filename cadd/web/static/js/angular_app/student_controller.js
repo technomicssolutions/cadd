@@ -174,6 +174,7 @@ validate_new_student = function($scope) {
         $scope.validation_error = 'Please check the installment amount with the total';
         return false;
     } else if ($scope.installments.length > 0) {
+
         for(var i = 0; i < $scope.installments.length; i++){
             id_name = '#'+$scope.installments[i].due_date_id;
             $scope.installments[i].due_date = $$(id_name)[0].get('value');
@@ -186,7 +187,7 @@ validate_new_student = function($scope) {
             } else if($scope.installments[i].due_date == ''){
                 $scope.validation_error = "Please enter the due date for installment";
                 return false;
-            } else if($scope.installments[i].fine != 0 && !Number($scope.installments.fine)){
+            } else if(parseFloat($scope.installments[i].fine) != Number($scope.installments[i].fine)){
                 $scope.validation_error = "Please enter a valid fine amount for installment";
                 return false;
             } 

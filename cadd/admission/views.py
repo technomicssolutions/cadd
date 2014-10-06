@@ -137,10 +137,9 @@ class GetStudent(View):
 
     def get(self, request, *args, **kwargs):
         course_id = kwargs['course_id']
-        batch_id = kwargs['batch_id']
         if request.is_ajax():
             try:
-                students = Student.objects.filter(course__id=course_id, batch__id=batch_id)
+                students = Student.objects.filter(course__id=course_id)
                 student_list = []
                 for student in students:
                     student_list.append({
