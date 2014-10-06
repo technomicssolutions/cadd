@@ -224,7 +224,8 @@ class Batches(View):
                     'end':batch.end_time.strftime('%H:%M%p'),
                     'allowed_students':batch.allowed_students,                                        
                     'batch_name': batch_name,
-                    'id': batch.id
+                    'id': batch.id,
+                    'name': batch.name,
                 })
             res = {
                 'result': 'ok',

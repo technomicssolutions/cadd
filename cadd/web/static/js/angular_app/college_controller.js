@@ -244,6 +244,7 @@ function CollegeController($scope, $element, $http, $timeout, share, $location)
         $scope.course.duration = course.duration;
         $scope.course.amount = course.amount;
         $scope.course.duration_unit = course.duration_unit;
+        $scope.course.fine = course.fine;
         $scope.url = '/college/softwares/';
         $http.get($scope.url).success(function(data)
         {        
@@ -337,9 +338,28 @@ function BatchController($scope, $element, $http, $timeout, share, $location)
         get_batches($scope, $http);
     }
     $scope.close_popup = function(){
+        $scope.batch = {
+            'id': '',
+            'name': '',
+            'software_id': '',
+            'start': '',
+            'end': '',
+            'allowed_students': '',
+        }
         $scope.popup.hide_popup();
     }
-    $scope.add_new_batch = function(){  
+    $scope.add_new_batch = function(type){  
+        if(type != 'edit'){
+            $scope.batch = {
+                'id': '',
+                'name': '',
+                'software_id': '',
+                'start': '',
+                'end': '',
+                'allowed_students': '',
+            }
+        }
+
         new Picker.Date($$('#batch_start'), {
             timePicker: true,
             positionOffset: {x: 5, y: 0},
@@ -378,7 +398,8 @@ function BatchController($scope, $element, $http, $timeout, share, $location)
         save_batch($scope, $http);
     } 
     $scope.edit_batch = function(batch){
+        console.log(batch);
         $scope.batch = batch;
-        $scope.add_new_batch();
+        $scope.add_new_batch('edit');
     }
 }
