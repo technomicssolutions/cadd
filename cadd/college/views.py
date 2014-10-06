@@ -216,12 +216,12 @@ class Batches(View):
             print batches
             batch_list = []
             for batch in batches:
-                batch_name = batch.name + ' - '+ str(batch.start_time.strftime('%H:%M%p')) + ' to ' + str(batch.end_time.strftime('%H:%M%p'))
+                batch_name = batch.name + ' - '+ str(batch.start_time.strftime('%I:%M%p')) + ' to ' + str(batch.end_time.strftime('%I:%M%p'))
                 batch_list.append({
                     'software':batch.software.name,
                     'software_id': batch.software.id,
-                    'start':batch.start_time.strftime('%H:%M%p'),
-                    'end':batch.end_time.strftime('%H:%M%p'),
+                    'start':batch.start_time.strftime('%I:%M%p'),
+                    'end':batch.end_time.strftime('%I:%M%p'),
                     'allowed_students':batch.allowed_students,                                        
                     'batch_name': batch_name,
                     'id': batch.id,
