@@ -239,8 +239,22 @@ textarea{
     padding-left: 3px;
 }
 
-
-
+.form_container {
+	margin: auto;
+	width: 35%;
+	min-height: 100%
+}
+.form_container .control {
+	width: 100%;
+	height: 30px;
+	float: left;
+	padding: 10px;
+}
+.form_container label{
+	display: block !important;
+    float: left;
+    width: 45%;
+}
 #letter .form_container {
 	margin: auto;
 	width: 35%;
@@ -930,4 +944,10 @@ a:hover , a:focus{
 }
 #radio_label {
 	width: 20% !important;
+}
+#certificate .search_batch{
+	margin-top: 2% !important;
+}
+#add_certificate .search_list{
+	top: 41% !important;
 }

@@ -250,8 +250,7 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         });
         get_course_list($scope, $http);
         get_batches($scope, $http, 'edit_student');
-        console.log($scope.batches);
-       
+        
     }
     $scope.get_fees = function() {
         for(var i=0; i<$scope.courses.length; i++) {
@@ -499,8 +498,6 @@ function StudentListController($scope, $http, $element, $location, $timeout) {
     $scope.edit_student_details = function(student){
         $scope.student_id = student.id;
         document.location.href = '/admission/edit_student_details/'+ $scope.student_id+ '/';
-        
-       
     } 
     
     $scope.display_student_details = function(student) {
