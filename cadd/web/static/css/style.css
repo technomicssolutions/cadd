@@ -945,3 +945,9 @@ a:hover , a:focus{
 #radio_label {
 	width: 20% !important;
 }
+#certificate .search_batch{
+	margin-top: 2% !important;
+}
+#add_certificate .search_list{
+	top: 41% !important;
+}
