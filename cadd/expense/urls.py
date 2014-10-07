@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.contrib.auth.decorators import login_required
 
-from expenses.views import AddExpenseHead, ExpenseHeadList, Expenses, ExpenseList, EditExpense
+from expense.views import AddExpenseHead, ExpenseHeadList, Expenses, ExpenseList, EditExpense
 
 urlpatterns = patterns('',
 	url(r'^new_expense_head/$', login_required(AddExpenseHead.as_view()), name='new_expense_head'),

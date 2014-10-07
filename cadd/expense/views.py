@@ -16,17 +16,13 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from sales.models import *
-from project.models import *
-from web.models import *
-from .models import *
-
+from expense.models import Expense, ExpenseHead
 
 class AddExpenseHead(View):
 
     def get(self, request, *args, **kwargs):
 
-        return render(request, 'expenses/add_expense_head.html', {})
+        return render(request, 'add_expense_head.html', {})
 
     def post(self, request, *args, **kwargs):
 
@@ -101,11 +97,17 @@ class ExpenseList(View):
             if len(expenses) > 0:
                 for expense in expenses:
                     ctx_expense_head.append({
-                        'head_name': expense.expense_head,
-                        'id': expense.id, 
-                        'date': expense.date.strftime('%d/%m/%Y'),
-                        'voucher_no': expense.voucher_no,
-                        'amount': expense.amount
+                        'expense_head_id': expense.expense_head.id if expense.expense_head else '',
+	                    'id': expense.id, 
+	                    'date': expense.date.strftime('%d/%m/%Y'),
+	                    'voucher_no': expense.voucher_no,
+	                    'amount': expense.amount,
+	                    'payment_mode': expense.payment_mode,
+	                    'branch': expense.branch,
+	                    'bank_name': expense.bank_name,
+	                    'cheque_no': expense.cheque_no,
+	                    'cheque_date': expense.cheque_date.strftime('%d/%m/%Y') if expense.cheque_date else '',
+	                    'narration': expense.narration,
                     })
             res = {
                 'result': 'ok',
@@ -113,18 +115,12 @@ class ExpenseList(View):
             }
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status_code, mimetype="application/json")
-        return render(request, 'expenses/expense_list.html', {'expenses': expenses})
+        return render(request, 'expense_list.html', {'expenses': expenses})
 
 class EditExpense(View):
 
     def get(self, request, *args, **kwargs):
         expense = Expense.objects.get(id=request.GET['expense_id'])
-
-        try:
-            cash_in_hand = CashInHand.objects.latest('id')
-        except:
-            cash_in_hand = None
-        
         if request.is_ajax():
             ctx_expense = []
             status_code = 200
@@ -135,7 +131,6 @@ class EditExpense(View):
                     'date': expense.date.strftime('%d/%m/%Y'),
                     'voucher_no': expense.voucher_no,
                     'amount': expense.amount,
-                    'project_id': expense.project.id if expense.project else '',
                     'payment_mode': expense.payment_mode,
                     'branch': expense.branch,
                     'bank_name': expense.bank_name,
@@ -149,16 +144,12 @@ class EditExpense(View):
             }
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status_code, mimetype="application/json")
-        return render(request, 'expenses/edit_expense.html', {'expense': expense, 'cash_in_hand': cash_in_hand.amount if cash_in_hand else 0,})
+        return render(request, 'edit_expense.html', {'expense': expense})
     
     def post(self, request, *args, **kwargs):
 
         expense_details = ast.literal_eval(request.POST['expense'])
         status = 200
-        try:
-            cash_in_hand = CashInHand.objects.latest('id')
-        except:
-            cash_in_hand = None
         expense = Expense.objects.get(id=expense_details['id'])
         try:
             expense.voucher_no = expense_details['voucher_no']
@@ -172,25 +163,8 @@ class EditExpense(View):
             expense.branch = expense_details['branch']
             expense_head = ExpenseHead.objects.get(id=expense_details['expense_head_id'])
             expense.expense_head = expense_head
-            
-            if expense.project:
-                project = expense.project
-                project.expense_amount = float(project.expense_amount) - float(expense.amount)
-                project.save()
-            if expense_details['project_id']:
-                project = Project.objects.get(id=expense_details['project_id'])
-                project.expense_amount = float(project.expense_amount) + float(expense_details['amount'])
-                project.save()
-                expense.project = project
-            cash_in_hand.amount = float(cash_in_hand.amount) + float(expense.amount)
             expense.amount = expense_details['amount']
-            cash_in_hand.amount = float(cash_in_hand.amount) - float(expense_details['amount'])
-            cash_in_hand.save()
             expense.save()
-            if expense.purchase:
-                purchase = expense.purchase
-                purchase.purchase_expense = expense_details['amount']
-                purchase.save()
             res = {
                 'result': 'ok',
             }
@@ -210,11 +184,6 @@ class Expenses(View):
 
         current_date = dt.datetime.now().date()
         expenses = Expense.objects.all().count()
-        try:
-            cash_in_hand = CashInHand.objects.latest('id')
-        except:
-            cash_in_hand = None
-
         if int(expenses) > 0:
             latest_expense = Expense.objects.latest('id')
             voucher_no = int(latest_expense.voucher_no) + 1
@@ -223,10 +192,9 @@ class Expenses(View):
         context = {
             'current_date': current_date.strftime('%d/%m/%Y'),
             'voucher_no': voucher_no,
-            'cash_in_hand': cash_in_hand.amount if cash_in_hand else 0,
         }
         
-        return render(request, 'expenses/expense.html', context)
+        return render(request, 'expense.html', context)
 
     def post(self, request, *args, **kwargs):
 
@@ -245,39 +213,12 @@ class Expenses(View):
             expense.amount = post_dict['amount']
             expense.payment_mode = post_dict['payment_mode']
             expense.narration = post_dict['narration']
-            try:
-                cash_in_hand = CashInHand.objects.latest('id')
-            except Exception as ex:
-                cash_in_hand = None
-            if cash_in_hand:
-                cash_in_hand.amount = float(cash_in_hand.amount) - float(post_dict['amount'])
-                cash_in_hand.save()
-                cash_entry = CashEntry.objects.create(cash_in_hand=cash_in_hand)
-                cash_entry.in_out = 'out'
-                cash_entry.date = datetime.strptime(post_dict['date'], '%d/%m/%Y')
-                cash_entry.from_to = 'Expense'
-                cash_entry.amount = post_dict['amount']
             if post_dict['payment_mode'] == 'cheque':
                 expense.cheque_no = post_dict['cheque_no']
                 expense.cheque_date = datetime.strptime(post_dict['cheque_date'], '%d/%m/%Y')
                 expense.bank_name = post_dict['bank_name']
                 expense.branch = post_dict['branch']
             expense.save()
-            try:
-                project = Project.objects.get(id=post_dict['project_id'])
-                project.expense_amount = float(project.expense_amount) + float(post_dict['amount'])
-                cash_entry.purpose = 'other'
-                cash_entry.other_purpose = post_dict['narration']
-                cash_entry.project = project
-                project.save()
-                expense.project = project
-                expense.save()
-            except Exception as ex:
-                cash_entry.purpose = 'other'
-                cash_entry.other_purpose = post_dict['narration']
-                print str(ex)
-                project = None
-            cash_entry.save()
             res = {
                 'result': 'ok'
             }

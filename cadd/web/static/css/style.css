@@ -925,3 +925,6 @@ a:hover , a:focus{
 	border: 1px solid #336699;
     border-radius: 5px;
 }
+#radio_label {
+	width: 20% !important;
+}
