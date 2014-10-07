@@ -214,14 +214,12 @@ class EditStudentDetails(View):
         batch_details = []
         installment_list = []
         student = Student.objects.get(id=student_id)
-        print student
         if request.is_ajax():
             for batch in student.batches.all():
                 batch_details.append({
                     'id': batch.id,
                     'name': batch.name,
                 })
-            print batch_details
             installments = student.installments.all()
             for installment in installments:
                 installment_list.append({
@@ -231,7 +229,6 @@ class EditStudentDetails(View):
                     'fine': installment.fine_amount if installment.fine_amount else '',
                     'due_date_id': installment.id,
                 })
-            #print installments
             ctx_student_data.append({
                 'student_id': student.id,
                 'student_name': student.student_name if student.student_name else '',
@@ -315,7 +312,7 @@ class EditStudentDetails(View):
                 installment_obj.amount = installment['amount']
                 installment_obj.due_date = datetime.strptime(installment['due_date'], '%d/%m/%Y')
                 if installment.get('fine', ''):
-                    installmet.fine_amount = installment['fine']
+                    installment_obj.fine_amount = installment['fine']
                 installment_obj.save()
                 student.installments.add(installment_obj)
                 student.save()

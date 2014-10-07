@@ -106,7 +106,7 @@ validate_new_student = function($scope) {
     $scope.dob = $$('#dob')[0].get('value');
     $scope.doj = $$('#doj')[0].get('value');
     var total = 0;
-    console.log($scope.installments.length);
+
     for (var i=0; i<$scope.installments.length; i++) {
         if ($scope.installments[i].amount == Number($scope.installments[i].amount)) {
             total = parseFloat(total) + parseFloat($scope.installments[i].amount)
@@ -177,6 +177,10 @@ validate_new_student = function($scope) {
         for(var i = 0; i < $scope.installments.length; i++){
             id_name = '#'+$scope.installments[i].due_date_id;
             $scope.installments[i].due_date = $$(id_name)[0].get('value');
+            var date_value = $scope.installments[i].due_date.split('/');
+            var start_date = new Date(date_value[2],date_value[1]-1, date_value[0]); 
+            
+            $scope.installments[i].due_date = $$(id_name)[0].get('value');
             if($scope.installments[i].amount == ''){
                 $scope.validation_error = "Please enter the amount for installment";
                 return false;
@@ -190,6 +194,16 @@ validate_new_student = function($scope) {
                 $scope.validation_error = "Please enter a valid fine amount for installment";
                 return false;
             } 
+            for(var j = i+1; j < $scope.installments.length; j++){
+                id_name = '#'+$scope.installments[j].due_date_id;
+                $scope.installments[j].due_date = $$(id_name)[0].get('value');
+                var date_value = $scope.installments[j].due_date.split('/');
+                var next_date = new Date(date_value[2],date_value[1]-1, date_value[0]);
+                if(start_date > next_date){
+                    $scope.validation_error = "Please check the due date in row " + (j+1);
+                    return false;
+                }
+            }
         }
     } return true;
 }   
@@ -239,6 +253,13 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         console.log($scope.batches);
        
     }
+    $scope.get_fees = function() {
+        for(var i=0; i<$scope.courses.length; i++) {
+            if ($scope.student.course == $scope.courses[i].id) {
+                $scope.student.fees = $scope.courses[i].amount;
+            }
+        }
+    }
     $scope.get_student_details  = function(student_id){
         $scope.url = '/admission/edit_student_details/' + student_id+ '/';
         $http.get($scope.url).success(function(data)
@@ -258,7 +279,9 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         });
     }
     $scope.load_installments = function() {
+        console.log($scope.student.no_installments);
         if ($scope.student.no_installments.length > 0) {
+            console.log($scope.student.no_installments, $scope.installments.length);
             if ($scope.student.no_installments > $scope.installments.length) {
                 diff = $scope.student.no_installments - $scope.installments.length;
                 for (var i=0; i<diff; i++) {
@@ -270,6 +293,7 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
                         'due_date_id': due_date_id,
                     })
                 }
+                console.log($scope.installments);
             } else {
                 diff = $scope.installments.length - $scope.student.no_installments;
                 for (var i=diff; i>0; i--) {
@@ -293,8 +317,8 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
     }
     $scope.validate_edit_student = function() {
         $scope.validation_error = '';
-        $scope.dob = $$('#dob')[0].get('value');
-        $scope.doj = $$('#doj')[0].get('value');
+        $scope.student.dob = $$('#dob')[0].get('value');
+        $scope.student.doj = $$('#doj')[0].get('value');
         var total = 0;
         console.log($scope.student.batch);
         for (var i=0; i<$scope.installments.length; i++) {
@@ -366,19 +390,31 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
             for(var i = 0; i < $scope.installments.length; i++){
                 id_name = '#'+$scope.installments[i].due_date_id;
                 $scope.installments[i].due_date = $$(id_name)[0].get('value');
+                var date_value = $scope.installments[i].due_date.split('/');
+                var start_date = new Date(date_value[2],date_value[1]-1, date_value[0]);                
                 if($scope.installments[i].amount == ''){
-                    $scope.validation_error = "Please enter the amount for installment";
+                    $scope.validation_error = "Please enter the amount for installment in row " + (i+1);
                     return false;
                 } else if($scope.installments[i].amount && !Number($scope.installments[i].amount)){
-                    $scope.validation_error = "Please enter a valid amount for installment";
+                    $scope.validation_error = "Please enter a valid amount for installment in row " + (i+1);
                     return false;
                 } else if($scope.installments[i].due_date == ''){
-                    $scope.validation_error = "Please enter the due date for installment";
+                    $scope.validation_error = "Please enter the due date for installment in row " + (i+1);
                     return false;
                 } else if($scope.installments[i].fine != 0 && parseFloat($scope.installments[i].fine) != Number($scope.installments[i].fine)){
-                    $scope.validation_error = "Please enter a valid fine amount for installment";
+                    $scope.validation_error = "Please enter a valid fine amount for installment in row " + (i+1);
                     return false;
                 } 
+                for(var j = i+1; j < $scope.installments.length; j++){
+                    id_name = '#'+$scope.installments[j].due_date_id;
+                    $scope.installments[j].due_date = $$(id_name)[0].get('value');
+                    var date_value = $scope.installments[j].due_date.split('/');
+                    var next_date = new Date(date_value[2],date_value[1]-1, date_value[0]);
+                    if(start_date > next_date){
+                        $scope.validation_error = "Please check the due date in row " + (j+1);
+                        return false;
+                    }
+                }
             }
         } return true;
     }   

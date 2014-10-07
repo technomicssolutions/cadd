@@ -93,7 +93,7 @@ class BatchAttendanceList(View):
         if request.is_ajax():
             for batch in batches:
                 student_list = []                
-                students = Student.objects.filter(batch=batch).order_by('roll_number')
+                students = Student.objects.filter(batch=batch).order_by('student_name')
                 holiday_calendar = None
                 for student in students:
                     period_list = []
@@ -172,7 +172,7 @@ class AttendanceDetails(View):
             current_date = datetime.now()
             if(request.GET.get('batch_day')):
                 day = request.GET.get('batch_day')
-                students = batch.student_set.all().order_by('roll_number')
+                students = batch.student_set.all().order_by('student_name')
                 students_list = []
                 date = dt.date(int(year), int(month), int(day))
                 try:
@@ -211,7 +211,7 @@ class AttendanceDetails(View):
                     'is_future_date': "true" if datetime(int(year),int(month),int(day)) > datetime.now() else "false",
                 }            
             else:  
-                students = batch.student_set.all().order_by('roll_number')
+                students = batch.student_set.all().order_by('student_name')
                 no_of_days = calendar.monthrange(int(year), int(month))[1]            
                 calendar_days = []
                 for day in range(1, no_of_days + 1):
@@ -283,7 +283,7 @@ class BatchStudents(View):
         day = current_date.day  
         batch_id = kwargs['batch_id']
         batch = Batch.objects.get(id=batch_id)
-        students = batch.student_set.all().order_by('roll_number')
+        students = batch.student_set.all().order_by('student_name')
         students_list = []
         date = dt.date(int(year), int(month), int(day))
         try:

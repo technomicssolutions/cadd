@@ -92,6 +92,8 @@ class ListStaff(View):
                     'student_module': 'true' if staff.permission and staff.permission.student_module else 'false',
                     'master_module': 'true' if staff.permission and staff.permission.master_module else 'false',
                     'fees_module': 'true' if staff.permission and staff.permission.fees_module else 'false',
+                    'register_module': 'true' if staff.permission and staff.permission.register_module else 'false',
+                    'expense_module': 'true' if staff.permission and staff.permission.expense_module else 'false',
                 }
                 staff_list.append({
                     'id': staff.id,
@@ -181,6 +183,14 @@ class PermissionSetting(View):
                 permission.fees_module = True
             else:
                 permission.fees_module = False
+            if permission_details['register_module'] == 'true':
+                permission.register_module = True
+            else:
+                permission.register_module = False
+            if permission_details['expense_module'] == 'true':
+                permission.expense_module = True
+            else:
+                permission.expense_module = False
             permission.save()
             staff.permission = permission
             staff.save()

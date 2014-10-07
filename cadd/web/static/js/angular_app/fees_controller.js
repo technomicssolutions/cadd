@@ -213,7 +213,7 @@ function FeesController($scope, $element, $http, $timeout, share, $location)
         $scope.popup.hide_popup();
     }   
     $scope.print_outstanding_fees_list = function() {
-        document.location.href = '/fees/'
+        document.location.href = '/fees/print_outstanding_fees_details/?student='+$scope.student_id;
     }
 }
 

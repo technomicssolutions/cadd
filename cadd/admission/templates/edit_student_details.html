@@ -30,7 +30,7 @@
                 </div>
                 <div class="control">
                     <label> Course</label>  
-                    <select name="course" ng-model="student.course" ng-selected="course.id == student.course_id" ng-options="course.id as course.course_name for course in courses">
+                    <select name="course" ng-model="student.course" ng-selected="course.id == student.course_id" ng-options="course.id as course.course_name for course in courses" ng-change="get_fees()">
 					<option value="">Select</option>
 				</select>
                 </div>
@@ -116,7 +116,7 @@
                     <input type="text" name="no_installments" value="" ng-model="student.no_installments" ng-change="load_installments()"/>
                 </div>
 
-                <div class="control" ng-show="no_installments">
+                <div class="control" ng-show="student.no_installments">
                     <table>
                         <tr>
                             <th>Amount</th>

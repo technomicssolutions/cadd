@@ -123,7 +123,7 @@ function CollegeController($scope, $element, $http, $timeout, share, $location)
         }
     }
     $scope.edit_software = function(software){
-        $scope.add_new_software();
+        $scope.add_new_software('edit');
         $scope.software.name = software.name;
         $scope.software.id = software.id;
     }
@@ -168,7 +168,13 @@ function CollegeController($scope, $element, $http, $timeout, share, $location)
         }
     } 
 
-    $scope.add_new_software = function(){  
+    $scope.add_new_software = function(type){ 
+        if(type != 'edit'){
+            $scope.software = {
+                'id': '',
+                'name': '',
+            }; 
+        }
         $scope.popup = new DialogueModelWindow({
             'dialogue_popup_width': '38%',
             'message_padding': '0px',
@@ -189,7 +195,17 @@ function CollegeController($scope, $element, $http, $timeout, share, $location)
         $scope.validation_error = "";
         $scope.popup.hide_popup();
     }
-    $scope.add_new_course = function(){  
+    $scope.add_new_course = function(type){  
+        if(type != 'edit'){
+            $scope.course = {
+                'id': '',
+                'name': '',
+                'duration': '',
+                'duration_unit': '',
+                'amount': '',
+                'softwares': [],
+            };
+        }
         $scope.popup = new DialogueModelWindow({
             'dialogue_popup_width': '38%',
             'message_padding': '0px',
@@ -244,6 +260,7 @@ function CollegeController($scope, $element, $http, $timeout, share, $location)
         $scope.course.duration = course.duration;
         $scope.course.amount = course.amount;
         $scope.course.duration_unit = course.duration_unit;
+        $scope.course.fine = course.fine;
         $scope.url = '/college/softwares/';
         $http.get($scope.url).success(function(data)
         {        
@@ -261,7 +278,7 @@ function CollegeController($scope, $element, $http, $timeout, share, $location)
         {
             console.log(data || "Request failed");
         });
-        $scope.add_new_course();
+        $scope.add_new_course('edit');
     }
     $scope.delete_course = function(course){
         $scope.url = '/college/delete_course/'+course.id;
@@ -337,9 +354,28 @@ function BatchController($scope, $element, $http, $timeout, share, $location)
         get_batches($scope, $http);
     }
     $scope.close_popup = function(){
+        $scope.batch = {
+            'id': '',
+            'name': '',
+            'software_id': '',
+            'start': '',
+            'end': '',
+            'allowed_students': '',
+        }
         $scope.popup.hide_popup();
     }
-    $scope.add_new_batch = function(){  
+    $scope.add_new_batch = function(type){  
+        if(type != 'edit'){
+            $scope.batch = {
+                'id': '',
+                'name': '',
+                'software_id': '',
+                'start': '',
+                'end': '',
+                'allowed_students': '',
+            }
+        }
+
         new Picker.Date($$('#batch_start'), {
             timePicker: true,
             positionOffset: {x: 5, y: 0},
@@ -378,7 +414,8 @@ function BatchController($scope, $element, $http, $timeout, share, $location)
         save_batch($scope, $http);
     } 
     $scope.edit_batch = function(batch){
+        console.log(batch);
         $scope.batch = batch;
-        $scope.add_new_batch();
+        $scope.add_new_batch('edit');
     }
 }
