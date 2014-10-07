@@ -11,6 +11,8 @@ class Permission(models.Model):
 	student_module = models.BooleanField('Student Permission', default=False)
 	master_module = models.BooleanField('Master Permission', default=False)
 	fees_module = models.BooleanField('Fees Permission', default=False)
+	register_module = models.BooleanField('Register Permission', default=False)
+	expense_module = models.BooleanField('Expense Permission', default=False)
 	
 	class Meta:
 		verbose_name_plural = 'Permission'

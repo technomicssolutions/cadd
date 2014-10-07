@@ -254,6 +254,8 @@ function PermissionController($scope, $http) {
         'student_module': false,
         'master_module': false,
         'fees_module': false,
+        'register_module': false,
+        'expense_module': false,
     }
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
@@ -296,6 +298,15 @@ function PermissionController($scope, $http) {
             $scope.permission.fees_module = true;
         else
             $scope.permission.fees_module = false;
+        if (staff.permission.register_module == 'true')
+            $scope.permission.register_module = true;
+        else
+            $scope.permission.register_module = false;
+        if (staff.permission.expense_module == 'true')
+            $scope.permission.expense_module = true;
+        else
+            $scope.permission.expense_module = false;
+
         $scope.staffs = [];
     }
     $scope.select_list_item = function(index){
@@ -329,6 +340,16 @@ function PermissionController($scope, $http) {
                 $scope.permission.fees_module = 'true';
             } else {
                 $scope.permission.fees_module = 'false';
+            }
+            if ($scope.permission.register_module == true) {
+                $scope.permission.register_module = 'true';
+            } else {
+                $scope.permission.register_module = 'false';
+            }
+            if ($scope.permission.expense_module == true) {
+                $scope.permission.expense_module = 'true';
+            } else {
+                $scope.permission.expense_module = 'false';
             }
             params = {
                 'permission_details': angular.toJson($scope.permission),
