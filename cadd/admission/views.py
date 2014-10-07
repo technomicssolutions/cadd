@@ -612,6 +612,96 @@ class EnquiryReport(View):
         else:
             return render(request, 'enquiry_report.html',{})
 
+class AdmissionReport(View):
+
+    def get(self, request, *args, **kwargs):
+        
+        date = datetime.now().date()
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if not start_date: 
+            return render(request, 'admission_report.html', {})
+        elif not end_date:
+            return render(request, 'admission_report.html', {}) 
+        else:
+            start_date = datetime.strptime(start_date, '%d/%m/%Y')
+            end_date = datetime.strptime(end_date, '%d/%m/%Y')
+        try:
+            admissions = Student.objects.filter( doj__gte=start_date,doj__lte=end_date).order_by('doj')
+        except Exception as ex:
+            print str(ex), 'Exception'
+            res = {
+                    'result': 'error',
+                }
+
+        if admissions:
+            if request.is_ajax():
+                admission_list = []
+                batch_list = []
+                for admission in admissions:
+                    if admission.batches.all().count() > 0: 
+                        for batch in admission.batches.all().order_by('-id'):
+                            batch_list.append(batch.name)
+                    admission_list.append({
+                        'student_name': admission.student_name,
+                        'course' : admission.course.name,
+                        'batch' : batch_list,
+                        'saved_date': admission.doj.strftime('%d/%m/%Y') if admission.doj else '',
+                    })
+                res = {
+                        'result': 'ok',
+                        'admissions': admission_list,
+                    }
+                response = simplejson.dumps(res)
+                return HttpResponse(response, status=200, mimetype='application/json')
+
+        if request.GET.get('report_type',''):
+            if admissions:
+                
+                response = HttpResponse(content_type='application/pdf')
+                p = SimpleDocTemplate(response, pagesize=A4)
+                elements = []        
+                d = [['Admission Report as at '+date.strftime('%d %B %Y')]]
+                t = Table(d, colWidths=(450), rowHeights=25, style=style)
+                t.setStyle([('ALIGN',(0,0),(-1,-1),'CENTER'),
+                            ('TEXTCOLOR',(0,0),(-1,-1),colors.HexColor('#699AB7')),
+                            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                            ('BACKGROUND',(0, 0),(-1,-1),colors.HexColor('#EEEEEE')),
+                            ('FONTSIZE', (0,0), (0,0), 20),
+                            ('FONTSIZE', (1,0), (-1,-1), 17),
+                            ])   
+                elements.append(t)
+                
+                elements.append(Spacer(4, 5))
+                data = []
+                data_list = []
+                batches_name = ''
+                data.append(['Date of Admission','Name','Course','Batches'])
+                for admission in admissions:
+                    if admission.batches.all().count() > 0:
+                        for batch in admission.batches.all().order_by('-id'):
+                            batches_name = batches_name + batch.name + ','
+                    data.append([admission.doj.strftime('%d/%m/%Y') ,Paragraph(admission.student_name,para_style),Paragraph(admission.course.name,para_style),Paragraph(batches_name,para_style)])
+                table = Table(data, colWidths=(100,100,100,100),  style=style)
+                table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
+                            ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
+                            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                            ('BACKGROUND',(0, 0),(-1,-1),colors.white),
+                            ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+                            ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+                            ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
+                            
+                            ])   
+                elements.append(table)
+                
+                
+                p.build(elements)        
+                return response
+            else:
+
+                return render(request, 'admission_report.html',{'message':'No admissions founds'})
+        else:
+            return render(request, 'admission_report.html',{})
 
 class StudentSearch(View):
 

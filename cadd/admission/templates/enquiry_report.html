@@ -4,6 +4,11 @@
 {% block controller %} ng-controller="EnquiryReportController" ng-init="init('{{csrf_token}}')"{% endblock controller %}
 
 {% block content %}
+ 	<div id="main-title">
+        <div class="alert alert-info" align="Center">
+            <h4>Enquiry Report</h4>
+        </div>
+    </div>
 	<div class="control">
 		<label>Start Date</label>
 		<input type="text"name="start_date" value="" ng-model="start_date" id="start_date">	
@@ -27,7 +32,7 @@
 			<th>Course</th>
 			
 		</tr>
-		<tr ng-repeat="enquiry in enquiries">
+		<tr ng-repeat="enquiry in visible_list">
 			<td>[[$index+1]]</td>
 			<td>[[enquiry.saved_date]]</td>
 			<td>[[enquiry.auto_generated_num]]</td>
@@ -36,4 +41,5 @@
 		</tr>
 		
 	</table>
+	{% include 'pagination_div.html' %}
 {% endblock content %}
