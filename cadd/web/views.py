@@ -229,7 +229,7 @@ class DeleteLetter(View):
         letter_id = kwargs['letter_id']
         letter = Letter.objects.get(id=letter_id)
         letter.delete()
-        return render(request, 'letter.html', {})
+        return HttpResponseRedirect(reverse('letters'))
 
 
 class Login(View):
