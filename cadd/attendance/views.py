@@ -64,12 +64,13 @@ class AddAttendance(View):
         attendance.save()
         for student_details in students:    
             student = Student.objects.get(id=student_details['id'])
-            student_attendance, created =  StudentAttendance.objects.get_or_create(student=student, attendance=attendance)
-            if student_details['is_presented'] == 'true':
-                student_attendance.status = "P"
-            else:
-                student_attendance.status = "A"
-            student_attendance.save()                
+            if student.is_rolled == False:
+                student_attendance, created =  StudentAttendance.objects.get_or_create(student=student, attendance=attendance)
+                if student_details['is_presented'] == 'true':
+                    student_attendance.status = "P"
+                else:
+                    student_attendance.status = "A"
+                student_attendance.save()                
         res = {
             'result': 'ok',
         }
@@ -96,38 +97,39 @@ class BatchAttendanceList(View):
                 students = Student.objects.filter(batch=batch).order_by('student_name')
                 holiday_calendar = None
                 for student in students:
-                    period_list = []
-                    date = dt.date(int(year), int(month), int(day))
-                    holiday_calendar, created = HolidayCalendar.objects.get_or_create(date=date)
-                    if created:
-                        if date.strftime("%A") == 'Sunday' :
-                            holiday_calendar.is_holiday = True             
-                        holiday_calendar.save()
-                    periods = int(batch.periods)
-                    try:
-                        attendance = Attendance.objects.get(date=date, student=student, batch=batch)
-                        for period in attendance.presented:                          
-                            period_list.append({
-                            'count': period['period'],
-                            'is_presented': 'true' if period['is_presented'] else 'false',
-                            'is_holiday': 'true' if holiday_calendar and holiday_calendar.is_holiday else 'false',
-                            'status': 'P' if period['is_presented'] else 'A',
-                            })
-                    except:                        
-                        for period in range(1, periods + 1):                   
-                            period_list.append({
-                            'count': period,
-                            'is_presented': "true",
-                            'is_holiday': 'true' if holiday_calendar and holiday_calendar.is_holiday else 'false',
-                            'status': '',
-                            })
-                    student_list.append({
-                        'student_id': student.id,
-                        'name': student.student_name,  
-                        'roll_no': student.roll_number,
-                        'counts': period_list          
-                    })
-                    period_list = []
+                    if student.is_rolled == False:
+                        period_list = []
+                        date = dt.date(int(year), int(month), int(day))
+                        holiday_calendar, created = HolidayCalendar.objects.get_or_create(date=date)
+                        if created:
+                            if date.strftime("%A") == 'Sunday' :
+                                holiday_calendar.is_holiday = True             
+                            holiday_calendar.save()
+                        periods = int(batch.periods)
+                        try:
+                            attendance = Attendance.objects.get(date=date, student=student, batch=batch)
+                            for period in attendance.presented:                          
+                                period_list.append({
+                                'count': period['period'],
+                                'is_presented': 'true' if period['is_presented'] else 'false',
+                                'is_holiday': 'true' if holiday_calendar and holiday_calendar.is_holiday else 'false',
+                                'status': 'P' if period['is_presented'] else 'A',
+                                })
+                        except:                        
+                            for period in range(1, periods + 1):                   
+                                period_list.append({
+                                'count': period,
+                                'is_presented': "true",
+                                'is_holiday': 'true' if holiday_calendar and holiday_calendar.is_holiday else 'false',
+                                'status': '',
+                                })
+                        student_list.append({
+                            'student_id': student.id,
+                            'name': student.student_name,  
+                            'roll_no': student.roll_number,
+                            'counts': period_list          
+                        })
+                        period_list = []
                 periods = int(batch.periods)   
                 for period in range(1, periods + 1):
                     period_nos.append(period)              
@@ -298,17 +300,18 @@ class BatchStudents(View):
             attendance = Attendance()
             staff = ''
         for student in students:
-            try:
-                student_attendance = StudentAttendance.objects.get(attendance=attendance, student=student)
-            except:
-                student_attendance = StudentAttendance()
-            students_list.append({
-                'id': student.id,
-                'name': student.student_name,
-                'roll_number': student.roll_number,
-                'status': student_attendance.status if student_attendance.status else 'NA',
-                'is_presented': 'false' if student_attendance.status == 'A' else 'true',
-            })
+            if student.is_rolled == False:
+                try:
+                    student_attendance = StudentAttendance.objects.get(attendance=attendance, student=student)
+                except:
+                    student_attendance = StudentAttendance()
+                students_list.append({
+                    'id': student.id,
+                    'name': student.student_name,
+                    'roll_number': student.roll_number,
+                    'status': student_attendance.status if student_attendance.status else 'NA',
+                    'is_presented': 'false' if student_attendance.status == 'A' else 'true',
+                })
         res = {
             'students': students_list,
             'current_month': current_date.month,  
