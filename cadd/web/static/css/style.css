@@ -241,21 +241,24 @@ textarea{
 
 
 
-.form_container {
+#letter .form_container {
 	margin: auto;
 	width: 35%;
 	min-height: 100%
 }
-.form_container .control {
+#letter .form_container .control {
 	width: 100%;
 	height: 30px;
 	float: left;
 	padding: 10px;
 }
-.form_container label{
+#letter .form_container label{
 	display: block !important;
     float: left;
     width: 45%;
+}
+#letter textarea{
+	width: 50% !important;
 }
 
 .form_container input[type="text"], .form_container input[type="file"]{
@@ -747,7 +750,7 @@ label.block{
 .control input[type="radio"] {
 	float: left;
 }
-#list_outstanding_fees .control label {
+#letter .control label {
 	width: 21% !important;
 }
 .inner_table{

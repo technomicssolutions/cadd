@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Letter{% endblock title %}
+{% block body_id %}letter{% endblock %}
+
+{% block controller %}
+	ng-controller="RegisterController" ng-init="init('{{csrf_token}}', 'letter')"
+{% endblock controller %}
+{% block dialogue_popup %}
+	{% include 'add_letter.html' %} 
+	              	
+{% endblock %}
+{% block content %}
+	<div id="main-title">
+		<div class="alert alert-info" align="Center"><h4>Letter</h4></div>
+	</div>
+	<div  align="Center">		
+		<input type="button" class="btn btn-info" value="New Letter" ng-click="new_letter()">
+	</div>
+	<div class="form_container">
+		<div class="search_staff">
+			<table id="list" class="table table-hover" >
+				<tr>
+				  <th>Date</th>
+				  <th>Type</th>
+				  <th>From</th>
+				  <th>To</th>
+				  <th>Edit </th>
+				  <th>Delete</th>						  
+				</tr>
+				<tr ng-repeat="letter in letters">
+					<td>[[letter.date]]</td>
+					<td>[[letter.type]]</td>
+					<td>[[letter.from]]</td>
+					<td>[[letter.to]]</td>
+					<td> <a href="" ng-click="edit_letter(letter)">Edit </td>
+					<td><a href="/delete_letter/[[letter.id]]/" >Delete</td>
+				</tr>
+			</table> 
+		</div>
+	</div>	
+{% endblock content %}

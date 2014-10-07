@@ -64,7 +64,7 @@ class AddExpenseHead(View):
         if request.is_ajax():
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')
-        return render(request, 'expenses/add_expense_head.html', context)
+        return render(request, 'add_expense_head.html', context)
 
 class ExpenseHeadList(View):
 
@@ -92,11 +92,11 @@ class ExpenseList(View):
         expenses = Expense.objects.all()
 
         if request.is_ajax():
-            ctx_expense_head = []
+            ctx_expenses = []
             status_code = 200
             if len(expenses) > 0:
                 for expense in expenses:
-                    ctx_expense_head.append({
+                    ctx_expenses.append({
                         'expense_head_id': expense.expense_head.id if expense.expense_head else '',
 	                    'id': expense.id, 
 	                    'date': expense.date.strftime('%d/%m/%Y'),
@@ -108,10 +108,11 @@ class ExpenseList(View):
 	                    'cheque_no': expense.cheque_no,
 	                    'cheque_date': expense.cheque_date.strftime('%d/%m/%Y') if expense.cheque_date else '',
 	                    'narration': expense.narration,
+	                    'expense_head': expense.expense_head.expense_head if expense.expense_head else '',
                     })
             res = {
                 'result': 'ok',
-                'expenses': expenses
+                'expenses': ctx_expenses
             }
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status_code, mimetype="application/json")

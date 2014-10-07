@@ -73,19 +73,16 @@
 				{% if user.is_superuser or user.staff_set.all.0.permission.expense_module %}
 					<li class="menu"> <a href=""> Expense </a>
 						<ul>
-							<li> <a href="{% url 'expense_list' %}" >Expenses</a>
-							</li>
-							<li> <a href="" >Certificate</a>
-							</li>	
-							<li> <a href="" >Complaint</a>
-							</li>					
+							<li> <a href="{% url 'expense_list' %}" >Expenses</a></li>
+							<li><a href="{% url 'new_expense' %}">Add Expense</a></li>
+							<li><a href="{% url 'new_expense_head' %}"> Expense Head</a></li>				
 						</ul>
 					</li>	
 				{% endif %}	
 				{% if user.is_superuser or user.staff_set.all.0.permission.register_module %}
 					<li class="menu last"> <a href=""> Register </a>
 						<ul>
-							<li> <a href="" >Letter</a>
+							<li> <a href="{% url 'letters' %}" >Letter</a>
 							</li>
 							<li> <a href="" >Certificate</a>
 							</li>	

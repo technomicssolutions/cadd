@@ -38,17 +38,3 @@ class StudentAttendance(models.Model):
 
 		verbose_name_plural = 'Student Attendance'
 
-class HolidayCalendar(models.Model):
-
-	date = models.DateField('Date', null=True, blank=True)
-	is_holiday = models.BooleanField('Is holiday', default=False)
-	
-	def __unicode__(self):
-
-		return str(self.date) 
-
-	class Meta:
-
-		verbose_name_plural = 'Holiday Calendar'
-
-

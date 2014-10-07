@@ -32,7 +32,8 @@
 			</div>
 			<div class="control">
 				<label for="expense_head">Select Head :</label>
-				<select name="expense_head" ng-model="expense.expense_head_id" ng-options="head.head_id as head.head_name for head in expense_heads" ng-change="add_expense_head()">
+				<a href="" ng-click="add_expense_head()">New</a>
+				<select name="expense_head" ng-model="expense.expense_head_id" ng-options="head.id as head.head_name for head in expense_heads" ng-selected="head.head_id == expense.expense_head_id">
 					<option value="">Select</option>
 				</select>
 			</div>
