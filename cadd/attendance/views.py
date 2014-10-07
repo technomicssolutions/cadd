@@ -14,7 +14,7 @@ from django.views.generic.base import View
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 
-from attendance.models import Attendance, HolidayCalendar, StudentAttendance
+from attendance.models import Attendance, StudentAttendance
 from college.models import Batch
 from admission.models import Student
 from staff.models import Staff
