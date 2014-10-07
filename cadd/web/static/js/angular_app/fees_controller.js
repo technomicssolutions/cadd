@@ -911,3 +911,39 @@ function FeesReportController($scope, $http, $element) {
         }
     }
 }
+function FeesPaymentController($scope, $http, $element) {
+    $scope.report_type = '';
+    $scope.show_course_wise_report = false;
+    $scope.show_student_wise_report = false;
+    $scope.init = function(csrf_token){
+        $scope.csrf_token = csrf_token;
+        $scope.error_flag = false;
+        get_course_list($scope, $http);
+    }
+    $scope.change_report_type = function(report_type){
+        if (report_type == 'course_wise'){
+            $scope.show_course_wise_report = true;
+            $scope.show_student_wise_report = false;
+        }else {
+            $scope.show_student_wise_report = true;
+            $scope.show_course_wise_report = false;
+        }
+    }
+    $scope.student_search = function(){
+        console.log($scope.student_name)
+        if($scope.student_name.length > 0){
+            $scope.validation_error = "";
+            student_search($scope, $http);
+        }
+        else
+            $scope.students_list = ""
+    }
+    $scope.get_report = function(report_type,student){
+       
+        if (report_type == 'student_wise') {
+            document.location.href = '/fees/fees_payment_report/?&student_id='+student.id+'&report_type='+report_type;
+        }else if(report_type == 'course_wise'){
+            document.location.href = '/fees/fees_payment_report/?course='+$scope.course+ '&report_type='+report_type;
+        }
+    }
+}
