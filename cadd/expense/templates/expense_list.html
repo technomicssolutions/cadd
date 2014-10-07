@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% block title %}Expenses{% endblock title %}
 {% block body_id %}expenses{% endblock %}
+
+{% block controller %}
+	ng-controller="ExpenseController" ng-init="init('{{csrf_token}}')"   
+{% endblock controller %}
 {% block content %}
 
 <div id="main-title">
@@ -19,26 +23,19 @@
 			<th> Date</th> 
 			<th> Voucher No</th> 
 			<th> Amount</th> 
-			<!-- <th> Barcode </th>  -->
-			<!-- <th> Tax </th> -->
 			<th> &nbsp;</th> 
 		</tr>
-		
-		{% for expense in expenses %}
-		 	<tr> 
-		 		<td> {{expense.expense_head}} </td>
-		 		<td> {{expense.date|date:"d/m/Y"}} </td>
-		 		<td> {{ expense.voucher_no }} </td>
-		 		<td> {{ expense.amount }} </td>
-		 		<!-- <td> {{expense.barcode}} </td> -->
-		 		<!-- <td> {{item.tax}} </td> -->
-		 		<td> 
-		 			<a href="{% url 'edit_expense' %}?expense_id={{expense.id}}">
-						<img src="/static/images/edit.png">
-					</a>					
-				</td>
-		 	</tr>
-		{% endfor %}
+	 	<tr ng-repeat="expense in expenses"> 
+	 		<td> [[expense.expense_head]] </td>
+	 		<td> [[expense.date]] </td>
+	 		<td> [[expense.voucher_no]] </td>
+	 		<td> [[expense.amount]] </td>
+	 		<td> 
+	 			<a href="{% url 'edit_expense' %}?expense_id=[[expense.id]]">
+					<img src="/static/images/edit.png">
+				</a>					
+			</td>
+	 	</tr>
 	</table>
 {% endif %}
 

@@ -8,6 +8,15 @@ function get_expense_head_list($scope, $http) {
         console.log(data || "Request failed");
     });
 }
+function get_expense_list($scope, $http) {
+    $http.get('/expense/expense_list/').success(function(data)
+    {
+        $scope.expenses = data.expenses;
+    }).error(function(data, status)
+    {
+        console.log(data || "Request failed");
+    });
+}
 
 function ExpenseController($scope, $element, $http, $timeout, $location) {
 
@@ -43,7 +52,7 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
             format:'%d/%m/%Y',
         });
         if (expense_id) {
-            $http.get('/expenses/edit_expense/?expense_id='+expense_id).success(function(data){
+            $http.get('/expense/edit_expense/?expense_id='+expense_id).success(function(data){
                 $scope.expense = data.expense[0];
                 $scope.payment_mode_change($scope.expense.payment_mode);
 
@@ -52,8 +61,8 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
                 console.log(data || "Request failed");
             });
         }
+        get_expense_list($scope, $http);
     }
-    
     $scope.payment_mode_change = function(payment_mode) {
         if(payment_mode == 'cheque') {
             $scope.payment_mode_selection = false;
@@ -69,7 +78,6 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
             $scope.payment_mode_selection = true;
         }
     }
-
     $scope.add_expense_head = function() {
         $scope.head_name = '';
         $scope.popup = new DialogueModelWindow({
@@ -100,7 +108,7 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
             }
             $http({
                 method : 'post',
-                url : "/expenses/new_expense_head/",
+                url : "/expense/new_expense_head/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
@@ -114,18 +122,15 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
                     $scope.expense.expense_head_id = data.head_id;
                     $scope.close_popup();
                 }
-                
             }).error(function(data, status){
                 console.log(data);
             });
         }
     }
-    
     $scope.form_validation = function(){
         $scope.expense.voucher_no = $$('#voucher_no')[0].get('value');
         $scope.expense.date = $$('#date')[0].get('value');
         $scope.expense.cheque_date = $$('#cheque_date')[0].get('value');
-        var cash_in_hand = $$('#cash_in_hand')[0].get('value');
         
         if ($scope.expense.expense_head_id == '' || $scope.expense.expense_head_id == undefined || $scope.expense.expense_head_id == 'select') {
             $scope.error_flag = true;
@@ -134,10 +139,6 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
         } else if ($scope.expense.amount == '' || $scope.expense.amount == undefined) {
             $scope.error_flag = true;
             $scope.error_message = 'Please enter amount';
-            return false;
-        } else if (parseFloat(cash_in_hand) < parseFloat($scope.expense.amount)) {
-            $scope.error_flag = true;
-            $scope.error_message = 'Please check the amount with Cash in hand';
             return false;
         } else if ($scope.expense.narration == '' || $scope.expense.narration == undefined) {
             $scope.error_flag = true;
@@ -176,20 +177,19 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
             }
             $http({
                 method : 'post',
-                url : "/expenses/new_expense/",
+                url : "/expense/new_expense/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {
-                
                 if (data.result == 'error'){
                     $scope.error_flag=true;
                     $scope.error_message = data.message;
                 } else {
                     $scope.error_flag=false;
                     $scope.error_message = '';
-                    document.location.href ='/expenses/new_expense/';
+                    document.location.href ='/expense/new_expense/';
                 }
             }).error(function(data, status){
                 console.log(data);
@@ -218,7 +218,7 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
             }
             $http({
                 method : 'post',
-                url : "/expenses/edit_expense/",
+                url : "/expense/edit_expense/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
@@ -231,7 +231,7 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
                 } else {
                     $scope.error_flag=false;
                     $scope.error_message = '';
-                    document.location.href ='/expenses/expense_list/';
+                    document.location.href ='/expense/expense_list/';
                 }
             }).error(function(data, status){
                 console.log(data);
