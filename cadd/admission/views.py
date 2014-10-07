@@ -708,11 +708,16 @@ class StudentSearch(View):
     def get(self, request, *args, **kwargs):
 
         if request.is_ajax():
-            batch_id = request.GET.get('batch')
-            student_name = request.GET.get('name')
-            batch = Batch.objects.get(id=batch_id)
             students_list = []
-            students = batch.student_set.filter(student_name__istartswith=student_name)
+            student_name = request.GET.get('name')
+            if request.GET.get('batch'):
+                batch_id = request.GET.get('batch')
+                batch = Batch.objects.get(id=batch_id)
+                students = batch.student_set.filter(student_name__istartswith=student_name)
+            elif request.GET.get('course'):
+                course_id = request.GET.get('course')
+                course = Course.objects.get(id=course_id)
+                students = Student.objects.filter(course=course, student_name__istartswith=student_name)
             for student in students:
                 students_list.append({
                     'id': student.id,

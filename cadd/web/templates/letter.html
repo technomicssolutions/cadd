@@ -4,7 +4,7 @@
 {% block body_id %}letter{% endblock %}
 
 {% block controller %}
-	ng-controller="RegisterController" ng-init="init('{{csrf_token}}', 'letter')"
+	ng-controller="LetterController" ng-init="init('{{csrf_token}}')"
 {% endblock controller %}
 {% block dialogue_popup %}
 	{% include 'add_letter.html' %} 

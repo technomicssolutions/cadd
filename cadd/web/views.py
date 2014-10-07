@@ -9,7 +9,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.core.urlresolvers import reverse
 
-from web.models import Letter
+from web.models import Letter, Certificate
+from admission.models import Student
+from college.models import Course
 
 
 class Home(View):
@@ -64,6 +66,42 @@ class Letters(View):
             response = simplejson.dumps(res)
             return HttpResponse(response, status = status_code, mimetype="application/json")
 
+class Certificates(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'certificates.html',{})
+
+
+class AddCertificate(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'add_certificate.html',{})
+
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            certificate_details = ast.literal_eval(request.POST['certificate_details'])
+            try:
+
+                certificate = Certificate()
+                certificate.certificate_name = certificate_details['name']
+                certificate.date = datetime.strptime(certificate_details['date'], '%d/%m/%Y')
+                student = Student.objects.get(id=certificate_details['student'])
+                certificate.student = student
+                course = Course.objects.get(id=certificate_details['course'])
+                certificate.course = course
+                certificate.issued_authority = certificate_details['issued_authority']
+                certificate.save()
+                res = {
+                    'result': 'ok',
+                    }
+            except Exception as ex:
+                print str(ex)
+                res = {
+                    'result': 'error',
+                    'message': 'Failed',
+                }
+            status_code = 200
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status = status_code, mimetype="application/json")
+
 
 class DeleteLetter(View):
     def get(self,request,*args,**kwargs):
@@ -71,8 +109,6 @@ class DeleteLetter(View):
         letter = Letter.objects.get(id=letter_id)
         letter.delete()
         return render(request, 'letter.html', {})
-
-
 
 
 class Login(View):
