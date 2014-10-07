@@ -15,6 +15,12 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.core.urlresolvers import reverse
 
+from reportlab.pdfgen import canvas
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.platypus import Paragraph, Table, TableStyle, SimpleDocTemplate, Spacer
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter, A4
+
 from web.models import Letter, Certificate
 from admission.models import Student
 from college.models import Course
@@ -28,6 +34,15 @@ para_style = ParagraphStyle('fancy')
 para_style.fontSize = 12
 para_style.fontName = 'Helvetica'
 
+
+style = [
+    ('FONTSIZE', (0,0), (-1, -1), 12),
+    ('FONTNAME',(0,0),(-1,-1),'Helvetica') 
+]
+
+para_style = ParagraphStyle('fancy')
+para_style.fontSize = 12
+para_style.fontName = 'Helvetica'
 
 class Home(View):
     def get(self, request, *args, **kwargs):
@@ -271,3 +286,57 @@ class ResetPassword(View):
         else:
             user_type = user.userprofile_set.all()[0].user_type 
             return HttpResponseRedirect(reverse('users', kwargs={'user_type': user_type}))
+
+class LetterList(View):
+
+    def get(self, request, *args, **kwargs):
+
+        start_date = request.GET.get('start_date', '')
+        end_date = request.GET.get('end_date', '')
+        letter_type = request.GET.get('letter_type', '')
+        letters = Letter.objects.filter(date__gte=datetime.strptime(start_date, '%d/%m/%Y'), date__lte=datetime.strptime(end_date, '%d/%m/%Y'), letter_type=letter_type)
+        letter_list = []
+        if request.is_ajax():
+            for letter in letters:
+                letter_list.append({
+                    'date': letter.date.strftime('%d/%m/%Y'),
+                    'to': letter.to_address,
+                    'from': letter.from_address,
+                })
+            res = {
+                'result': 'ok',
+                'letters': letter_list,
+            }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
+        else:
+            response = HttpResponse(content_type='application/pdf')
+            p = SimpleDocTemplate(response, pagesize=A4)
+            elements = []        
+            d = [['Letter '+letter_type +' Register Report -     '+start_date+' - ' + end_date]]
+            t = Table(d, colWidths=(450), rowHeights=25, style=style)
+            t.setStyle([('ALIGN',(0,0),(-1,-1),'CENTER'),
+                        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                        ('FONTSIZE', (0,0), (-1,-1), 17),
+                        ])   
+            elements.append(t)
+            elements.append(Spacer(4, 5))
+            data = []
+            data.append([ 'Sl no.','Date','From','To'])
+            i = 1
+            for letter in letters:
+                data.append([i , letter.date.strftime('%d/%m/%Y'), Paragraph(letter.to_address,para_style), Paragraph(letter.from_address,para_style)])
+                i = i + 1
+            table = Table(data, colWidths=(40,100,200,200),  style=style)
+            table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
+                        ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
+                        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                        ('BACKGROUND',(0, 0),(-1,-1),colors.white),
+                        ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+                        ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+                        ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
+                        ])   
+            elements.append(table)
+            p.build(elements)        
+            return response
+

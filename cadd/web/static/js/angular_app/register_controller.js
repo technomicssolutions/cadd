@@ -30,7 +30,22 @@ function LetterController($scope, $element, $http, $timeout, share, $location) {
 			'from': '',
 			'to': '',
 		}
-		get_letters($scope, $http);
+		$scope.letter_type = 'Incoming';
+		// get_letters($scope, $http);
+		new Picker.Date($$('#start_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
+        new Picker.Date($$('#end_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
 	}
 	$scope.create_popup = function(){
 		new Picker.Date($$('#letter_date'), {
@@ -111,6 +126,26 @@ function LetterController($scope, $element, $http, $timeout, share, $location) {
                 $scope.validation_error = data.message;
             });
         } 
+	}
+	$scope.view_list = function(type) {
+		start_date = $('#start_date')[0].get('value');
+		end_date = $('#end_date')[0].get('value');
+		$scope.error_message = '';
+		if (start_date == '' || start_date == undefined) {
+			$scope.error_message = 'Please choose the start date';
+		} else if (end_date == '' || end_date == undefined) {
+			$scope.error_message = 'Please choose the end date';
+		} else {
+			if (type == 'print')
+				document.location.href = '/letter_list/?start_date='+start_date+'&end_date='+end_date+'&letter_type='+$scope.letter_type;
+			else {
+				$http.get('/letter_list/?start_date='+start_date+'&end_date='+end_date+'&letter_type='+$scope.letter_type).success(function(data){
+					$scope.letters = data.letters;
+				}).error(function(data, status){	
+					console.log('Request failed');
+				})
+			}
+		}
 	}
 }
 

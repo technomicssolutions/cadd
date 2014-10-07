@@ -15,6 +15,7 @@ function get_batches($scope, $http, from){
     {        
         $scope.batches = data.batches;
         if(from == 'edit_student'){
+            console.log($scope.batches);
             for(var i = 0; i < $scope.batches.length; i++){
                 for(var j = 0; j < $scope.student.batches.length; j++){
                     if($scope.batches[i].id == $scope.student.batches[j].id){
