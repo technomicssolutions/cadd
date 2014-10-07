@@ -223,7 +223,7 @@ class DeleteLetter(View):
         letter_id = kwargs['letter_id']
         letter = Letter.objects.get(id=letter_id)
         letter.delete()
-        return render(request, 'letter.html', {})
+        return HttpResponseRedirect(reverse('letters'))
 
 
 class Login(View):
@@ -293,9 +293,11 @@ class LetterList(View):
         if request.is_ajax():
             for letter in letters:
                 letter_list.append({
+                    'id': letter.id,
                     'date': letter.date.strftime('%d/%m/%Y'),
                     'to': letter.to_address,
                     'from': letter.from_address,
+                    'type': letter.letter_type,
                 })
             res = {
                 'result': 'ok',
@@ -316,12 +318,18 @@ class LetterList(View):
             elements.append(t)
             elements.append(Spacer(4, 5))
             data = []
-            data.append([ 'Sl no.','Date','From','To'])
+            if letter_type == 'Incoming':
+                data.append([ 'SL #','DATE','FROM ADDRESS','LETTER BY WHO INSIDE THE OFFICE'])
+            else:
+                data.append([ 'SL #','DATE','TO ADDRESS','TO WHO INSIDE THE OFFICE'])
             i = 1
             for letter in letters:
-                data.append([i , letter.date.strftime('%d/%m/%Y'), Paragraph(letter.to_address,para_style), Paragraph(letter.from_address,para_style)])
+                if letter_type == 'Incoming':
+                    data.append([i , letter.date.strftime('%d/%m/%Y'), Paragraph(letter.from_address,para_style), Paragraph(letter.to_address,para_style)])
+                else:
+                    data.append([i , letter.date.strftime('%d/%m/%Y'), Paragraph(letter.to_address,para_style), Paragraph(letter.from_address,para_style)])
                 i = i + 1
-            table = Table(data, colWidths=(40,100,200,200),  style=style)
+            table = Table(data, colWidths=(40,100,150,250),  style=style)
             table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
                         ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
                         ('VALIGN',(0,0),(-1,-1),'MIDDLE'),

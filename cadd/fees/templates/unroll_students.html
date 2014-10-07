@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Un Roll Students{% endblock title %}
+{% block body_id %}un-rool_students{% endblock %}
+{% block controller %}
+	ng-controller="UnRollController" ng-init="init('{{csrf_token}}')"
+{% endblock controller %}
+{% block content %}
+<div class="main-title">
+	<div class="alert alert-info" align="Center">Unroll Students</div>
+	<div class="form_container">		
+		<div class="control">
+			<select name="course" ng-model="course" ng-change="get_outstanding_student()" ng-options="course.id as course.course_name for course in courses">
+				<option value="">Course</option>
+			</select>
+		</div>
+	</div>
+	<table id="list" class="table striped" ng-show="fees_details.length > 0">
+				<tr class="success" style="font-size: 12px" style="width:auto">
+					<th>Name</th>
+					<th>Roll no</th>
+					<th>Installments</th>
+					
+					<th>Unroll</th>
+					
+				</tr>
+				<tr ng-repeat="fee_detail in fees_details">
+					<td> [[fee_detail.student_name]] </td>
+					<td> [[fee_detail.roll_no]] </td>
+					<td> [[fee_detail.no_installments]] </td>
+					
+					<td><input type="checkbox" ng-click="unroll(fee_detail.student_id)"></td>
+				</tr>
+			</table> 
+
+</div>
+{% endblock content %}
