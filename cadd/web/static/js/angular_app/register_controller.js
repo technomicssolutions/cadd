@@ -133,6 +133,20 @@ function CertificateController($scope, $element, $http, $timeout, share, $locati
             useFadeInOut: !Browser.ie,
             format:'%d/%m/%Y',
         });
+        new Picker.Date($$('#end_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
+        new Picker.Date($$('#start_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
 	}
 	$scope.student_search = function(){
 		if($scope.student_name.length > 0){
@@ -182,6 +196,26 @@ function CertificateController($scope, $element, $http, $timeout, share, $locati
 	}
 	$scope.cancel_certificate = function(){
 		document.location.href ='/web/add_certificate/';
+	}
+	$scope.show_certificates = function(){
+		$scope.start_date = $$('#start_date')[0].get('value');
+		$scope.end_date = $$('#end_date')[0].get('value');
+		var url ='/web/certificate/?start_date='+$scope.start_date+'&end_date='+$scope.end_date;
+		$http.get(url).success(function(data)
+	    {
+	        $scope.certificates = data.certificates;
+	        if($scope.certificates.length == 0)
+	        	$scope.message = "No entries found"
+	        paginate($scope.certificates, $scope);
+	    }).error(function(data, status)
+	    {
+	        console.log(data || "Request failed");
+	    });
+	}
+	$scope.show_pdf = function(){
+		$scope.start_date = $$('#start_date')[0].get('value');
+		$scope.end_date = $$('#end_date')[0].get('value');
+		document.location.href = '/web/certificate/?start_date='+$scope.start_date+'&end_date='+$scope.end_date+'&report_type=pdf';
 	}
 	$scope.save_certificate = function(){
 		if($scope.validate_certificate()){

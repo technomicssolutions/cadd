@@ -499,8 +499,6 @@ function StudentListController($scope, $http, $element, $location, $timeout) {
     $scope.edit_student_details = function(student){
         $scope.student_id = student.id;
         document.location.href = '/admission/edit_student_details/'+ $scope.student_id+ '/';
-        
-       
     } 
     
     $scope.display_student_details = function(student) {
