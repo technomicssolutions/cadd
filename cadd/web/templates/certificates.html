@@ -15,33 +15,43 @@
 		<a class="btn btn-info" href="{% url 'add_certificate' %}"> New Certificate </a>
 	</div>
 	<div class="search_batch">
-		<label>Search By</label>		
-		<select ng-model="search">
-			<option value="">Select</option>
-			<option value="Student">Student</option>
-			<option value="Certificate">Certificate</option>
-		</select>					
-
-		<div ng-show="search=='Certificate'">
-			<label>Select Certificate</label>			
-			<input type="text" ng-model="certificate_name" ng-change="certificate_search()" autocomplete="off">
-			<div ng-show="certificates_list.length > 0" class="search_list">
-				<div ng-repeat="certificate in certificates_list" class="search_list_item" ng-click="get_certificate_details(certificate)">
-				<span>[[certificate.name]]</span>
-				</div>
-			<p class="error_msg">[[no_certificate_msg]]</p>
-			</div>
+		<label>	Start Date</label>
+		<input type="text" id="start_date">
+	</div>
+	<div class="search_batch">
+		<label>	End Date</label>
+		<input type="text" id="end_date">
+	</div>
+	<div class="control" align="Center">
+		<div class="buttons">
+			<p class="error_message"> [[message]] </p>
+			<input type="button" class="btn btn-info" ng-click="show_certificates()" value="View Entries">	
+			<input type="button" class="btn btn-info" ng-click="show_pdf()" value="View PDF">	
 		</div>
-
-		<div ng-show="search=='Student'">
-			<label>Select Student</label>			
-			<input type="text" ng-model="student_name" ng-change="student_search()" autocomplete="off">
-			<div ng-show="students_list.length > 0" class="search_list">
-				<div ng-repeat="student in students_list" class="search_list_item" ng-click="get_student_details(student)">
-				<span>[[student.roll_number]]-[[student.name]]</span>
-				</div>
-			<p class="error_msg">[[no_student_msg]]</p>
-			</div>
+	</div>
+	<div class="form_container">
+		<div class="search_staff">
+			<table id="list" class="table table-hover" ng-show="certificates.length > 0">
+				<tr>
+				  <th>SL No</th>
+				  <th>Date</th>
+				  <th>Name</th>
+				  <th>Issued To</th>
+				  <th>Issued Authority</th>
+				  <th>Course </th>
+				  <th>Delete</th>						  
+				</tr>
+				<tr ng-repeat="certificate in certificates">
+					<td>[[$index+1]]</td>
+					<td>[[certificate.date]]</td>
+					<td>[[certificate.name]]</td>
+					<td>[[certificate.student]]</td>
+					<td>[[certificate.issued_authority]]</td>
+					<td>[[certificate.course]]</td>
+					<td><a href="/delete_certificate/[[certificate.id]]/" >Delete</td>
+				</tr>
+			</table> 
 		</div>
+	</div>	
 	</div>
 {% endblock content %}
