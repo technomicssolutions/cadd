@@ -67,7 +67,19 @@
 							</li>					
 						</ul>
 					</li>	
-				{% endif %}		
+				{% endif %}	
+				{% if user.is_superuser or user.staff_set.all.0.permission.expense_module %}
+					<li class="menu"> <a href=""> Expense </a>
+						<ul>
+							<li> <a href="{% url 'expense_list' %}" >Expenses</a>
+							</li>
+							<li> <a href="" >Certificate</a>
+							</li>	
+							<li> <a href="" >Complaint</a>
+							</li>					
+						</ul>
+					</li>	
+				{% endif %}	
 				{% if user.is_superuser or user.staff_set.all.0.permission.register_module %}
 					<li class="menu last"> <a href=""> Register </a>
 						<ul>
