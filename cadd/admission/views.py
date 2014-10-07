@@ -714,16 +714,31 @@ class StudentSearch(View):
                 batch_id = request.GET.get('batch')
                 batch = Batch.objects.get(id=batch_id)
                 students = batch.student_set.filter(student_name__istartswith=student_name)
+                for student in students:
+                    students_list.append({
+                        'id': student.id,
+                        'name': student.student_name,
+                        'roll_number': student.roll_number,
+                    })
             elif request.GET.get('course'):
                 course_id = request.GET.get('course')
                 course = Course.objects.get(id=course_id)
                 students = Student.objects.filter(course=course, student_name__istartswith=student_name)
-            for student in students:
-                students_list.append({
-                    'id': student.id,
-                    'name': student.student_name,
-                    'roll_number': student.roll_number,
-                })
+                for student in students:
+                    students_list.append({
+                        'id': student.id,
+                        'name': student.student_name,
+                        'roll_number': student.roll_number,
+                    })
+
+            elif student_name:
+                students = Student.objects.filter(student_name__istartswith=student_name)
+                for student in students:
+                    students_list.append({
+                        'id': student.id,
+                        'name': student.student_name,
+                        'roll_number': student.roll_number,
+                    })
             res = {
                     'result': 'ok',
                     'students': students_list,

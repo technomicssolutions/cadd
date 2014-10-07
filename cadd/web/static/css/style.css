@@ -239,8 +239,22 @@ textarea{
     padding-left: 3px;
 }
 
-
-
+.form_container {
+	margin: auto;
+	width: 35%;
+	min-height: 100%
+}
+.form_container .control {
+	width: 100%;
+	height: 30px;
+	float: left;
+	padding: 10px;
+}
+.form_container label{
+	display: block !important;
+    float: left;
+    width: 45%;
+}
 #letter .form_container {
 	margin: auto;
 	width: 35%;
