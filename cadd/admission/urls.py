@@ -5,7 +5,7 @@ from django.conf import settings
 
 from admission.views import GetStudent,AddStudent,ListStudent,ViewStudentDetails,EditStudentDetails,\
 DeleteStudentDetails, EnquiryView, SearchEnquiry, EnquiryDetails, StudentAdmission, EnquiryReport, \
-StudentSearch, GetInstallmentDetails,AllEnquiries, DeleteEnquiry
+StudentSearch, GetInstallmentDetails,AllEnquiries, DeleteEnquiry, AdmissionReport
 
 urlpatterns = patterns('',
 	url(r'^get_student/(?P<course_id>\d+)/$',login_required(GetStudent.as_view()), name="get_student"),
@@ -15,6 +15,8 @@ urlpatterns = patterns('',
 	url(r'^view_student_details/(?P<student_id>\d+)/$',login_required(ViewStudentDetails.as_view()), name="view_student_details"),
 	url(r'^edit_student_details/(?P<student_id>\d+)/$',login_required(EditStudentDetails.as_view()), name="edit_student_details"),
 	url(r'^delete_student_details/(?P<student_id>\d+)/$',login_required(DeleteStudentDetails.as_view()), name="delete_student_details"),
+	
+
 	url(r'^enquiry/$',login_required(EnquiryView.as_view()), name='enquiry'),
 	url(r'^enquiry_details/$',login_required(EnquiryDetails.as_view()), name='enquiry_details'),
 	url(r'^all_enquiries/$',login_required(AllEnquiries.as_view()), name='all_enquiries'),
@@ -23,6 +25,7 @@ urlpatterns = patterns('',
 	
 	url(r'^student_admission/$', login_required(StudentAdmission.as_view()), name='student_admission'),
 	url(r'^enquiry_report/$',login_required(EnquiryReport.as_view()), name='enquiry_report'),
+	url(r'^admission_report/$',login_required(AdmissionReport.as_view()), name='admission_report'),
 	url(r'^search_student/$',login_required(StudentSearch.as_view()), name='search_student'),
 	url(r'^get_installment_details/$', login_required(GetInstallmentDetails.as_view()), name='get_installment_details'),
 )

@@ -127,7 +127,8 @@ INSTALLED_APPS = (
     'attendance',
     'college',
     'fees',
-    'staff'
+    'staff',
+    'expense',
 )
 
 # A sample logging configuration. The only tangible logging

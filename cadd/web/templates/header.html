@@ -45,6 +45,7 @@
 							<li> <a href="{% url 'student_admission'  %}"> Admission </a> </li>
 							<li><a href="{% url 'list_student'  %}">Students</a></li>
 							<li> <a href="{% url 'enquiry_report'  %}"> Enquiry Report </a> </li>
+							<li><a href="{% url 'admission_report'  %}">Admission Report</a></li>
 						</ul>
 					</li>
 				{% endif %}
@@ -67,7 +68,19 @@
 							</li>					
 						</ul>
 					</li>	
-				{% endif %}		
+				{% endif %}	
+				{% if user.is_superuser or user.staff_set.all.0.permission.expense_module %}
+					<li class="menu"> <a href=""> Expense </a>
+						<ul>
+							<li> <a href="{% url 'expense_list' %}" >Expenses</a>
+							</li>
+							<li> <a href="" >Certificate</a>
+							</li>	
+							<li> <a href="" >Complaint</a>
+							</li>					
+						</ul>
+					</li>	
+				{% endif %}	
 				{% if user.is_superuser or user.staff_set.all.0.permission.register_module %}
 					<li class="menu last"> <a href=""> Register </a>
 						<ul>

@@ -843,6 +843,7 @@ function EnquiryReportController($scope, $http) {
                 if(data.result=='ok'){
                     
                     $scope.enquiries = data.enquiries;
+                    paginate(data.enquiries, $scope);
                 }else{
                     $scope.validate_error_msg = "No enquiries  found";
                 }
@@ -855,6 +856,70 @@ function EnquiryReportController($scope, $http) {
         $scope.start_date= $$('#start_date')[0].get('value');
         $scope.end_date = $$('#end_date')[0].get('value');
         document.location.href = '/admission/enquiry_report?start_date='+$scope.start_date+'&end_date='+$scope.end_date+'&report_type=pdf';
+    } 
+    $scope.select_page = function(page){
+        select_page(page, $scope.enquiries, $scope);
+    }
+    $scope.range = function(n) {
+        return new Array(n);
+    } 
+}
+function AdmissionReportController($scope, $http) {
+    $scope.start_date = '';
+    $scope.end_date = '';
+    $scope.init = function(csrf_token){
+        $scope.csrf_token = csrf_token;
+        new Picker.Date($$('#start_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
+        new Picker.Date($$('#end_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
+    }
+    $scope.validate = function(){
+        $scope.start_date = $$('#start_date')[0].get('value');
+        $scope.end_date = $$('#end_date')[0].get('value');
+        if($scope.start_date == ''){
+            $scope.validate_error_msg = 'Please select the start date';
+            return false;
+        } else if($scope.end_date == ''){
+            $scope.validate_error_msg = 'Please select the end date';
+            return false;
+        } return true;
+    }
+    $scope.view_admission = function(){
+        if($scope.validate()){
+            $http.get('/admission/admission_report?start_date='+$scope.start_date+'&end_date='+$scope.end_date).success(function(data){
+                if(data.result=='ok'){
+                    
+                    $scope.admissions = data.admissions;
+                    paginate(data.admissions, $scope);
+                }else{
+                    $scope.validate_error_msg = "No admissions  found";
+                }
+            }).error(function(data, status){
+                $scope.message = data.message;
+            })
+        }
+    } 
+    $scope.get_admission_report = function(){
+        $scope.start_date= $$('#start_date')[0].get('value');
+        $scope.end_date = $$('#end_date')[0].get('value');
+        document.location.href = '/admission/admission_report?start_date='+$scope.start_date+'&end_date='+$scope.end_date+'&report_type=pdf';
+    }
+    $scope.select_page = function(page){
+        select_page(page, $scope.admissions, $scope);
+    }
+    $scope.range = function(n) {
+        return new Array(n);
     }  
 }
 function EnquiryListController($scope, $http) {
