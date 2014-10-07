@@ -71,7 +71,7 @@
 				{% if user.is_superuser or user.staff_set.all.0.permission.register_module %}
 					<li class="menu last"> <a href=""> Register </a>
 						<ul>
-							<li> <a href="" >Letter</a>
+							<li> <a href="{% url 'letters' %}" >Letter</a>
 							</li>
 							<li> <a href="" >Certificate</a>
 							</li>	
