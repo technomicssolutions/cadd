@@ -15,12 +15,6 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.core.urlresolvers import reverse
 
-from reportlab.pdfgen import canvas
-from reportlab.lib.styles import ParagraphStyle
-from reportlab.platypus import Paragraph, Table, TableStyle, SimpleDocTemplate, Spacer
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter, A4
-
 from web.models import Letter, Certificate
 from admission.models import Student
 from college.models import Course
@@ -138,11 +132,11 @@ class Certificates(View):
                 elements.append(Spacer(4, 5))
                 count = 0
                 d = []
-                d.append(['SL No', 'Date', 'Certificate Name', 'Issued To', 'Issued Authority', 'Course'])
+                d.append(['SL No', 'DATE', Paragraph('CERTIFICATE NAME', para_style), 'ISSUED TO', Paragraph('ISSUED AUTHORITY', para_style), Paragraph('COURSE WHICH THAT STUDENT ADMITTED TO', para_style)])
                 for certificate in certificates:
                     count = count + 1
-                    d.append([count, certificate.date.strftime('%d/%m/%Y'), certificate.certificate_name, certificate.student.student_name, certificate.issued_authority, certificate.course.name])
-                table = Table(d, colWidths=(50, 75, 75, 100, 100,100),  style=style)
+                    d.append([count, certificate.date.strftime('%d/%m/%Y'), Paragraph(certificate.certificate_name, para_style), Paragraph(certificate.student.student_name, para_style), Paragraph(certificate.issued_authority, para_style), Paragraph(certificate.course.name, para_style)])
+                table = Table(d, colWidths=(50, 75, 100, 100, 100,100),  style=style)
                 table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
                             ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
                             ('VALIGN',(0,0),(-1,-1),'MIDDLE'),

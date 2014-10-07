@@ -2,10 +2,14 @@ from django.db import models
 from college.models import Course
 from admission.models import Student
 
+CHOICES = (
+	('Incoming', 'Incoming'),
+	('Outgoing', 'Outgoing'),
+)
 
 class Letter(models.Model):
 
-	letter_type = models.CharField('Letter Type',null=True, blank=True, max_length=200)
+	letter_type = models.CharField('Letter Type',null=True, blank=True, max_length=200, choices=CHOICES)
 	date = models.DateField('Date',null=True, blank=True)
 	to_address = models.CharField('To Address',null=True, blank=True, max_length=200) 
 	from_address = models.CharField('From Address',null=True, blank=True, max_length=200)
