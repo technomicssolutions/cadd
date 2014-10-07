@@ -402,17 +402,30 @@ class GetOutStandingFeesDetails(View):
         status = 200
         if request.is_ajax():
             student_id = request.GET.get('student_id', '')
+            course = request.GET.get('course','')
             fees_details = []
-            student = Student.objects.get(id=student_id)
-            i = 0
-            is_not_paid = False
-            ctx_installments = []
-            for installment in student.installments.all():
-                try:
-                    fees_payment = FeesPayment.objects.get(student__id=student_id)
-                    fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
-                    if fees_payment_installments.count() > 0:
-                        if fees_payment_installments[0].installment_amount < installment.amount:
+            if student_id:
+                student = Student.objects.get(id=student_id)
+                i = 0
+                is_not_paid = False
+                ctx_installments = []
+                for installment in student.installments.all():
+                    try:
+                        fees_payment = FeesPayment.objects.get(student__id=student_id)
+                        fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
+                        if fees_payment_installments.count() > 0:
+                            if fees_payment_installments[0].installment_amount < installment.amount:
+                                is_not_paid = True
+                                ctx_installments.append({
+                                    'id': installment.id,
+                                    'amount':installment.amount,
+                                    'due_date': installment.due_date.strftime('%d/%m/%Y'),
+                                    'fine_amount': installment.fine_amount,
+                                    'name':'installment'+str(i + 1),
+                                    'paid_installment_amount': fees_payment_installments[0].installment_amount,
+                                    'balance': float(installment.amount) - float(fees_payment_installments[0].installment_amount),
+                                })
+                        elif fees_payment_installments.count() == 0:
                             is_not_paid = True
                             ctx_installments.append({
                                 'id': installment.id,
@@ -420,46 +433,96 @@ class GetOutStandingFeesDetails(View):
                                 'due_date': installment.due_date.strftime('%d/%m/%Y'),
                                 'fine_amount': installment.fine_amount,
                                 'name':'installment'+str(i + 1),
-                                'paid_installment_amount': fees_payment_installments[0].installment_amount,
-                                'balance': float(installment.amount) - float(fees_payment_installments[0].installment_amount),
+                                'paid_installment_amount': 0,
+                                'balance': float(installment.amount),
                             })
-                    elif fees_payment_installments.count() == 0:
-                        is_not_paid = True
-                        ctx_installments.append({
-                            'id': installment.id,
-                            'amount':installment.amount,
-                            'due_date': installment.due_date.strftime('%d/%m/%Y'),
-                            'fine_amount': installment.fine_amount,
-                            'name':'installment'+str(i + 1),
-                            'paid_installment_amount': 0,
-                            'balance': float(installment.amount),
-                        })
-                except Exception as ex:
-                    if current_date >= installment.due_date:
-                        is_not_paid = True
-                        ctx_installments.append({
-                            'id': installment.id,
-                            'amount':installment.amount,
-                            'due_date': installment.due_date.strftime('%d/%m/%Y'),
-                            'fine_amount': installment.fine_amount,
-                            'name':'installment'+str(i + 1),
-                            'paid_installment_amount': 0,
-                            'balance': float(installment.amount),
-                        })
-                i = i + 1
-            if is_not_paid:
-                fees_details.append({
-                    'no_installments': student.no_installments,
-                    'installments': ctx_installments,
+                    except Exception as ex:
+                        if current_date >= installment.due_date:
+                            is_not_paid = True
+                            ctx_installments.append({
+                                'id': installment.id,
+                                'amount':installment.amount,
+                                'due_date': installment.due_date.strftime('%d/%m/%Y'),
+                                'fine_amount': installment.fine_amount,
+                                'name':'installment'+str(i + 1),
+                                'paid_installment_amount': 0,
+                                'balance': float(installment.amount),
+                            })
+                    i = i + 1
+                if is_not_paid:
+                    fees_details.append({
+                        'no_installments': student.no_installments,
+                        'installments': ctx_installments,
+                        'student_name': student.student_name,
+                        'roll_no': student.roll_number,
+                    })
+                res = {
+                    'result':'ok',
+                    'fees_details': fees_details,
                     'student_name': student.student_name,
                     'roll_no': student.roll_number,
-                })
-            res = {
-                'result':'ok',
-                'fees_details': fees_details,
-                'student_name': student.student_name,
-                'roll_no': student.roll_number,
-            }
+                }
+            elif course:
+                students = Student.objects.filter(course__id=course)
+                i = 0
+                is_not_paid = False
+                ctx_installments = []
+                for student in students:
+                    for installment in student.installments.all():
+                        try:
+                            fees_payment = FeesPayment.objects.get(student__id=student.id)
+                            fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
+                            if fees_payment_installments.count() > 0:
+                                if fees_payment_installments[0].installment_amount < installment.amount:
+                                    is_not_paid = True
+                                    ctx_installments.append({
+                                        'id': installment.id,
+                                        'amount':installment.amount,
+                                        'due_date': installment.due_date.strftime('%d/%m/%Y'),
+                                        'fine_amount': installment.fine_amount,
+                                        'name':'installment'+str(i + 1),
+                                        'paid_installment_amount': fees_payment_installments[0].installment_amount,
+                                        'balance': float(installment.amount) - float(fees_payment_installments[0].installment_amount),
+                                    })
+                            elif fees_payment_installments.count() == 0:
+                                is_not_paid = True
+                                ctx_installments.append({
+                                    'id': installment.id,
+                                    'amount':installment.amount,
+                                    'due_date': installment.due_date.strftime('%d/%m/%Y'),
+                                    'fine_amount': installment.fine_amount,
+                                    'name':'installment'+str(i + 1),
+                                    'paid_installment_amount': 0,
+                                    'balance': float(installment.amount),
+                                })
+                        except Exception as ex:
+                            if current_date >= installment.due_date:
+                                is_not_paid = True
+                                ctx_installments.append({
+                                    'id': installment.id,
+                                    'amount':installment.amount,
+                                    'due_date': installment.due_date.strftime('%d/%m/%Y'),
+                                    'fine_amount': installment.fine_amount,
+                                    'name':'installment'+str(i + 1),
+                                    'paid_installment_amount': 0,
+                                    'balance': float(installment.amount),
+                                })
+                        i = i + 1
+                    if is_not_paid:
+                        fees_details.append({
+                            'no_installments': student.no_installments,
+                            'installments': ctx_installments,
+                            'student_id' : student.id,
+                            'student_name': student.student_name,
+                            'roll_no': student.roll_number,
+                            
+
+                        })
+                    res = {
+                        'result':'ok',
+                        'fees_details': fees_details,
+                    }
+            
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')
 
@@ -726,4 +789,27 @@ class FeepaymentReport(View):
         else:
             return render(request, 'fee_collected_report.html',{})            
 
+class UnRollStudent(View):
+
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            student_id = request.GET.get('student_id','')
+            try:
+                student = Student.objects.get(id=student_id)
+                student.is_rolled = True
+                student.save()
+                res = {
+                    'result': 'ok',
+                }
+                status = 200
+                response = simplejson.dumps(res)
+                return HttpResponse(response, status=status, mimetype='application/json')
+            except:
+                res = {
+                    'result': 'error',
+                }
+                status = 200
+                response = simplejson.dumps(res)
+                return HttpResponse(response, status=status, mimetype='application/json')
+        return render(request, 'unroll_students.html',{})  
             

@@ -947,3 +947,44 @@ function FeesPaymentController($scope, $http, $element) {
         }
     }
 }
+function UnRollController($scope, $http, $element) {
+    $scope.init = function(csrf_token){
+        $scope.csrf_token = csrf_token;
+        $scope.error_flag = false;
+        get_course_list($scope, $http);
+    }
+    $scope.get_outstanding_student = function(){
+        $scope.url = '/fees/get_outstanding_fees_details/?course='+$scope.course;
+        $http.get($scope.url).success(function(data)
+        {
+            if (data.result == 'ok') {
+                if (data.fees_details.length > 0) {
+                    $scope.fees_details = data.fees_details;
+                    // if($scope.fees_details.students)
+                    //     paginate($scope.fees_details.students, $scope, 2);
+                } else {
+                    $scope.fees_details = [];
+                }
+            } else {
+                $scope.no_student_error = data.message;
+            }
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+    }
+    $scope.unroll = function(student_id){
+        $scope.url = '/fees/unroll_students/?student_id='+student_id;
+        $http.get($scope.url).success(function(data)
+        {
+            if (data.result == 'ok') {
+                
+            } else {
+                $scope.no_student_error = data.message;
+            }
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+    }
+}

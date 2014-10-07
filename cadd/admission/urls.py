@@ -28,4 +28,5 @@ urlpatterns = patterns('',
 	url(r'^admission_report/$',login_required(AdmissionReport.as_view()), name='admission_report'),
 	url(r'^search_student/$',login_required(StudentSearch.as_view()), name='search_student'),
 	url(r'^get_installment_details/$', login_required(GetInstallmentDetails.as_view()), name='get_installment_details'),
+	
 )
