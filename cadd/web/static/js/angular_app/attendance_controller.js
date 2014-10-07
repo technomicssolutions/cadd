@@ -12,6 +12,9 @@ function attendance_validation($scope, $http){
     } return true;
 }
 function student_search($scope, $http){
+    if ($scope.batch_id == undefined){
+        $scope.batch_id = ''
+    }
     $http.get('/admission/search_student/?name='+$scope.student_name+'&batch='+$scope.batch_id).success(function(data){
         if(data.result == 'ok'){
             $scope.students_list = data.students;

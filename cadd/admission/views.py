@@ -708,21 +708,37 @@ class StudentSearch(View):
     def get(self, request, *args, **kwargs):
 
         if request.is_ajax():
-            batch_id = request.GET.get('batch')
+            
             student_name = request.GET.get('name')
-            batch = Batch.objects.get(id=batch_id)
+            batch_id = request.GET.get('batch')
             students_list = []
-            students = batch.student_set.filter(student_name__istartswith=student_name)
-            for student in students:
-                students_list.append({
-                    'id': student.id,
-                    'name': student.student_name,
-                    'roll_number': student.roll_number,
-                })
-            res = {
-                    'result': 'ok',
-                    'students': students_list,
-                }
+            if batch_id != '':
+                
+                batch = Batch.objects.get(id=batch_id)
+                students = batch.student_set.filter(student_name__istartswith=student_name)
+                for student in students:
+                    students_list.append({
+                        'id': student.id,
+                        'name': student.student_name,
+                        'roll_number': student.roll_number,
+                    })
+                res = {
+                        'result': 'ok',
+                        'students': students_list,
+                    }
+            elif student_name:
+
+                students = Student.objects.filter(student_name__istartswith=student_name)
+                for student in students:
+                    students_list.append({
+                        'id': student.id,
+                        'name': student.student_name,
+                        'roll_number': student.roll_number,
+                    })
+                res = {
+                        'result': 'ok',
+                        'students': students_list,
+                    }
             response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype='application/json')
 
