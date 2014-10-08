@@ -37,7 +37,6 @@ class AddAttendance(View):
         context = {
             'current_date': current_date.strftime('%d/%m/%Y')
         }
-        print current_date
         return render(request, 'add_attendance.html', context)
 
     def post(self, request, *args, **kwargs):

@@ -31,7 +31,6 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
     //     get_course_batch_list($scope, $http);
     // }
     $scope.get_student_list = function(){
-        console.log('in stud');
         get_course_batch_student_list($scope, $http);
     }
     $scope.get_fees_head = function(){
@@ -259,7 +258,6 @@ function EditFeeStructureController($scope, $http, $element) {
                     return false;                                           
                 } else if($scope.fees_structure.fees_head[i].no_installments > 0) {
                     for (var j=0; j<$scope.fees_structure.fees_head[i].no_installments; j++) {
-                        console.log($scope.fees_structure.fees_head[i].installments[j].fine_amount);
                         if ($scope.fees_structure.fees_head[i].installments[j].due_date == '' || $scope.fees_structure.fees_head[i].installments[j].due_date == undefined) {
                             $scope.validation_error = 'Please enter Due Date for the head '+$scope.fees_structure.fees_head[i].head+' installment in the row '+(j + 1);
                             $scope.fees_structure.fees_head[i].shrink = false;
@@ -350,7 +348,6 @@ function EditFeeStructureController($scope, $http, $element) {
     }
     $scope.save_edit_fee_structure = function() {
         for (var i=0; i< $scope.fees_structure.fees_head.length; i++) {
-            console.log($scope.fees_structure.fees_head[i].installments.length);
             if ($scope.fees_structure.fees_head[i].installments.length > 0) {
                 for (var j=0; j< $scope.fees_structure.fees_head[i].installments.length; j++) {
                     id_name = '#' + $scope.fees_structure.fees_head[i].installments[j].due_date_id;
@@ -664,7 +661,6 @@ function EditFeesHeadController($scope, $http, $element) {
      }
     $scope.save_fees_head = function() {
         if($scope.validate_fees_head()) {       
-            console.log($scope.fee_head);  
             params = { 
                 'fee_head_details': angular.toJson($scope.fee_head),
                 'fees_head_id': $scope.fees_head_id,
@@ -985,7 +981,6 @@ function UnRollController($scope, $http, $element) {
         {
             if (data.result == 'ok') {
                 if (data.fees_details.length > 0) {
-                    console.log(data.fees_details[0].student_details);
                     $scope.fees_details = data.fees_details[0];
                     for(i=0;i<$scope.fees_details.student_details.length;i++){
                         if($scope.fees_details.student_details[i].is_rolled == 'false'){

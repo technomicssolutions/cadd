@@ -18,7 +18,6 @@ function student_search($scope, $http){
     $http.get('/admission/search_student/?name='+$scope.student_name+'&batch='+$scope.batch_id).success(function(data){
         if(data.result == 'ok'){
             $scope.students_list = data.students;
-            console.log($scope.students_list);
             if($scope.students_list.length == 0)
                 $scope.no_student_msg = "No Students found";
         }            
@@ -29,7 +28,6 @@ function student_search($scope, $http){
 function staff_search($scope, $http){
     $http.get('/staff/search_staff/?name='+$scope.staff_name).success(function(data){
             $scope.staffs_list = data.staffs;
-            console.log($scope.staffs_list);
             if($scope.staffs_list.length == 0)
                 $scope.no_staff_msg = "No Staff found";
         }).error(function(data, status){
@@ -54,7 +52,6 @@ function AttendanceController($scope, $http, $element){
         var url = '/attendance/batch_students/'+batch.id;
         $http.get(url).success(function(data)
         {
-            console.log(data);
             $scope.students = data.students;
             $scope.current_month = data.current_month;
             $scope.current_year = data.current_year;
@@ -306,7 +303,6 @@ function AttendanceDetailsController($scope, $element, $http) {
             
             $http.get(url).success(function(data)
             {
-                console.log(data);
                 $scope.view = data.view;
                 if($scope.view == 'monthly'){
                     $scope.students = data.batch[0].students;
@@ -350,8 +346,6 @@ function AttendanceDetailsController($scope, $element, $http) {
            
             $('#overlay').css('height', height);
             $('#spinner').css('height', height);
-            console.log($scope.batch);
-            console.log($scope.students);
             for (var i=0; i < $scope.students.length; i++){
                 if($scope.students[i].is_presented == true)
                     $scope.students[i].is_presented = "true";
@@ -547,7 +541,6 @@ function TopicsController($scope, $http, $element){
         $http.get(url).success(function(data)
         {            
             $scope.topics = data.topics;
-            console.log($scope.topics);
         }).error(function(data, status)
         {
             $('#overlay').css('height', '0px');

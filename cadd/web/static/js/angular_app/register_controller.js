@@ -2,7 +2,6 @@ function student_search_course($scope, $http){
     $http.get('/admission/search_student/?name='+$scope.student_name+'&course='+$scope.certificate.course).success(function(data){
         if(data.result == 'ok'){
             $scope.students_list = data.students;
-            console.log($scope.students_list);
             if($scope.students_list.length == 0)
                 $scope.validation_error = "No Students found";
         }            

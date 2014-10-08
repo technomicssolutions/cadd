@@ -137,7 +137,6 @@ class IsUsernameExists(View):
         if request.is_ajax():
             status = 200
             username = request.GET.get('username', '')
-            print username , 'username'
             try:
                 user = User.objects.get(username=username)
                 res = {
