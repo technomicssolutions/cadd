@@ -87,11 +87,11 @@
 						<div class="forminput">
 							<input type="text" ng-model="student_name" ng-change="student_search()" autocomplete="off">
 							<div ng-show="students_list.length > 0" class="search_list">
-								<div ng-repeat="student in students_list" class="search_list_item" ng-click="get_student_details(student)">
+								<div ng-repeat="student in students_list" class="search_list_item" ng-click="get_student_details(student)" ng-class="{'highlight': $index == focusIndex}">
 								<span>[[student.roll_number]]-[[student.name]]</span>
 								</div>
 							</div>
-							<p class="error_msg">[[no_student_msg]]</p>
+							<p class="error_message"> [[no_student_msg]] </p>
 						</div>
 					</div>
 					<div class="view_flags" ng-show="view=='monthly'">
@@ -188,6 +188,9 @@
 						<a href="{% url 'attendance_details' %}"><input type="button" value="Cancel" class="btn btn-info"></a>
 					</div>
 				</div>	
+			</div>
+			<div ng-show="students.length > 0">
+				<input type="button" value="Export to PDF" ng-click="edit_attendance();" class="btn btn-info"/>	
 			</div>
 		<div class="clear"></div>
 	</div>

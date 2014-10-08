@@ -189,17 +189,18 @@ class AttendanceDetails(View):
                     attendance = Attendance()
                     staff = ''
                 for student in students:
-                    try:
-                        student_attendance = StudentAttendance.objects.get(attendance=attendance, student=student)
-                    except:
-                        student_attendance = StudentAttendance()
-                    students_list.append({
-                        'id': student.id,
-                        'name': student.student_name,
-                        'roll_number': student.roll_number,
-                        'status': student_attendance.status if student_attendance.status else 'NA',
-                        'is_presented': 'false' if student_attendance.status == 'A' else 'true',
-                    })
+                    if student.is_rolled == False:
+                        try:
+                            student_attendance = StudentAttendance.objects.get(attendance=attendance, student=student)
+                        except:
+                            student_attendance = StudentAttendance()
+                        students_list.append({
+                            'id': student.id,
+                            'name': student.student_name,
+                            'roll_number': student.roll_number,
+                            'status': student_attendance.status if student_attendance.status else 'NA',
+                            'is_presented': 'false' if student_attendance.status == 'A' else 'true',
+                        })
                 res = {
                     'batch_id': batch.id,
                     'students': students_list,
@@ -404,7 +405,7 @@ class JobCard(View):
                                     ('BOX', (0,0), (-1,-1), 0.25, colors.black),
                                     ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
                                     ])
-                    flag = 1
+                        flag = 1
                 except:
                     pass
             if flag == 1:   
