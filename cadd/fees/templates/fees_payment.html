@@ -16,8 +16,7 @@
 			
 			<div class="control">
 				<label> Course</label> 
-				<!--   -->
-				<select name="course" ng-model="course" ng-change="get_student()" ng-options="course.id as course.course_name for course in courses">
+				<select name="course" ng-model="course" ng-options="course.id as course.course_name for course in courses" ng-change="get_student_list()" >
 					<option value="">Select</option>
 				</select>
 			</div>

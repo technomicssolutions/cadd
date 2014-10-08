@@ -131,7 +131,6 @@ function get_batch_list($scope, $http) {
 }
 
 function get_course_batch_student_list($scope, $http) {
-    console.log($scope.course, $scope.batch);
     if (($scope.course != 'select') && (($scope.batch != 'select'))) {
         $http.get('/admission/get_student/'+ $scope.course+ '/').success(function(data)
         {

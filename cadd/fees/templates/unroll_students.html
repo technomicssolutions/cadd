@@ -14,21 +14,25 @@
 			</select>
 		</div>
 	</div>
-	<table id="list" class="table striped" ng-show="fees_details.length > 0">
+	<table id="list" class="table striped" ng-show="fees_details.student_details.length > 0">
 				<tr class="success" style="font-size: 12px" style="width:auto">
 					<th>Name</th>
 					<th>Roll no</th>
 					<th>Installments</th>
-					
-					<th>Unroll</th>
+					<th>Installment Name</th>
+					<th>Balance</th>
+					<th >Unroll</th>
+					<th >Roll</th>
 					
 				</tr>
-				<tr ng-repeat="fee_detail in fees_details">
+				<tr ng-repeat="fee_detail in fees_details.student_details">
 					<td> [[fee_detail.student_name]] </td>
 					<td> [[fee_detail.roll_no]] </td>
 					<td> [[fee_detail.no_installments]] </td>
-					
-					<td><input type="checkbox" ng-click="unroll(fee_detail.student_id)"></td>
+					<td><span ng-repeat="installment in fee_detail.installments">[[installment.name]],</span></td>
+					<td><span ng-repeat="installment in fee_detail.installments">[[installment.balance]]</span></td>
+					<td ng-show="unroll_student_flag"><input type="checkbox" ng-model="fee_detail.is_rolled" ng-click="unroll(fee_detail.student_id)"></td>
+					<td ng-show="roll_student_flag"><input type="checkbox"  ng-model="fee_detail.is_unrolled" ng-click="roll(fee_detail.student_id)"></td>
 				</tr>
 			</table> 
 

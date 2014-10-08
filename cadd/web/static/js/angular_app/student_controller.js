@@ -945,6 +945,7 @@ function EnquiryListController($scope, $http) {
         $http.get($scope.url).success(function(data)
         {
             $scope.enquiry = data.enquiry[0];
+            console.log($scope.enquiry)
             paginate(data.enquiry, $scope);
         }).error(function(data, status)
         {
