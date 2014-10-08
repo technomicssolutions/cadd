@@ -4,7 +4,7 @@ from django.conf import settings
 
 from fees.views import CreateFeesStructure, EditFeesStructure, DeleteFeesStructure, ListFeesStructure, AddFeesHead, EditFeesHead, \
 	DeleteFeesHead, FeesHeadList, FeesPaymentSave, GetFeeStructureHeadList, ListOutStandingFees, CommonFeesPaymentSave, \
-	GetFeesHeadList, GetOutStandingFeesDetails, PrintOutstandingFeesReport, FeepaymentReport, UnRollStudent
+	GetFeesHeadList, GetOutStandingFeesDetails, PrintOutstandingFeesReport, FeepaymentReport, UnRollStudent, RollStudent
 
 urlpatterns = patterns('',
 	url(r'^fees_heads/$',login_required(FeesHeadList.as_view()), name='fees_heads'),
@@ -29,4 +29,5 @@ urlpatterns = patterns('',
 	url(r'^print_outstanding_fees_details/$', login_required(PrintOutstandingFeesReport.as_view()), name='print_outstanding_fees_details'),
 	url(r'^fees_payment_report/$', login_required(FeepaymentReport.as_view()), name='fees_payment_report'),
 	url(r'^unroll_students/$',login_required(UnRollStudent.as_view()), name='unroll_students'),
+	url(r'^roll_students/$',login_required(RollStudent.as_view()), name='roll_students'),
 )
