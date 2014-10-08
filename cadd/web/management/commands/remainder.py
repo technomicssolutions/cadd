@@ -16,6 +16,7 @@ class Command(BaseCommand):
 
         date = datetime.now()
         current_date = date.date()
+        # Reminder about the next follow up
         try:
             current_follow_ups = Enquiry.objects.filter(follow_up_date__year=current_date.year, follow_up_date__month=current_date.month, follow_up_date__day=current_date.day)
             subject = "Today's Follow Ups"
@@ -39,6 +40,8 @@ class Command(BaseCommand):
                 return HttpResponse('Invalid Header Found')
         except Exception as ex:
             print str(ex)
+
+        # Reminder about the Fees collection
 
 
 
