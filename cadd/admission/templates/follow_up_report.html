@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
-{% block body_id %}enquiry{% endblock %}
-{% block title %} Enquiry {% endblock title%}
-{% block controller %} ng-controller="EnquiryListController" ng-init="init('{{csrf_token}}')"{% endblock controller %}
+{% block body_id %}follow_up_report{% endblock %}
+{% block title %} Follow Up Report {% endblock title%}
+{% block controller %} ng-controller="FollowUpReportController" ng-init="init('{{csrf_token}}')"{% endblock controller %}
 {% block dialogue_popup %}
 	{% include 'view_enquiry_details.html' %} 
 	           	
@@ -9,10 +9,21 @@
 {% block content %}
  	<div id="main-title">
         <div class="alert alert-info" align="Center">
-            <h4>Enquiry List</h4>
+            <h4>Follow Up Report</h4>
         </div>
     </div>
-    
+    <div class="control">
+		<label>Start Date</label>
+		<input type="text"name="start_date" value="" ng-model="start_date" id="start_date">	
+	</div>
+	<div class="control">
+		<label>End Date</label>
+		<input type="text"name="end_date" value="" ng-model="end_date" id="end_date">	
+	</div>
+	<div class="button_control">
+		<p class="error_message">[[validate_error_msg]]</p>
+		<button  ng-click="view_follow_ups()" >View</button>
+	</div>
 <table ng-show="enquiries.length > 0" class="table list_table">
 		<tr>
 			<th>#</th>
@@ -32,8 +43,7 @@
 			<td>[[enquiry.student_name]]</td>
 			<td>[[enquiry.course_name]]</td>
 			<td>[[enquiry.follow_up_date]]</td>
-			<td><a href=""ng-click="display_enquiry_details(enquiry)">View</a></td>
-			<td><a href="/admission/delete_enquiry/[[enquiry.id]]/">Delete</a></td>
+			<td><a href=""ng-click="display_enquiry_details(enquiry)">View Details</a></td>
 		</tr>
 		
 </table>

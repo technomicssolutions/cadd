@@ -27,7 +27,7 @@
 				<label>Search Student</label>
 				<input type="text" ng-model="student_name" ng-change="student_search()" autocomplete="off">
 				<div ng-show="students_list.length > 0" class="search_list">
-					<div ng-repeat="student in students_list" class="search_list_item" ng-click="get_report('student_wise', student)">
+					<div ng-repeat="student in students_list" ng-class="{'highlight': $index == focusIndex}"class="search_list_item" ng-click="get_report('student_wise', student)">
 					<span>[[student.roll_number]]-[[student.name]]</span>
 					</div>
 				</div>

@@ -33,6 +33,7 @@ class Enquiry(models.Model):
 	auto_generated_num = models.CharField('Auto generated number',null=True, blank=True, max_length=200)
 	discount = models.IntegerField('Discount', default=0, null=True, blank=True)
 	saved_date = models.DateField('Saved Date',null=True, blank=True)
+	is_admitted = models.BooleanField('Is Admitted',default=False)
 	def __unicode__(self):
 		return str(self.student_name)
 
