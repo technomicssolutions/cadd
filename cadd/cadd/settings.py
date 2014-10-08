@@ -169,3 +169,13 @@ try:
     from local_settings import *
 except:
     pass
+
+# include this in Local settings
+# EMAIL_HOST = ''
+# EMAIL_PORT = 25
+# EMAIL_USE_TLS = True
+
+# EMAIL_HOST_USER = ''
+# EMAIL_HOST_PASSWORD = ''
+# DEFAULT_FROM_EMAIL = ''
+# FOLLOW_UP_MAIL_ID = ''
