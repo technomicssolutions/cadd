@@ -15,7 +15,6 @@ function get_batches($scope, $http, from){
     {        
         $scope.batches = data.batches;
         if(from == 'edit_student'){
-            console.log($scope.batches);
             for(var i = 0; i < $scope.batches.length; i++){
                 for(var j = 0; j < $scope.student.batches.length; j++){
                     if($scope.batches[i].id == $scope.student.batches[j].id){
@@ -34,7 +33,6 @@ function get_course_list($scope, $http){
     $http.get($scope.url).success(function(data)
     {        
         $scope.courses = data.courses; 
-        console.log($scope.courses) ;
     }).error(function(data, status)
     {
         console.log(data || "Request failed");
@@ -98,7 +96,6 @@ function CollegeController($scope, $element, $http, $timeout, share, $location)
     
     $scope.init = function(csrf_token, from)
     {
-        console.log(from);
         $scope.popup = '';
         $scope.error_flag = false;
         $scope.csrf_token = csrf_token;
@@ -274,7 +271,6 @@ function CollegeController($scope, $element, $http, $timeout, share, $location)
                     }
                 }
             }
-            console.log($scope.softwares);
         }).error(function(data, status)
         {
             console.log(data || "Request failed");
@@ -298,7 +294,6 @@ function CollegeController($scope, $element, $http, $timeout, share, $location)
                 'course_details': angular.toJson($scope.course),
                 "csrfmiddlewaretoken" : $scope.csrf_token
             }
-            console.log($scope.course);
             $http({
                 method: 'post',
                 url: "/college/courses/",
@@ -415,7 +410,6 @@ function BatchController($scope, $element, $http, $timeout, share, $location)
         save_batch($scope, $http);
     } 
     $scope.edit_batch = function(batch){
-        console.log(batch);
         $scope.batch = batch;
         $scope.add_new_batch('edit');
     }

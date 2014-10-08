@@ -23,9 +23,9 @@
 		<div ng-show="students_list.length > 0" class="search_list">
 			<div ng-repeat="student in students_list" class="search_list_item" ng-click="get_student_details(student)" ng-class="{'highlight': $index == focusIndex}">
 			<span>[[student.roll_number]]-[[student.name]]</span>
+			</div>
 		</div>
-		<p class="error_msg">[[no_student_msg]]</p>
-	</div>
+		<p class="error_message">[[no_student_msg]]</p>
 	<div class="clear"></div>
 	<div class="control" align="Center">
 		<div class="buttons">

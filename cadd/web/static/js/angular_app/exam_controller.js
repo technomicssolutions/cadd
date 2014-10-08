@@ -332,7 +332,6 @@ function EditExamController($scope, $element, $http, $timeout, share, $location)
             $scope.validation_error = "Please Select a end date";
             return false;
         }else if($scope.exam_schedule.no_subjects == '' || $scope.exam_schedule.no_subjects == undefined || !Number($scope.exam_schedule.no_subjects)) {
-            console.log($scope.exam_schedule.no_subjects);
             $scope.validation_error = "Please Enter no of subjects";
             return false;
         }else if($scope.exam_schedule.no_subjects > 0){

@@ -304,7 +304,6 @@ class EditStudentDetails(View):
             student.fees = student_data['fees']
             student.no_installments = student_data['no_installments']
             installments = student_data['installments']
-            print student_data['installments']
             for installment in installments:
                 try:
                     installment_obj = Installment.objects.get(id=installment['id'])
@@ -806,7 +805,6 @@ class FollowUpReport(View):
         if request.is_ajax():
             enquiry_list = []
             current_date = datetime.now().date()
-            print current_date
             start_date = request.GET.get('start_date')
             end_date = request.GET.get('end_date')
             if start_date and end_date:
@@ -815,7 +813,6 @@ class FollowUpReport(View):
                 enquiries = Enquiry.objects.filter(follow_up_date__gte=start_date,follow_up_date__lte=end_date).order_by('follow_up_date')
             else:
                 enquiries = Enquiry.objects.filter(follow_up_date__day=current_date.day,follow_up_date__month=current_date.month,follow_up_date__year=current_date.year )
-                print "saas", enquiries
             for enquiry in enquiries:
                 if not enquiry.is_admitted:
                     enquiry_list.append({

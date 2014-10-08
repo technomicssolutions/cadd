@@ -18,6 +18,7 @@ from attendance.models import Attendance, StudentAttendance
 from college.models import Batch
 from admission.models import Student
 from staff.models import Staff
+import xlwt
 
 style = [
     ('FONTSIZE', (0,0), (-1, -1), 12),
@@ -37,7 +38,6 @@ class AddAttendance(View):
         context = {
             'current_date': current_date.strftime('%d/%m/%Y')
         }
-        print current_date
         return render(request, 'add_attendance.html', context)
 
     def post(self, request, *args, **kwargs):
@@ -77,85 +77,10 @@ class AddAttendance(View):
         response = simplejson.dumps(res)
         return HttpResponse(response, status=status,  mimetype='application/json')
 
+<<<<<<< HEAD
+=======
 
-# class BatchAttendanceList(View):
-
-#     def get(self, request, *args, **kwargs):
-
-#         batches = Batch.objects.all()
-#         ctx_batch = []
-#         status = 200
-#         current_date = datetime.now()
-#         year = current_date.year
-#         month = current_date.month      
-#         day = current_date.day  
-#         period_nos = []
-        
-#         if request.is_ajax():
-#             for batch in batches:
-#                 student_list = []                
-#                 students = Student.objects.filter(batch=batch).order_by('student_name')
-#                 holiday_calendar = None
-#                 for student in students:
-#                     if student.is_rolled == False:
-#                         period_list = []
-#                         date = dt.date(int(year), int(month), int(day))
-#                         holiday_calendar, created = HolidayCalendar.objects.get_or_create(date=date)
-#                         if created:
-#                             if date.strftime("%A") == 'Sunday' :
-#                                 holiday_calendar.is_holiday = True             
-#                             holiday_calendar.save()
-#                         periods = int(batch.periods)
-#                         try:
-#                             attendance = Attendance.objects.get(date=date, student=student, batch=batch)
-#                             for period in attendance.presented:                          
-#                                 period_list.append({
-#                                 'count': period['period'],
-#                                 'is_presented': 'true' if period['is_presented'] else 'false',
-#                                 'is_holiday': 'true' if holiday_calendar and holiday_calendar.is_holiday else 'false',
-#                                 'status': 'P' if period['is_presented'] else 'A',
-#                                 })
-#                         except:                        
-#                             for period in range(1, periods + 1):                   
-#                                 period_list.append({
-#                                 'count': period,
-#                                 'is_presented': "true",
-#                                 'is_holiday': 'true' if holiday_calendar and holiday_calendar.is_holiday else 'false',
-#                                 'status': '',
-#                                 })
-#                         student_list.append({
-#                             'student_id': student.id,
-#                             'name': student.student_name,  
-#                             'roll_no': student.roll_number,
-#                             'counts': period_list          
-#                         })
-#                         period_list = []
-#                 periods = int(batch.periods)   
-#                 for period in range(1, periods + 1):
-#                     period_nos.append(period)              
-#                 ctx_batch.append({
-#                     'batch_id': batch.id,
-#                     'name': str(batch.start_date) + '-' + str(batch.end_date) + ' ' + (str(batch.branch) if batch.branch else batch.course.course),
-#                     'course': batch.course.course if batch.course else '',
-#                     'periods': batch.periods,
-#                     'period_nos':period_nos,
-#                     'students': student_list,                          
-#                 })
-#                 period_nos = []
-#             res = {
-#                 'batches': ctx_batch,
-#                 'current_month': current_date.month,  
-#                 'current_date': current_date.day,    
-#                 'current_year': current_date.year, 
-#                 'is_holiday': 'true' if holiday_calendar and holiday_calendar.is_holiday else 'false',  
-#                 'result': 'ok',
-#             }
-#             response = simplejson.dumps(res)
-#             return HttpResponse(response, status=status, mimetype='application/json')
-#         return HttpResponse('Ok')
-
-
-
+>>>>>>> 584cb1253b3f6c5f51d37c9c0e6f9666cf3bea5d
 class AttendanceDetails(View):
 
     def get(self, request, *args, **kwargs):
@@ -253,28 +178,7 @@ class AttendanceDetails(View):
                 }
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')
-
         return render(request, 'attendance_details.html', {})
-
-
-# class ClearBatchAttendanceDetails(View):
-
-#     def get(self, request, *args, **kwargs):
-
-#         batch_id = request.GET.get('batch_id', '')
-#         batch_year = request.GET.get('batch_year', '')
-#         batch_month = request.GET.get('batch_month', '')
-#         if batch_id:
-#             batch = Batch.objects.get(id=batch_id)
-#             print batch_id, batch_year,batch_month
-#             attendance = Attendance.objects.filter(batch=batch, date__month=batch_month, date__year=batch_year)
-#             print attendance
-#             for attendance_obj in attendance:
-#                 attendance_obj.delete()
-
-#             return HttpResponseRedirect(reverse('attendance_details'))
-#         return render(request, 'attendance/clear_batch_details.html', {})
-
 
 class BatchStudents(View):
 
@@ -414,6 +318,71 @@ class JobCard(View):
             return response
         return render(request, 'job_card.html', {})
 
+class AttendanceReport(View):
 
+    def get(self, request, *args, **kwargs):
+
+        if request.GET.get('batch', ''):
+            response = HttpResponse(mimetype='application/ms-excel')
+            response['Content-Disposition'] = 'attachment; filename=attendace_report.xls'
+            wb = xlwt.Workbook(encoding='utf-8')
+            ws = wb.add_sheet("Attendance Report")
+            font_style = xlwt.XFStyle()
+            font_style.font.bold = True
+            font_style = xlwt.XFStyle()
+            font_style.alignment.wrap = 1
+
+            start_date = datetime.strptime(request.GET.get('start_date', ''), '%d/%m/%Y')
+            end_date = datetime.strptime(request.GET.get('end_date', ''), '%d/%m/%Y')
+            batch = Batch.objects.get(id=request.GET.get('batch', ''))
+            numdays = (end_date - start_date).days
+            date_list = [start_date + dt.timedelta(days=x) for x in range(0, numdays + 1)] 
+            row = 0
+            col = 0
+            ws.write(row, col, 'Student')
+            for date in date_list:
+                col = col + 1
+                ws.write(row, col, date.strftime('%d/%m/%Y'))
+            row = row + 1
+            students = batch.student_set.all()
+            for student in students:
+                col = 0
+                ws.write(row, col, student.student_name)
+                for date in date_list:
+                    col = col + 1
+                    try:
+                        student_attendance = StudentAttendance.objects.get(student=student, attendance__date__day=date.day, attendance__date__month=date.month, attendance__date__year=date.year)
+                        ws.write(row, col, student_attendance.status)
+                    except Exception as ex:
+                        ws.write(row, col, '')
+                row = row + 1
+            wb.save(response)
+            return response
+        else:
+            return render(request, 'attendance_report.html', {})
+
+class TopicsCovered(View):
+
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            user_id = request.GET.get('staff')
+            topics_list = []
+            attendances = Attendance.objects.filter(user=user_id)
+            for attendance in attendances:
+                topics_list.append({
+                    'id': attendance.id,
+                    'batch': attendance.batch.name,
+                    'topics_covered': attendance.topics_covered,
+                    'remarks': attendance.remarks,
+                    'date': attendance.date.strftime('%d/%m/%Y'),
+                })
+            res = {
+                'result': 'ok',
+                'topics': topics_list,
+            }
+            status_code = 200
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status = status_code, mimetype="application/json")
+        return render(request, 'topics_covered.html', {})
 
 

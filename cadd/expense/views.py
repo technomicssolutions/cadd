@@ -157,11 +157,17 @@ class EditExpense(View):
             expense.date = datetime.strptime(expense_details['date'], '%d/%m/%Y')
             expense.payment_mode = expense_details['payment_mode']
             expense.narration = expense_details['narration']
-            expense.cheque_no = expense_details['cheque_no']
-            if expense_details['cheque_date']:
-                expense.cheque_date = datetime.strptime(expense_details['cheque_date'], '%d/%m/%Y')
-            expense.bank_name = expense_details['bank_name']
-            expense.branch = expense_details['branch']
+            if expense.payment_mode == 'cheque':
+                expense.cheque_no = expense_details['cheque_no']
+                if expense_details['cheque_date']:
+                    expense.cheque_date = datetime.strptime(expense_details['cheque_date'], '%d/%m/%Y')
+                expense.bank_name = expense_details['bank_name']
+                expense.branch = expense_details['branch']
+            else:
+                expense.cheque_date = None
+                expense.bank_name = ''
+                expense.branch = ''
+                expense.cheque_no = ''
             expense_head = ExpenseHead.objects.get(id=expense_details['expense_head_id'])
             expense.expense_head = expense_head
             expense.amount = expense_details['amount']
