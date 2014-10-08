@@ -30,7 +30,8 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
     // $scope.get_batch = function(){
     //     get_course_batch_list($scope, $http);
     // }
-    $scope.get_student = function(){
+    $scope.get_student_list = function(){
+        console.log('in stud');
         get_course_batch_student_list($scope, $http);
     }
     $scope.get_fees_head = function(){
@@ -911,7 +912,7 @@ function FeesReportController($scope, $http, $element) {
         }
     }
 }
-function FeesPaymentController($scope, $http, $element) {
+function FeesPaymentReportController($scope, $http, $element) {
     $scope.report_type = '';
     $scope.show_course_wise_report = false;
     $scope.show_student_wise_report = false;
