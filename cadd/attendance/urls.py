@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, include, url
 from django.contrib.auth.decorators import login_required
-from attendance.views import AddAttendance, AttendanceDetails, BatchStudents, JobCard
+from attendance.views import AddAttendance, AttendanceDetails, BatchStudents, JobCard, AttendanceReport
 
 urlpatterns = patterns('',
 	url(r'^batch_students/(?P<batch_id>\d+)/$',login_required (BatchStudents.as_view()), name="batch_students"),
@@ -8,5 +8,6 @@ urlpatterns = patterns('',
 	url(r'^add_attendance/$',login_required(AddAttendance.as_view()), name='add_attendance'),
 	url(r'^attendance_details/$',login_required(AttendanceDetails.as_view()), name='attendance_details'),
 	
-
+	url(r'^attendance_report/$',login_required(AttendanceReport.as_view()), name='attendance_report'),
+	
 )
