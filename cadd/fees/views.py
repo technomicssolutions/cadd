@@ -301,6 +301,8 @@ class FeesPaymentSave(View):
             try:
                 fees_payment_details = ast.literal_eval(request.POST['fees_payment'])
                 student = Student.objects.get(id=fees_payment_details['student'])
+                if student.is_rolled:
+                    student.is_rolled = False
                 fees_payment, created = FeesPayment.objects.get_or_create(student=student)
                 installment = Installment.objects.get(id=fees_payment_details['installment_id'])
                 fee_payment_installment, installment_created = FeesPaymentInstallment.objects.get_or_create(installment=installment, student=student)
