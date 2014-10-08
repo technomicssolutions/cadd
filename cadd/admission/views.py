@@ -455,6 +455,7 @@ class AllEnquiries(View):
                     'land_mark': enquiry.land_mark,
                     'saved_date':enquiry.saved_date.strftime('%d/%m/%Y') if enquiry.saved_date else '',
                     'course' : enquiry.course.id,
+                    'course_name':enquiry.course.name,
                     'remarks': enquiry.remarks,
                     'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
                     'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,

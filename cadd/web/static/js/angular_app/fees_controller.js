@@ -951,8 +951,8 @@ function UnRollController($scope, $http, $element) {
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
         $scope.error_flag = false;
-        $scope.unroll_student_flag = false;
-        $scope.roll_student_flag = false;
+        $scope.unroll_student_flag = true;
+        $scope.roll_student_flag = true;
         get_course_list($scope, $http);
     }
     $scope.get_outstanding_student = function(){
@@ -967,11 +967,11 @@ function UnRollController($scope, $http, $element) {
                         if($scope.fees_details.student_details[i].is_rolled == 'false'){
                             $scope.fees_details.student_details[i].is_rolled = false;
                             $scope.fees_details.student_details[i].is_unrolled = true;
-                            $scope.unroll_student_flag = true;
+                            // $scope.unroll_student_flag = true;
                         }else if($scope.fees_details.student_details[i].is_rolled == 'true'){
                             $scope.fees_details.student_details[i].is_unrolled = false;
                             $scope.fees_details.student_details[i].is_rolled = true;
-                            $scope.roll_student_flag = true;
+                            // $scope.roll_student_flag = true;
                         }
                     }
                     // if($scope.fees_details.students)
@@ -988,6 +988,7 @@ function UnRollController($scope, $http, $element) {
         });
     }
     $scope.unroll = function(student_id){
+        // $scope.roll_student_flag = false;
         $scope.url = '/fees/unroll_students/?student_id='+student_id;
         $http.get($scope.url).success(function(data)
         {
@@ -1002,6 +1003,7 @@ function UnRollController($scope, $http, $element) {
         });
     }
     $scope.roll = function(student_id){
+        // $scope.unroll_student_flag = false;
         $scope.url = '/fees/roll_students/?student_id='+student_id;
         $http.get($scope.url).success(function(data)
         {
