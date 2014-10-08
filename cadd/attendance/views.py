@@ -78,84 +78,6 @@ class AddAttendance(View):
         return HttpResponse(response, status=status,  mimetype='application/json')
 
 
-# class BatchAttendanceList(View):
-
-#     def get(self, request, *args, **kwargs):
-
-#         batches = Batch.objects.all()
-#         ctx_batch = []
-#         status = 200
-#         current_date = datetime.now()
-#         year = current_date.year
-#         month = current_date.month      
-#         day = current_date.day  
-#         period_nos = []
-        
-#         if request.is_ajax():
-#             for batch in batches:
-#                 student_list = []                
-#                 students = Student.objects.filter(batch=batch).order_by('student_name')
-#                 holiday_calendar = None
-#                 for student in students:
-#                     if student.is_rolled == False:
-#                         period_list = []
-#                         date = dt.date(int(year), int(month), int(day))
-#                         holiday_calendar, created = HolidayCalendar.objects.get_or_create(date=date)
-#                         if created:
-#                             if date.strftime("%A") == 'Sunday' :
-#                                 holiday_calendar.is_holiday = True             
-#                             holiday_calendar.save()
-#                         periods = int(batch.periods)
-#                         try:
-#                             attendance = Attendance.objects.get(date=date, student=student, batch=batch)
-#                             for period in attendance.presented:                          
-#                                 period_list.append({
-#                                 'count': period['period'],
-#                                 'is_presented': 'true' if period['is_presented'] else 'false',
-#                                 'is_holiday': 'true' if holiday_calendar and holiday_calendar.is_holiday else 'false',
-#                                 'status': 'P' if period['is_presented'] else 'A',
-#                                 })
-#                         except:                        
-#                             for period in range(1, periods + 1):                   
-#                                 period_list.append({
-#                                 'count': period,
-#                                 'is_presented': "true",
-#                                 'is_holiday': 'true' if holiday_calendar and holiday_calendar.is_holiday else 'false',
-#                                 'status': '',
-#                                 })
-#                         student_list.append({
-#                             'student_id': student.id,
-#                             'name': student.student_name,  
-#                             'roll_no': student.roll_number,
-#                             'counts': period_list          
-#                         })
-#                         period_list = []
-#                 periods = int(batch.periods)   
-#                 for period in range(1, periods + 1):
-#                     period_nos.append(period)              
-#                 ctx_batch.append({
-#                     'batch_id': batch.id,
-#                     'name': str(batch.start_date) + '-' + str(batch.end_date) + ' ' + (str(batch.branch) if batch.branch else batch.course.course),
-#                     'course': batch.course.course if batch.course else '',
-#                     'periods': batch.periods,
-#                     'period_nos':period_nos,
-#                     'students': student_list,                          
-#                 })
-#                 period_nos = []
-#             res = {
-#                 'batches': ctx_batch,
-#                 'current_month': current_date.month,  
-#                 'current_date': current_date.day,    
-#                 'current_year': current_date.year, 
-#                 'is_holiday': 'true' if holiday_calendar and holiday_calendar.is_holiday else 'false',  
-#                 'result': 'ok',
-#             }
-#             response = simplejson.dumps(res)
-#             return HttpResponse(response, status=status, mimetype='application/json')
-#         return HttpResponse('Ok')
-
-
-
 class AttendanceDetails(View):
 
     def get(self, request, *args, **kwargs):
@@ -253,7 +175,6 @@ class AttendanceDetails(View):
                 }
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')
-
         return render(request, 'attendance_details.html', {})
 
 
@@ -415,5 +336,28 @@ class JobCard(View):
         return render(request, 'job_card.html', {})
 
 
+class TopicsCovered(View):
+
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            user_id = request.GET.get('staff')
+            topics_list = []
+            attendances = Attendance.objects.filter(user=user_id)
+            for attendance in attendances:
+                topics_list.append({
+                    'id': attendance.id,
+                    'batch': attendance.batch.name,
+                    'topics_covered': attendance.topics_covered,
+                    'remarks': attendance.remarks,
+                    'date': attendance.date.strftime('%d/%m/%Y'),
+                })
+            res = {
+                'result': 'ok',
+                'topics': topics_list,
+            }
+            status_code = 200
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status = status_code, mimetype="application/json")
+        return render(request, 'topics_covered.html', {})
 
 

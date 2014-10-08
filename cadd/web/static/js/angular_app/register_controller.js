@@ -161,6 +161,7 @@ function CertificateController($scope, $element, $http, $timeout, share, $locati
 	$scope.init = function(csrf_token, certificate_id){
 		$scope.csrf_token = csrf_token;
 		get_course_list($scope, $http);
+		$scope.keyboard_control();
 		new Picker.Date($$('#certificate_date'), {
             timePicker: false,
             positionOffset: {x: 5, y: 0},
@@ -183,6 +184,32 @@ function CertificateController($scope, $element, $http, $timeout, share, $locati
             format:'%d/%m/%Y',
         });
 	}
+	$scope.keyboard_control = function(){
+        $scope.focusIndex = 0;
+        $scope.keys = [];
+        $scope.keys.push({ code: 13, action: function() { $scope.select_list_item( $scope.focusIndex ); }});
+        $scope.keys.push({ code: 38, action: function() { 
+            if($scope.focusIndex > 0){
+                $scope.focusIndex--; 
+            }
+        }});
+        $scope.keys.push({ code: 40, action: function() { 
+            if($scope.focusIndex < $scope.students_list.length-1){
+                $scope.focusIndex++; 
+            }
+        }});
+        $scope.$on('keydown', function( msg, code ) {
+            $scope.keys.forEach(function(o) {
+              if ( o.code !== code ) { return; }
+              o.action();
+              $scope.$apply();
+            });
+        });
+    }
+    $scope.select_list_item = function(index) {
+        student = $scope.students_list[index];
+        $scope.get_student_details(student);
+    }
 	$scope.student_search = function(){
 		if($scope.student_name.length > 0){
 			$scope.validation_error = "";

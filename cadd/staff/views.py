@@ -199,3 +199,21 @@ class PermissionSetting(View):
             }
             response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype='application/json')
+
+
+class SearchStaff(View):
+
+    def get(self, request, *args, **kwargs):
+        staff_name = request.GET.get('name')
+        staffs = Staff.objects.filter(user__first_name__istartswith=staff_name)
+        staff_list = []
+        for staff in staffs:
+            staff_list.append({
+                'id': staff.user.id,
+                'name': staff.user.first_name + " " + staff.user.last_name,
+            })
+        res = {
+            'staffs': staff_list,
+        }
+        response = simplejson.dumps(res)
+        return HttpResponse(response, status=200, mimetype='application/json')

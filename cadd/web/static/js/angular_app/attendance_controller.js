@@ -26,6 +26,16 @@ function student_search($scope, $http){
             console.log('Request failed'|| data);
         });
 }
+function staff_search($scope, $http){
+    $http.get('/staff/search_staff/?name='+$scope.staff_name).success(function(data){
+            $scope.staffs_list = data.staffs;
+            console.log($scope.staffs_list);
+            if($scope.staffs_list.length == 0)
+                $scope.no_staff_msg = "No Staff found";
+        }).error(function(data, status){
+            console.log('Request failed'|| data);
+        });
+}
 function AttendanceController($scope, $http, $element){
     $scope.batch_id = "";
     $scope.students = {}
@@ -486,5 +496,63 @@ function JobCardController($scope, $http){
         if($scope.validate_jobcard()){
             document.location.href = '/attendance/job_card/?batch='+$scope.job_card.batch_id+'&student='+$scope.job_card.student_id;
         }
+    }
+}
+
+function TopicsController($scope, $http, $element){
+    $scope.init = function(){
+        $scope.keyboard_control()
+    }
+    $scope.staff_search = function(){
+        $scope.no_staff_msg = "";
+        if($scope.staff_name.length > 0){
+            staff_search($scope, $http);
+        }
+        else{
+            $scope.staffs_list = "";
+            $scope.topics = "";
+        }    
+    }
+    $scope.keyboard_control = function(){
+        $scope.focusIndex = 0;
+        $scope.keys = [];
+        $scope.keys.push({ code: 13, action: function() { $scope.select_list_item( $scope.focusIndex ); }});
+        $scope.keys.push({ code: 38, action: function() { 
+            if($scope.focusIndex > 0){
+                $scope.focusIndex--; 
+            }
+        }});
+        $scope.keys.push({ code: 40, action: function() { 
+            if($scope.focusIndex < $scope.staffs_list.length-1){
+                $scope.focusIndex++; 
+            }
+        }});
+        $scope.$on('keydown', function( msg, code ) {
+            $scope.keys.forEach(function(o) {
+              if ( o.code !== code ) { return; }
+              o.action();
+              $scope.$apply();
+            });
+        });
+    }
+    $scope.select_list_item = function(index) {
+        staff = $scope.staffs_list[index];
+        $scope.get_staff_details(staff);
+    }
+    $scope.get_staff_details = function(staff) {
+        $scope.staff_name = staff.name;
+        $scope.staffs_list = [];
+        $scope.no_staff_msg = "";
+        var url = '/attendance/topics_covered/?staff='+staff.id;
+        $http.get(url).success(function(data)
+        {            
+            $scope.topics = data.topics;
+            console.log($scope.topics);
+        }).error(function(data, status)
+        {
+            $('#overlay').css('height', '0px');
+            $('#spinner').css('height', '0px');
+            console.log(data || "Request failed");
+        });
     }
 }
