@@ -825,8 +825,7 @@ label.block{
     position: absolute;
     width: 46%;
     border-bottom: none;
-    right: 0;
-    top: 35%;
+    right: 0;    
     width: 16%;
     z-index: 1;
     margin-right: 34%;
@@ -839,7 +838,6 @@ label.block{
 }
 #attendance_details .search_list{
 	margin-right: 19.5%;
-	top: 30%;
 }
 .highlight {
 	border: 2px solid #707070;
@@ -948,6 +946,4 @@ a:hover , a:focus{
 #certificate .search_batch{
 	margin-top: 2% !important;
 }
-#add_certificate .search_list{
-	top: 41% !important;
-}
+

@@ -18,10 +18,18 @@ function student_search($scope, $http){
     $http.get('/admission/search_student/?name='+$scope.student_name+'&batch='+$scope.batch_id).success(function(data){
         if(data.result == 'ok'){
             $scope.students_list = data.students;
-            console.log($scope.students_list);
             if($scope.students_list.length == 0)
                 $scope.no_student_msg = "No Students found";
         }            
+        }).error(function(data, status){
+            console.log('Request failed'|| data);
+        });
+}
+function staff_search($scope, $http){
+    $http.get('/staff/search_staff/?name='+$scope.staff_name).success(function(data){
+            $scope.staffs_list = data.staffs;
+            if($scope.staffs_list.length == 0)
+                $scope.no_staff_msg = "No Staff found";
         }).error(function(data, status){
             console.log('Request failed'|| data);
         });
@@ -44,7 +52,6 @@ function AttendanceController($scope, $http, $element){
         var url = '/attendance/batch_students/'+batch.id;
         $http.get(url).success(function(data)
         {
-            console.log(data);
             $scope.students = data.students;
             $scope.current_month = data.current_month;
             $scope.current_year = data.current_year;
@@ -296,7 +303,6 @@ function AttendanceDetailsController($scope, $element, $http) {
             
             $http.get(url).success(function(data)
             {
-                console.log(data);
                 $scope.view = data.view;
                 if($scope.view == 'monthly'){
                     $scope.students = data.batch[0].students;
@@ -340,8 +346,6 @@ function AttendanceDetailsController($scope, $element, $http) {
            
             $('#overlay').css('height', height);
             $('#spinner').css('height', height);
-            console.log($scope.batch);
-            console.log($scope.students);
             for (var i=0; i < $scope.students.length; i++){
                 if($scope.students[i].is_presented == true)
                     $scope.students[i].is_presented = "true";
@@ -522,5 +526,61 @@ function AttendanceReportController($scope, $http) {
             document.location.href = '/attendance/attendance_report/?batch='+$scope.batch+'&start_date='+start_date+'&end_date='+end_date;
         }
     }
+}
 
+function TopicsController($scope, $http, $element){
+    $scope.init = function(){
+        $scope.keyboard_control()
+    }
+    $scope.staff_search = function(){
+        $scope.no_staff_msg = "";
+        if($scope.staff_name.length > 0){
+            staff_search($scope, $http);
+        }
+        else{
+            $scope.staffs_list = "";
+            $scope.topics = "";
+        }    
+    }
+    $scope.keyboard_control = function(){
+        $scope.focusIndex = 0;
+        $scope.keys = [];
+        $scope.keys.push({ code: 13, action: function() { $scope.select_list_item( $scope.focusIndex ); }});
+        $scope.keys.push({ code: 38, action: function() { 
+            if($scope.focusIndex > 0){
+                $scope.focusIndex--; 
+            }
+        }});
+        $scope.keys.push({ code: 40, action: function() { 
+            if($scope.focusIndex < $scope.staffs_list.length-1){
+                $scope.focusIndex++; 
+            }
+        }});
+        $scope.$on('keydown', function( msg, code ) {
+            $scope.keys.forEach(function(o) {
+              if ( o.code !== code ) { return; }
+              o.action();
+              $scope.$apply();
+            });
+        });
+    }
+    $scope.select_list_item = function(index) {
+        staff = $scope.staffs_list[index];
+        $scope.get_staff_details(staff);
+    }
+    $scope.get_staff_details = function(staff) {
+        $scope.staff_name = staff.name;
+        $scope.staffs_list = [];
+        $scope.no_staff_msg = "";
+        var url = '/attendance/topics_covered/?staff='+staff.id;
+        $http.get(url).success(function(data)
+        {            
+            $scope.topics = data.topics;
+        }).error(function(data, status)
+        {
+            $('#overlay').css('height', '0px');
+            $('#spinner').css('height', '0px');
+            console.log(data || "Request failed");
+        });
+    }
 }

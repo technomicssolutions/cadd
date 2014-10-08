@@ -38,7 +38,6 @@ class AddAttendance(View):
         context = {
             'current_date': current_date.strftime('%d/%m/%Y')
         }
-        print current_date
         return render(request, 'add_attendance.html', context)
 
     def post(self, request, *args, **kwargs):
@@ -78,6 +77,10 @@ class AddAttendance(View):
         response = simplejson.dumps(res)
         return HttpResponse(response, status=status,  mimetype='application/json')
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 584cb1253b3f6c5f51d37c9c0e6f9666cf3bea5d
 class AttendanceDetails(View):
 
     def get(self, request, *args, **kwargs):
@@ -175,7 +178,6 @@ class AttendanceDetails(View):
                 }
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')
-
         return render(request, 'attendance_details.html', {})
 
 class BatchStudents(View):
@@ -358,5 +360,29 @@ class AttendanceReport(View):
             return response
         else:
             return render(request, 'attendance_report.html', {})
+
+class TopicsCovered(View):
+
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            user_id = request.GET.get('staff')
+            topics_list = []
+            attendances = Attendance.objects.filter(user=user_id)
+            for attendance in attendances:
+                topics_list.append({
+                    'id': attendance.id,
+                    'batch': attendance.batch.name,
+                    'topics_covered': attendance.topics_covered,
+                    'remarks': attendance.remarks,
+                    'date': attendance.date.strftime('%d/%m/%Y'),
+                })
+            res = {
+                'result': 'ok',
+                'topics': topics_list,
+            }
+            status_code = 200
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status = status_code, mimetype="application/json")
+        return render(request, 'topics_covered.html', {})
 
 
