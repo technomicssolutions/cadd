@@ -66,7 +66,7 @@ class FeesPayment(models.Model):
 	payment_installment = models.ManyToManyField(FeesPaymentInstallment, null=True, blank=True)
 	
 	def __unicode__(self):
-		return str(self.fee_structure)
+		return str(self.student)
 
 	class Meta:
 
