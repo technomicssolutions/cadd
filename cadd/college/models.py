@@ -18,7 +18,7 @@ class Course(models.Model):
 		return (self.name)
 
 class Batch(models.Model):
-	name = models.CharField('Batch Name', null=True, blank=True, max_length=200, unique=True)
+	name = models.CharField('Batch Name', null=True, blank=True, max_length=200)
 	software = models.ForeignKey(Software)
 	start_time = models.TimeField('Start Date', null=True, blank=True)
 	end_time = models.TimeField('End Date', null=True, blank=True)
