@@ -493,6 +493,41 @@ function JobCardController($scope, $http){
     }
 }
 
+function AttendanceReportController($scope, $http) {
+    $scope.init = function(csrf_token) {
+        $scope.csrf_token = csrf_token;
+        get_batches($scope, $http);
+        var paid_date = new Picker.Date($$('#start_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
+        var paid_date = new Picker.Date($$('#end_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
+    }
+    $scope.generate = function() {
+        start_date = $('#start_date')[0].get('value');
+        end_date = $('#end_date')[0].get('value');
+        $scope.error_message = '';
+        if (start_date == '' || start_date == undefined) {
+            $scope.error_message = 'Please choose the start date';
+        } else if (end_date == '' || end_date == undefined) {
+            $scope.error_message = 'Please choose the end date';
+        } else if ($scope.batch == '' || $scope.batch == undefined) {
+            $scope.error_message = 'Please choose the batch';
+        } else {
+            document.location.href = '/attendance/attendance_report/?batch='+$scope.batch+'&start_date='+start_date+'&end_date='+end_date;
+        }
+    }
+}
+
 function TopicsController($scope, $http, $element){
     $scope.init = function(){
         $scope.keyboard_control()

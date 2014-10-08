@@ -44,6 +44,7 @@
 							<li> <a href="{% url 'all_enquiries'  %}"> Enquiry View </a> </li>
 							<li> <a href="{% url 'student_admission'  %}"> Admission </a> </li>
 							<li><a href="{% url 'list_student'  %}">Students</a></li>
+							<li><a href="{% url 'enquiry_to_admission' %}">Enquiry to Admission</a></li>
 							<li><a href="{% url 'follow_up_details' %}">Follow Up Report</a></li>
 							<li> <a href="{% url 'enquiry_report'  %}"> Enquiry Report </a> </li>
 							<li><a href="{% url 'admission_report'  %}">Admission Report</a></li>
@@ -68,8 +69,9 @@
 							<li> <a href="{% url 'attendance_details' %}" >View Attendance</a>
 							</li>	
 							<li> <a href="{% url 'job_card' %}" >Job Card</a>
-							</li>	
-							<li> <a href="{% url 'topics_covered' %}"> Topics Covered </a> </li>				
+							</li>
+							<li><a href="{% url 'attendance_report' %}">Attendance Report</a></li>		
+							<li> <a href="{% url 'topics_covered' %}"> Topics Covered </a> </li>	
 						</ul>
 					</li>	
 				{% endif %}	
@@ -79,6 +81,7 @@
 							<li> <a href="{% url 'expense_list' %}" >Expenses</a></li>
 							<li><a href="{% url 'new_expense' %}">Add Expense</a></li>
 							<li><a href="{% url 'new_expense_head' %}"> Expense Head</a></li>				
+							<li> <a href="{% url 'expense_report' %}" >Expense Report</a></li>
 						</ul>
 					</li>	
 				{% endif %}	

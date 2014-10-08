@@ -6,4 +6,5 @@ simplejson==3.3.1
 django-jsonfield==0.9.13
 reportlab==2.7
 pytz==2014.4
+xlwt==0.7.5
 

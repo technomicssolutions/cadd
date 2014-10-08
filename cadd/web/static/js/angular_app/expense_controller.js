@@ -140,6 +140,10 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
             $scope.error_flag = true;
             $scope.error_message = 'Please enter amount';
             return false;
+        } else if ($scope.expense.amount != Number($scope.expense.amount)) {
+            $scope.error_flag = true;
+            $scope.error_message = 'Please enter valid amount';
+            return false;
         } else if ($scope.expense.narration == '' || $scope.expense.narration == undefined) {
             $scope.error_flag = true;
             $scope.error_message = 'Please add narration';
@@ -236,6 +240,37 @@ function ExpenseController($scope, $element, $http, $timeout, $location) {
             }).error(function(data, status){
                 console.log(data);
             });
+        }
+    }
+}
+function ExpenseReportController($scope, $http) {
+    $scope.init = function(csrf_token) {
+        $scope.csrf_token = csrf_token;
+        var paid_date = new Picker.Date($$('#start_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
+        var paid_date = new Picker.Date($$('#end_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
+    }
+    $scope.generate = function() {
+        start_date = $('#start_date')[0].get('value');
+        end_date = $('#end_date')[0].get('value');
+        $scope.error_message = '';
+        if (start_date == '' || start_date == undefined) {
+            $scope.error_message = 'Please choose the start date';
+        } else if (end_date == '' || end_date == undefined) {
+            $scope.error_message = 'Please choose the end date';
+        } else {
+            document.location.href = '/expense/expense_report/?start_date='+start_date+'&end_date='+end_date;
         }
     }
 }

@@ -18,6 +18,7 @@ from attendance.models import Attendance, StudentAttendance
 from college.models import Batch
 from admission.models import Student
 from staff.models import Staff
+import xlwt
 
 style = [
     ('FONTSIZE', (0,0), (-1, -1), 12),
@@ -75,7 +76,6 @@ class AddAttendance(View):
         }
         response = simplejson.dumps(res)
         return HttpResponse(response, status=status,  mimetype='application/json')
-
 
 class AttendanceDetails(View):
 
@@ -175,26 +175,6 @@ class AttendanceDetails(View):
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')
         return render(request, 'attendance_details.html', {})
-
-
-# class ClearBatchAttendanceDetails(View):
-
-#     def get(self, request, *args, **kwargs):
-
-#         batch_id = request.GET.get('batch_id', '')
-#         batch_year = request.GET.get('batch_year', '')
-#         batch_month = request.GET.get('batch_month', '')
-#         if batch_id:
-#             batch = Batch.objects.get(id=batch_id)
-#             print batch_id, batch_year,batch_month
-#             attendance = Attendance.objects.filter(batch=batch, date__month=batch_month, date__year=batch_year)
-#             print attendance
-#             for attendance_obj in attendance:
-#                 attendance_obj.delete()
-
-#             return HttpResponseRedirect(reverse('attendance_details'))
-#         return render(request, 'attendance/clear_batch_details.html', {})
-
 
 class BatchStudents(View):
 
@@ -334,6 +314,48 @@ class JobCard(View):
             return response
         return render(request, 'job_card.html', {})
 
+class AttendanceReport(View):
+
+    def get(self, request, *args, **kwargs):
+
+        if request.GET.get('batch', ''):
+            response = HttpResponse(mimetype='application/ms-excel')
+            response['Content-Disposition'] = 'attachment; filename=attendace_report.xls'
+            wb = xlwt.Workbook(encoding='utf-8')
+            ws = wb.add_sheet("Attendance Report")
+            font_style = xlwt.XFStyle()
+            font_style.font.bold = True
+            font_style = xlwt.XFStyle()
+            font_style.alignment.wrap = 1
+
+            start_date = datetime.strptime(request.GET.get('start_date', ''), '%d/%m/%Y')
+            end_date = datetime.strptime(request.GET.get('end_date', ''), '%d/%m/%Y')
+            batch = Batch.objects.get(id=request.GET.get('batch', ''))
+            numdays = (end_date - start_date).days
+            date_list = [start_date + dt.timedelta(days=x) for x in range(0, numdays + 1)] 
+            row = 0
+            col = 0
+            ws.write(row, col, 'Student')
+            for date in date_list:
+                col = col + 1
+                ws.write(row, col, date.strftime('%d/%m/%Y'))
+            row = row + 1
+            students = batch.student_set.all()
+            for student in students:
+                col = 0
+                ws.write(row, col, student.student_name)
+                for date in date_list:
+                    col = col + 1
+                    try:
+                        student_attendance = StudentAttendance.objects.get(student=student, attendance__date__day=date.day, attendance__date__month=date.month, attendance__date__year=date.year)
+                        ws.write(row, col, student_attendance.status)
+                    except Exception as ex:
+                        ws.write(row, col, '')
+                row = row + 1
+            wb.save(response)
+            return response
+        else:
+            return render(request, 'attendance_report.html', {})
 
 class TopicsCovered(View):
 

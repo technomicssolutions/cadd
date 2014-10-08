@@ -1029,3 +1029,85 @@ function FollowUpReportController($scope, $http) {
         return new Array(n);
     }
 }
+function EnquiryToAdmissionController($scope, $http) {
+    $scope.start_date = '';
+    $scope.end_date = '';
+    $scope.report_type = 'completed';
+    $scope.init = function(csrf_token){
+        new Picker.Date($$('#start_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
+        new Picker.Date($$('#end_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
+    }
+    $scope.view_enquiry_to_admission = function(){
+        $scope.start_date = $$('#start_date')[0].get('value');
+        $scope.end_date = $$('#end_date')[0].get('value');
+        if($scope.validate()){
+            if($scope.report_type == 'completed'){
+                $scope.url = '/admission/enquiry_to_admission/?start_date='+$scope.start_date+'&end_date='+$scope.end_date+'&completed='+$scope.report_type;
+            }else if($scope.report_type == 'incompleted'){
+                $scope.url = '/admission/enquiry_to_admission/?start_date='+$scope.start_date+'&end_date='+$scope.end_date+'&incompleted='+$scope.report_type;
+
+            }
+            $http.get($scope.url).success(function(data)
+            {
+                $scope.no_enquiry_msg = '';
+                if (data.enquiries.length == 0)
+                    $scope.no_enquiry_msg = 'No  enquiry';
+                else {
+                   $scope.enquiries = data.enquiries;
+                   paginate(data.enquiries, $scope);
+                }
+            }).error(function(data, status)
+            {
+                console.log(data || "Request failed");
+            });
+        }
+    }
+    $scope.generate_report = function(){
+        $scope.start_date = $$('#start_date')[0].get('value');
+        $scope.end_date = $$('#end_date')[0].get('value');
+        if($scope.validate()){
+            if($scope.report_type == 'completed'){
+                document.location.href = '/admission/enquiry_to_admission/?start_date='+$scope.start_date+'&end_date='+$scope.end_date+'&completed='+$scope.report_type;
+            }else if($scope.report_type == 'incompleted'){
+                document.location.href = '/admission/enquiry_to_admission/?start_date='+$scope.start_date+'&end_date='+$scope.end_date+'&incompleted='+$scope.report_type;
+
+            }
+        }
+    }
+    $scope.change_report_type = function(report_type){
+        if(report_type == 'completed'){
+            $scope.report_type = report_type;
+        }else if(report_type == 'incompleted'){
+            $scope.report_type = report_type;
+        }
+    }
+    $scope.validate = function(){
+        $scope.start_date = $$('#start_date')[0].get('value');
+        $scope.end_date = $$('#end_date')[0].get('value');
+        if($scope.start_date == ''){
+            $scope.validate_error_msg = 'Please select the start date';
+            return false;
+        } else if($scope.end_date == ''){
+            $scope.validate_error_msg = 'Please select the end date';
+            return false;
+        } return true;
+    }
+    $scope.select_page = function(page){
+        select_page(page, $scope.enquiries, $scope);
+    }
+    $scope.range = function(n) {
+        return new Array(n);
+    }
+}
