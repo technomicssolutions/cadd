@@ -955,7 +955,6 @@ function FeesPaymentReportController($scope, $http, $element) {
         }
     }
     $scope.student_search = function(){
-        console.log($scope.student_name)
         if($scope.student_name.length > 0){
             $scope.validation_error = "";
             student_search($scope, $http);

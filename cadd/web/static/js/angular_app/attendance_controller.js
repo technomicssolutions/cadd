@@ -20,7 +20,7 @@ function student_search($scope, $http){
             $scope.students_list = data.students;
             console.log($scope.students_list);
             if($scope.students_list.length == 0)
-                $scope.message = "No Students found";
+                $scope.no_student_msg = "No Students found";
         }            
         }).error(function(data, status){
             console.log('Request failed'|| data);
@@ -124,6 +124,7 @@ function AttendanceDetailsController($scope, $element, $http) {
     $scope.batch_year = '';
     $scope.init = function(csrf_token) {
         $scope.csrf_token = csrf_token;
+        $scope.keyboard_control();
         get_batches($scope, $http);
         $scope.batch_id = '';
         $scope.monthly_attendance = false
@@ -152,6 +153,32 @@ function AttendanceDetailsController($scope, $element, $http) {
     for(var i=start_year; i<=current_year; i++){
         $scope.year.push(i);
     }
+    $scope.keyboard_control = function(){
+        $scope.focusIndex = 0;
+        $scope.keys = [];
+        $scope.keys.push({ code: 13, action: function() { $scope.select_list_item( $scope.focusIndex ); }});
+        $scope.keys.push({ code: 38, action: function() { 
+            if($scope.focusIndex > 0){
+                $scope.focusIndex--; 
+            }
+        }});
+        $scope.keys.push({ code: 40, action: function() { 
+            if($scope.focusIndex < $scope.students_list.length-1){
+                $scope.focusIndex++; 
+            }
+        }});
+        $scope.$on('keydown', function( msg, code ) {
+            $scope.keys.forEach(function(o) {
+              if ( o.code !== code ) { return; }
+              o.action();
+              $scope.$apply();
+            });
+        });
+    }
+    $scope.select_list_item = function(index) {
+        student = $scope.students_list[index];
+        $scope.get_student_details(student);
+    }
     $scope.attendance_validation = function() {
         $scope.validation_error = "";
         if($scope.attendance_view == "1" || $scope.attendance_view == undefined){
@@ -175,6 +202,7 @@ function AttendanceDetailsController($scope, $element, $http) {
         } else if($scope.attendance_view == "3"){
             $scope.attendance_list = "";
             $scope.student_name = "";
+            $scope.students_list = [];
             return false;
         }
 
@@ -225,8 +253,10 @@ function AttendanceDetailsController($scope, $element, $http) {
             else
                 $scope.validation_error = "Please select a Batch";
         }
-        else
-            $scope.students_list = ""
+        else{
+            $scope.students_list = "";
+            $scope.attendance_list = "";
+        }            
     }
     $scope.get_student_details = function(student) {
         $scope.student_name = student.name;
@@ -391,15 +421,14 @@ function JobCardController($scope, $http){
     $scope.keyboard_control = function(){
         $scope.focusIndex = 0;
         $scope.keys = [];
-        $scope.keys.push({ code: 13, action: function() { $scope.select_list_item( $scope.focusIndex ); }});        
+        $scope.keys.push({ code: 13, action: function() { $scope.select_list_item( $scope.focusIndex ); }});
         $scope.keys.push({ code: 38, action: function() { 
             if($scope.focusIndex > 0){
                 $scope.focusIndex--; 
             }
         }});
         $scope.keys.push({ code: 40, action: function() { 
-            $scope.item_list = $scope.students_list;
-            if($scope.focusIndex < $scope.item_list.length-1){
+            if($scope.focusIndex < $scope.students_list.length-1){
                 $scope.focusIndex++; 
             }
         }});
