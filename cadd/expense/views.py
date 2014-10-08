@@ -3,20 +3,31 @@ import ast
 import simplejson
 import datetime as dt
 from datetime import datetime
-from decimal import *
 import math
-import os
 
-from django.db import IntegrityError
+from reportlab.pdfgen import canvas
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.platypus import Paragraph, Table, TableStyle, SimpleDocTemplate, Spacer
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter, A4
+
 from django.db.models import Max
 from django.shortcuts import get_object_or_404, render
 from django.views.generic.base import View
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
-from django.conf import settings
 
 from expense.models import Expense, ExpenseHead
+
+style = [
+    ('FONTSIZE', (0,0), (-1, -1), 12),
+    ('FONTNAME',(0,0),(-1,-1),'Helvetica') 
+]
+
+para_style = ParagraphStyle('fancy')
+para_style.fontSize = 12
+para_style.fontName = 'Helvetica'
 
 class AddExpenseHead(View):
 
@@ -231,3 +242,41 @@ class Expenses(View):
             }
         response = simplejson.dumps(res)
         return HttpResponse(response, status=200, mimetype="application/json")
+
+class ExpenseReport(View):
+
+    def get(self, request, *args, **kwargs):
+
+        start_date = request.GET.get('start_date', '')
+        end_date = request.GET.get('end_date', '')
+        if start_date and end_date:
+            
+            expenses = Expense.objects.filter(date__gte=datetime.strptime(start_date, '%d/%m/%Y'), date__lte=datetime.strptime(end_date, '%d/%m/%Y'))
+            response = HttpResponse(content_type='application/pdf')
+            p = SimpleDocTemplate(response, pagesize=A4)
+            elements = []
+            d = [['Expense Report - '+ start_date + ' - ' + end_date]]
+            t = Table(d, colWidths=(450), rowHeights=25, style=style)
+            t.setStyle([('ALIGN',(0,0),(-1,-1),'CENTER'),
+                        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                        ('FONTSIZE', (0,0), (-1,-1), 17),
+                        ])   
+            elements.append(t)
+            elements.append(Spacer(4, 5))
+            data = []
+            data.append(['Date', 'Expense Head', 'Voucher No', 'Amount'])
+            for expense in expenses:
+                data.append([expense.date.strftime('%d/%m/%Y'), Paragraph(expense.expense_head.expense_head, para_style), expense.voucher_no, expense.amount ])
+            table = Table(data, colWidths=(70, 150, 75, 100),  style=style)
+            table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
+                        ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
+                        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                        ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+                        ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+                        ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
+                        ])
+            elements.append(table)
+            p.build(elements)        
+            return response
+        else:
+            return render(request, 'expense_report.html', {})
