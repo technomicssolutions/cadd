@@ -578,9 +578,8 @@ class EnquiryReport(View):
                 d = [['Enquiry Report as at '+date.strftime('%d %B %Y')]]
                 t = Table(d, colWidths=(450), rowHeights=25, style=style)
                 t.setStyle([('ALIGN',(0,0),(-1,-1),'CENTER'),
-                            ('TEXTCOLOR',(0,0),(-1,-1),colors.HexColor('#699AB7')),
+                            ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
                             ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-                            ('BACKGROUND',(0, 0),(-1,-1),colors.HexColor('#EEEEEE')),
                             ('FONTSIZE', (0,0), (0,0), 20),
                             ('FONTSIZE', (1,0), (-1,-1), 17),
                             ])   
@@ -665,9 +664,8 @@ class AdmissionReport(View):
                 d = [['Admission Report as at '+date.strftime('%d %B %Y')]]
                 t = Table(d, colWidths=(450), rowHeights=25, style=style)
                 t.setStyle([('ALIGN',(0,0),(-1,-1),'CENTER'),
-                            ('TEXTCOLOR',(0,0),(-1,-1),colors.HexColor('#699AB7')),
+                            ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
                             ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-                            ('BACKGROUND',(0, 0),(-1,-1),colors.HexColor('#EEEEEE')),
                             ('FONTSIZE', (0,0), (0,0), 20),
                             ('FONTSIZE', (1,0), (-1,-1), 17),
                             ])   
