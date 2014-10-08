@@ -578,9 +578,6 @@ function EnquiryController($scope, $http) {
         if($scope.enquiry.student_name == '' || $scope.enquiry.student_name == undefined) {
             $scope.validation_error = "Please Enter the Name" ;
             return false;
-        } else if($scope.enquiry.course == '' || $scope.enquiry.course == undefined) {
-            $scope.validation_error = "Please Enter Course";
-            return false;
         } else if($scope.enquiry.address == '' || $scope.enquiry.address == undefined) {
             $scope.validation_error = "Please Enter Address";
             return false;
@@ -590,14 +587,20 @@ function EnquiryController($scope, $http) {
         } else if(!(Number($scope.enquiry.mobile_number)) || $scope.enquiry.mobile_number.length > 15) {            
             $scope.validation_error = "Please enter a Valid Mobile Number";
             return false;
+        } else if($scope.enquiry.date == '' || $scope.enquiry.date == undefined) {
+            $scope.validation_error = "Please Enter  date of enquiry";
+            return false;
+        } else if($scope.enquiry.course == '' || $scope.enquiry.course == undefined) {
+            $scope.validation_error = "Please Enter Course";
+            return false;
         } else if(($scope.enquiry.email != '' && $scope.enquiry.email != undefined) && (!(validateEmail($scope.enquiry.email)))){
             $scope.validation_error = "Please enter a Valid Email Id";
             return false;
         } else if($scope.enquiry.follow_up_date == '' || $scope.enquiry.follow_up_date == undefined) {
             $scope.validation_error = "Please Enter follow up date";
             return false;
-        }  else if($scope.enquiry.date == '' || $scope.enquiry.date == undefined) {
-            $scope.validation_error = "Please Enter  date of enquiry";
+        } else if($scope.enquiry.discount && !Number($scope.enquiry.discount)) {
+            $scope.validation_error = "Please Enter  a avalid amount for discount";
             return false;
         }return true;
     }   
@@ -942,6 +945,7 @@ function EnquiryListController($scope, $http) {
         $http.get($scope.url).success(function(data)
         {
             $scope.enquiry = data.enquiry[0];
+            console.log($scope.enquiry)
             paginate(data.enquiry, $scope);
         }).error(function(data, status)
         {

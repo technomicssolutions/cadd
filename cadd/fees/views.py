@@ -464,10 +464,12 @@ class GetOutStandingFeesDetails(View):
                 }
             elif course:
                 students = Student.objects.filter(course__id=course)
-                i = 0
-                is_not_paid = False
-                ctx_installments = []
+                student_details = []
                 for student in students:
+                    # 
+                    i = 0
+                    is_not_paid = False
+                    ctx_installments = []
                     for installment in student.installments.all():
                         try:
                             fees_payment = FeesPayment.objects.get(student__id=student.id)
@@ -508,20 +510,23 @@ class GetOutStandingFeesDetails(View):
                                     'balance': float(installment.amount),
                                 })
                         i = i + 1
-                    if is_not_paid:
-                        fees_details.append({
+                    if is_not_paid :
+                        student_details.append({
                             'no_installments': student.no_installments,
                             'installments': ctx_installments,
                             'student_id' : student.id,
                             'student_name': student.student_name,
+                            'is_rolled': 'true' if student.is_rolled else 'false',
                             'roll_no': student.roll_number,
-                            
-
                         })
-                    res = {
-                        'result':'ok',
-                        'fees_details': fees_details,
-                    }
+                fees_details.append({
+                    'student_details': student_details,
+                })
+
+                res = {
+                    'result':'ok',
+                    'fees_details': fees_details,
+                }
             
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')
@@ -797,6 +802,30 @@ class UnRollStudent(View):
             try:
                 student = Student.objects.get(id=student_id)
                 student.is_rolled = True
+                student.save()
+                res = {
+                    'result': 'ok',
+                }
+                status = 200
+                response = simplejson.dumps(res)
+                return HttpResponse(response, status=status, mimetype='application/json')
+            except:
+                res = {
+                    'result': 'error',
+                }
+                status = 200
+                response = simplejson.dumps(res)
+                return HttpResponse(response, status=status, mimetype='application/json')
+        return render(request, 'unroll_students.html',{})  
+
+class RollStudent(View):
+
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            student_id = request.GET.get('student_id','')
+            try:
+                student = Student.objects.get(id=student_id)
+                student.is_rolled = False
                 student.save()
                 res = {
                     'result': 'ok',

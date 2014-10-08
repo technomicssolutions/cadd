@@ -952,6 +952,8 @@ function UnRollController($scope, $http, $element) {
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
         $scope.error_flag = false;
+        $scope.unroll_student_flag = false;
+        $scope.roll_student_flag = false;
         get_course_list($scope, $http);
     }
     $scope.get_outstanding_student = function(){
@@ -960,7 +962,19 @@ function UnRollController($scope, $http, $element) {
         {
             if (data.result == 'ok') {
                 if (data.fees_details.length > 0) {
-                    $scope.fees_details = data.fees_details;
+                    console.log(data.fees_details[0].student_details);
+                    $scope.fees_details = data.fees_details[0];
+                    for(i=0;i<$scope.fees_details.student_details.length;i++){
+                        if($scope.fees_details.student_details[i].is_rolled == 'false'){
+                            $scope.fees_details.student_details[i].is_rolled = false;
+                            $scope.fees_details.student_details[i].is_unrolled = true;
+                            $scope.unroll_student_flag = true;
+                        }else if($scope.fees_details.student_details[i].is_rolled == 'true'){
+                            $scope.fees_details.student_details[i].is_unrolled = false;
+                            $scope.fees_details.student_details[i].is_rolled = true;
+                            $scope.roll_student_flag = true;
+                        }
+                    }
                     // if($scope.fees_details.students)
                     //     paginate($scope.fees_details.students, $scope, 2);
                 } else {
@@ -976,6 +990,20 @@ function UnRollController($scope, $http, $element) {
     }
     $scope.unroll = function(student_id){
         $scope.url = '/fees/unroll_students/?student_id='+student_id;
+        $http.get($scope.url).success(function(data)
+        {
+            if (data.result == 'ok') {
+                
+            } else {
+                $scope.no_student_error = data.message;
+            }
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+    }
+    $scope.roll = function(student_id){
+        $scope.url = '/fees/roll_students/?student_id='+student_id;
         $http.get($scope.url).success(function(data)
         {
             if (data.result == 'ok') {
