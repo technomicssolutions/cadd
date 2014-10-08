@@ -77,10 +77,6 @@ class AddAttendance(View):
         response = simplejson.dumps(res)
         return HttpResponse(response, status=status,  mimetype='application/json')
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 584cb1253b3f6c5f51d37c9c0e6f9666cf3bea5d
 class AttendanceDetails(View):
 
     def get(self, request, *args, **kwargs):
