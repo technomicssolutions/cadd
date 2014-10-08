@@ -57,6 +57,7 @@ class AddStudent(View):
                         student.student_name = request.POST['student_name']
                         if enquiry is not None:
                             student.enquiry = enquiry
+                            enquiry.is_admitted = True;
                         student.roll_number = request.POST['roll_number']
                         student.address = request.POST['address']
                         student.qualifications = request.POST['qualifications']
@@ -473,8 +474,9 @@ class AllEnquiries(View):
 class DeleteEnquiry(View):
     def get(self, request, *args, **kwargs):
         enquiry_id = kwargs['enquiry_id']       
-        enquiry = Enquiry.objects.filter(id=enquiry_id)                          
-        enquiry.delete()
+        enquiry = Enquiry.objects.filter(id=enquiry_id) 
+        if not enquiry.is_admitted:
+            enquiry.delete()
         return HttpResponseRedirect(reverse('all_enquiries'))
             
 class SearchEnquiry(View):
@@ -491,21 +493,22 @@ class SearchEnquiry(View):
             count = 0
         enquiry_list = []
         for enquiry in enquiries:
-            enquiry_list.append({
-                'student_name': enquiry.student_name,
-                'address': enquiry.address,
-                'mobile_number' : enquiry.mobile_number,
-                'email' : enquiry.email,
-                'details_about_clients_enquiry' : enquiry.details_about_clients_enquiry,
-                'educational_qualification': enquiry.educational_qualification,
-                'land_mark': enquiry.land_mark,
-                'course' : enquiry.course.name,
-                'remarks': enquiry.remarks,
-                'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
-                'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,
-                'discount': enquiry.discount,
-                'auto_generated_num': enquiry.auto_generated_num,
-                })
+            if not enquiry.is_admitted:
+                enquiry_list.append({
+                    'student_name': enquiry.student_name,
+                    'address': enquiry.address,
+                    'mobile_number' : enquiry.mobile_number,
+                    'email' : enquiry.email,
+                    'details_about_clients_enquiry' : enquiry.details_about_clients_enquiry,
+                    'educational_qualification': enquiry.educational_qualification,
+                    'land_mark': enquiry.land_mark,
+                    'course' : enquiry.course.name,
+                    'remarks': enquiry.remarks,
+                    'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
+                    'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,
+                    'discount': enquiry.discount,
+                    'auto_generated_num': enquiry.auto_generated_num,
+                    })
         if request.is_ajax():
             
             response = simplejson.dumps({
