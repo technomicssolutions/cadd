@@ -445,25 +445,26 @@ class AllEnquiries(View):
             enquiry_list = []
             enquiries = Enquiry.objects.all()
             for enquiry in enquiries:
-                enquiry_list.append({
-                    'id': enquiry.id,
-                    'student_name': enquiry.student_name,
-                    'address': enquiry.address,
-                    'mobile_number' : enquiry.mobile_number,
-                    'email' : enquiry.email,
-                    'details_about_clients_enquiry' : enquiry.details_about_clients_enquiry,
-                    'educational_qualification': enquiry.educational_qualification,
-                    'land_mark': enquiry.land_mark,
-                    'saved_date':enquiry.saved_date.strftime('%d/%m/%Y') if enquiry.saved_date else '',
-                    'course' : enquiry.course.id,
-                    'course_name':enquiry.course.name,
-                    'remarks': enquiry.remarks,
-                    'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
-                    'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,
-                    'discount': enquiry.discount,
-                    'auto_generated_num': enquiry.auto_generated_num,
-                })
-            
+                if not enquiry.is_admitted:
+                    enquiry_list.append({
+                        'id': enquiry.id,
+                        'student_name': enquiry.student_name,
+                        'address': enquiry.address,
+                        'mobile_number' : enquiry.mobile_number,
+                        'email' : enquiry.email,
+                        'details_about_clients_enquiry' : enquiry.details_about_clients_enquiry,
+                        'educational_qualification': enquiry.educational_qualification,
+                        'land_mark': enquiry.land_mark,
+                        'saved_date':enquiry.saved_date.strftime('%d/%m/%Y') if enquiry.saved_date else '',
+                        'course' : enquiry.course.id,
+                        'course_name':enquiry.course.name,
+                        'remarks': enquiry.remarks,
+                        'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
+                        'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,
+                        'discount': enquiry.discount,
+                        'auto_generated_num': enquiry.auto_generated_num,
+                    })
+                
             
             response = simplejson.dumps({
                 'enquiry': enquiry_list,
@@ -486,7 +487,7 @@ class SearchEnquiry(View):
         enquiries = []
         q_list = []
         if student_name :
-            enquiries = Enquiry.objects.filter(student_name__icontains=student_name)
+            enquiries = Enquiry.objects.filter(student_name__icontains=student_name,is_admitted=False)
             count = enquiries.count()
         else :
             enquiries = []
@@ -798,3 +799,48 @@ class GetInstallmentDetails(View):
         }
         response = simplejson.dumps(res)
         return HttpResponse(response, status=200, mimetype='application/json')
+
+class FollowUpReport(View):
+
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            enquiry_list = []
+            current_date = datetime.now().date()
+            print current_date
+            start_date = request.GET.get('start_date')
+            end_date = request.GET.get('end_date')
+            if start_date and end_date:
+                start_date = datetime.strptime(start_date, '%d/%m/%Y')
+                end_date = datetime.strptime(end_date, '%d/%m/%Y')
+                enquiries = Enquiry.objects.filter(follow_up_date__gte=start_date,follow_up_date__lte=end_date).order_by('follow_up_date')
+            else:
+
+                enquiries = Enquiry.objects.filter(follow_up_date__day=current_date.day,follow_up_date__month=current_date.month,follow_up_date__year=current_date.year )
+                print "saas", enquiries
+            for enquiry in enquiries:
+                if not enquiry.is_admitted:
+                    enquiry_list.append({
+                        'id': enquiry.id,
+                        'student_name': enquiry.student_name,
+                        'address': enquiry.address,
+                        'mobile_number' : enquiry.mobile_number,
+                        'email' : enquiry.email,
+                        'details_about_clients_enquiry' : enquiry.details_about_clients_enquiry,
+                        'educational_qualification': enquiry.educational_qualification,
+                        'land_mark': enquiry.land_mark,
+                        'saved_date':enquiry.saved_date.strftime('%d/%m/%Y') if enquiry.saved_date else '',
+                        'course' : enquiry.course.id,
+                        'course_name':enquiry.course.name,
+                        'remarks': enquiry.remarks,
+                        'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
+                        'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,
+                        'discount': enquiry.discount,
+                        'auto_generated_num': enquiry.auto_generated_num,
+                    })
+                
+            
+            response = simplejson.dumps({
+                'enquiries': enquiry_list,
+            })    
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'follow_up_report.html', {})

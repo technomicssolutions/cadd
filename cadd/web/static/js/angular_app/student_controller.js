@@ -923,7 +923,23 @@ function AdmissionReportController($scope, $http) {
     }  
 }
 function EnquiryListController($scope, $http) {
+    $scope.start_date = '';
+    $scope.end_date = '';
     $scope.init = function(csrf_token){
+        new Picker.Date($$('#start_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
+        new Picker.Date($$('#end_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
         $scope.csrf_token = csrf_token;
         var url = '/admission/all_enquiries/';
         $http.get(url).success(function(data)
@@ -975,4 +991,90 @@ function EnquiryListController($scope, $http) {
         return new Array(n);
     }
     
+}
+function FollowUpReportController($scope, $http) {
+    $scope.start_date = '';
+    $scope.end_date = '';
+    $scope.init = function(csrf_token){
+        new Picker.Date($$('#start_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
+        new Picker.Date($$('#end_date'), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
+        var url = '/admission/follow_up_details/';
+        $http.get(url).success(function(data)
+        {   
+            $scope.no_enquiry_msg = '';
+            if (data.enquiries.length == 0)
+                $scope.no_enquiry_msg = 'No enquiry present today for follow up';
+            else {
+               $scope.enquiries = data.enquiries;
+            }
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+        
+    }
+    $scope.view_follow_ups = function(){
+        $scope.start_date = $$('#start_date')[0].get('value');
+        $scope.end_date = $$('#end_date')[0].get('value');
+        $scope.url = '/admission/follow_up_details/?start_date='+$scope.start_date+'&end_date='+$scope.end_date;
+        $http.get($scope.url).success(function(data)
+        {
+            $scope.no_enquiry_msg = '';
+            if (data.enquiries.length == 0)
+                $scope.no_enquiry_msg = 'No  enquiry';
+            else {
+               $scope.enquiries = data.enquiries;
+            }
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+    }
+    $scope.display_enquiry_details = function(enquiry) {
+        $scope.enquiry_id = enquiry.id;
+        $scope.url = '/admission/enquiry_details?enquiry_id='+$scope.enquiry_id;
+        $http.get($scope.url).success(function(data)
+        {
+            $scope.enquiry = data.enquiry[0];
+            console.log($scope.enquiry)
+            paginate(data.enquiry, $scope);
+        }).error(function(data, status)
+        {
+            console.log(data || "Request failed");
+        });
+
+
+        $('#enquiry_details_view')[0].setStyle('display', 'block');
+        
+        $scope.popup = new DialogueModelWindow({                
+            'dialogue_popup_width': '78%',
+            'message_padding': '0px',
+            'left': '28%',
+            'top': '182px',
+            'height': 'auto',
+            'content_div': '#enquiry_details_view'
+        });
+        
+        var height = $(document).height();
+        $scope.popup.set_overlay_height(height);
+        $scope.popup.show_content();
+    }
+    $scope.select_page = function(page){
+        select_page(page, $scope.enquiries, $scope);
+    }
+    $scope.range = function(n) {
+        return new Array(n);
+    }
 }
