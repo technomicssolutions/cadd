@@ -253,6 +253,7 @@ class EditStudentDetails(View):
                 'relationship': student.relationship if student.relationship else '',
                 'guardian_mobile_number': student.guardian_mobile_number if student.guardian_mobile_number else '',
                 'fees': student.fees if student.fees else '',
+                'discount': student.enquiry.discount if student.enquiry else '',
                 'no_installments': student.no_installments if student.no_installments else '',
                 'installments': installment_list,
                 })

@@ -45,7 +45,7 @@ function save_new_student($http, $scope) {
             'guardian_name': $scope.guardian_name,
             'relationship': $scope.relationship,
             'guardian_mobile_number': $scope.guardian_mobile_number,
-            'fees': $scope.fees,
+            'fees': $scope.fees_after_discount,
             'installments': angular.toJson($scope.installments),
             'no_installments': $scope.no_installments,
             "csrfmiddlewaretoken" : $scope.csrf_token
@@ -168,7 +168,7 @@ validate_new_student = function($scope) {
     } else if ($scope.no_installments == '' || $scope.no_installments == undefined) {
         $scope.validation_error = "Please enter no of installments";
         return false;
-    } else if ($scope.fees != total) {
+    } else if ($scope.fees_after_discount != total) {
         $scope.validation_error = 'Please check the installment amount with the total';
         return false;
     } else if ($scope.installments.length > 0) {
@@ -648,6 +648,7 @@ function AdmissionController($scope, $http) {
     $scope.guardian_name = '';
     $scope.relationship = '';
     $scope.photo_img = {};
+    $scope.fees_after_discount = 0;
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
         $scope.no_enquiries = false;
@@ -718,7 +719,9 @@ function AdmissionController($scope, $http) {
                 $scope.email = data.enquiry[0].email;
                 $scope.mobile_number = data.enquiry[0].mobile_number;
                 $scope.enquiry = data.enquiry[0].id;
+                $scope.discount = data.enquiry[0].discount;
                 $scope.get_fees();
+                
             }
         }).error(function(data, status)
         {
@@ -763,10 +766,14 @@ function AdmissionController($scope, $http) {
             format:'%d/%m/%Y',
         });
     }
+    $scope.calculate_actual_fees = function(){
+        $scope.fees_after_discount = $scope.fees - $scope.discount;
+    }
     $scope.get_fees = function() {
         for(var i=0; i<$scope.courses.length; i++) {
             if ($scope.course == $scope.courses[i].id) {
                 $scope.fees = $scope.courses[i].amount;
+                $scope.calculate_actual_fees();
             }
         }
     }
