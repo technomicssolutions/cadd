@@ -414,8 +414,7 @@ class EnquiryDetails(View):
                         'course' : enquiry.course.id,
                         'remarks': enquiry.remarks,
                         'saved_date':enquiry.saved_date.strftime('%d/%m/%Y') if enquiry.saved_date else '',
-                        'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
-                        'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,
+                        
                         'discount': enquiry.discount,
                         'auto_generated_num': enquiry.auto_generated_num,
                     })
@@ -433,8 +432,7 @@ class EnquiryDetails(View):
                         'course' : enquiry.course.name,
                         'remarks': enquiry.remarks,
                         'saved_date':enquiry.saved_date.strftime('%d/%m/%Y') if enquiry.saved_date else '',
-                        'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
-                        'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,
+                        
                         'discount': enquiry.discount,
                         'auto_generated_num': enquiry.auto_generated_num,
                     })
@@ -513,8 +511,6 @@ class SearchEnquiry(View):
                     'land_mark': enquiry.land_mark,
                     'course' : enquiry.course.name,
                     'remarks': enquiry.remarks,
-                    'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
-                    'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,
                     'discount': enquiry.discount,
                     'auto_generated_num': enquiry.auto_generated_num,
                     })
