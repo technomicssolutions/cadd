@@ -300,6 +300,7 @@ class FeesPaymentSave(View):
             status_code = 200 
             try:
                 fees_payment_details = ast.literal_eval(request.POST['fees_payment'])
+                print fees_payment_details
                 student = Student.objects.get(id=fees_payment_details['student'])
                 if student.is_rolled:
                     student.is_rolled = False
@@ -346,9 +347,11 @@ class GetFeeStructureHeadList(View):
                     for installment in head.installments.all():
                         try:
                             fees_payment = FeesPayment.objects.get(fee_structure=fee_structure, student__id=student_id)
+                            print "fees payment == ", fees_payment
                             fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
+                            print "fees payment installments == ", fees_payment_installments
                             if fees_payment_installments.count() > 0:
-                                if fees_payment_installments[0].installment_amount < installment.amount:
+                                if fees_payment_installments[0].paid_amount < installment.amount:
                                     ctx_installments.append({
                                         'id': installment.id,
                                         'amount':installment.amount,
@@ -368,7 +371,8 @@ class GetFeeStructureHeadList(View):
                                     'paid_installment_amount': 0,
                                     'balance': float(installment.amount),
                                 })
-                        except Exception:
+                        except Exception as ex:
+                            print "exception == ", str(ex)
                             ctx_installments.append({
                                 'id': installment.id,
                                 'amount':installment.amount,
@@ -416,7 +420,7 @@ class GetOutStandingFeesDetails(View):
                         fees_payment = FeesPayment.objects.get(student__id=student_id)
                         fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
                         if fees_payment_installments.count() > 0:
-                            if fees_payment_installments[0].installment_amount < installment.amount:
+                            if fees_payment_installments[0].paid_amount < installment.amount:
                                 is_not_paid = True
                                 ctx_installments.append({
                                     'id': installment.id,

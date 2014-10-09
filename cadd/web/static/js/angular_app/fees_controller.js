@@ -11,6 +11,7 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
         'paid_amount': '',
         'paid_installment_amount': '',
         'balance': '',
+        'student_fee_amount': ''
     }
     $scope.course = '';
     $scope.payment_installment.student = '';
@@ -27,9 +28,6 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
         });
         get_course_list($scope, $http);
     }
-    // $scope.get_batch = function(){
-    //     get_course_batch_list($scope, $http);
-    // }
     $scope.get_student_list = function(){
         get_course_batch_student_list($scope, $http);
     }
@@ -56,6 +54,8 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
             });
     }
     $scope.get_installment = function() {
+        $scope.payment_installment.student = $scope.student.id;
+        $scope.payment_installment.student_fee_amount = $scope.student.fees;
         $http.get('/admission/get_installment_details/?student='+$scope.payment_installment.student).success(function(data){
             if (data.installments.length == 0)
                 $scope.no_installment_error = 'Payment completed';
@@ -79,7 +79,7 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
         $scope.payment_installment.amount = installment.amount;
         $scope.payment_installment.fine = installment.fine_amount;
         $scope.payment_installment.paid_installment_amount = installment.paid_installment_amount;
-        // $scope.payment_installment.balance = installment.balance;
+        $scope.payment_installment.balance = installment.balance;
         $('#due_date').val(installment.due_date);
         $('#fine_amount').val(installment.fine_amount);
         $('#fee_amount').val(installment.amount);
@@ -106,18 +106,20 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
         } else if ($scope.payment_installment.paid_amount != Number($scope.payment_installment.paid_amount)) {
             $scope.validation_error = "Please enter valid paid amount" ;
             return false;
-        } else if ($scope.payment_installment.paid_amount != $scope.payment_installment.balance) {
-            $scope.validation_error = "Please check the balance amount with paid amount" ;
-            return false;
         } return true; 
+        // else if ($scope.payment_installment.paid_amount != $scope.payment_installment.balance) {
+        //     $scope.validation_error = "Please check the balance amount with paid amount" ;
+        //     return false;
+        // } 
     }
     $scope.save_fees_payment = function() {
 
         $scope.payment_installment.course_id = $scope.course;
         $scope.payment_installment.installment_id = $scope.installment;
         $scope.payment_installment.paid_date = $$('#paid_date')[0].get('value');
-        $scope.payment_installment.total_amount = $$('#total_fee_amount')[0].get('value');
-        $scope.payment_installment.balance = $$('#balance')[0].get('value');
+        // $scope.payment_installment.total_amount = $$('#total_fee_amount')[0].get('value');
+        $scope.payment_installment.total_amount = $$('#fee_amount')[0].get('value');
+        // $scope.payment_installment.balance = $$('#balance')[0].get('value');
         if($scope.validate_fees_payment()) {
             params = { 
                 'fees_payment': angular.toJson($scope.payment_installment),

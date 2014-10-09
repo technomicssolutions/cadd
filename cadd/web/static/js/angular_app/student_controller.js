@@ -52,9 +52,7 @@ function save_new_student($http, $scope) {
             "csrfmiddlewaretoken" : $scope.csrf_token
         }
         var fd = new FormData();
-
         fd.append('photo_img', $scope.photo_img.src)
-        
         for(var key in params){
             fd.append(key, params[key]);          
         }
@@ -67,12 +65,10 @@ function save_new_student($http, $scope) {
             if (data.result == 'error'){
                 $scope.error_flag=true;
                 $scope.validation_error = data.message;
-            }
-            else {
+            } else {
                 
                 document.location.href ="/admission/student_admission/";
             }
-
         }).error(function(data, status){
             $scope.error_flag=true;
             $scope.validation_error = data.message;
@@ -173,13 +169,11 @@ validate_new_student = function($scope) {
         $scope.validation_error = 'Please check the installment amount with the total';
         return false;
     } else if ($scope.installments.length > 0) {
-
         for(var i = 0; i < $scope.installments.length; i++){
             id_name = '#'+$scope.installments[i].due_date_id;
             $scope.installments[i].due_date = $$(id_name)[0].get('value');
             var date_value = $scope.installments[i].due_date.split('/');
             var start_date = new Date(date_value[2],date_value[1]-1, date_value[0]); 
-            
             $scope.installments[i].due_date = $$(id_name)[0].get('value');
             if($scope.installments[i].amount == ''){
                 $scope.validation_error = "Please enter the amount for installment";
