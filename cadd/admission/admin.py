@@ -3,3 +3,4 @@ from admission.models import *
 
 admin.site.register(Student)
 admin.site.register(Enquiry)
+admin.site.register(FollowUp)

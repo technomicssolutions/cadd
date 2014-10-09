@@ -13,7 +13,7 @@ from django.views.generic.base import View
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 
-from admission.models import Student, Enquiry, Installment
+from admission.models import Student, Enquiry, Installment, FollowUp
 from college.models import Course, Batch
 from datetime import datetime
 from fees.models import FeesPayment
@@ -368,8 +368,14 @@ class EnquiryView(View):
                     course = Course.objects.get(id=enquiry_details['course'])
                     enquiry.course = course
                 enquiry.remarks = enquiry_details['remarks']
-                enquiry.follow_up_date = datetime.strptime(enquiry_details['follow_up_date'], '%d/%m/%Y')
-                enquiry.remarks_for_follow_up_date = enquiry_details['remarks_for_follow_up_date']
+                enquiry.save()
+                follow_up_details = enquiry_details['follow_up']
+                for follow_up in follow_up_details:
+                    follow_up_obj = FollowUp()
+                    follow_up_obj.follow_up_date = datetime.strptime(follow_up['follow_up_date'], '%d/%m/%Y')
+                    follow_up_obj.remarks_for_follow_up_date = follow_up['remarks_for_follow_up_date']
+                    follow_up_obj.save()
+                    enquiry.follow_up.add(follow_up_obj)
                 if enquiry_details['discount'] == '':
                     enquiry.discount = 0
                 else:

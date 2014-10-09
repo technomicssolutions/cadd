@@ -541,21 +541,19 @@ function EnquiryController($scope, $http) {
         'land_mark' : '',
         'course' : '',
         'remarks': '',
-        'follow_up_date' : '',
-        'remarks_for_follow_up_date' : '',
         'discount' : '',
         'date': '',
+        'follow_up': [],
     }
+    $scope.enquiry.follow_up.push({
+        'follow_up_date' : '',
+        'remarks_for_follow_up_date' : '',
+        'hide_button': false,
+        'follow_up_date_id': 0,
+    })
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
         get_course_list($scope, $http);
-        new Picker.Date($$('#follow_up_date'), {
-            timePicker: false,
-            positionOffset: {x: 5, y: 0},
-            pickerClass: 'datepicker_bootstrap',
-            useFadeInOut: !Browser.ie,
-            format:'%d/%m/%Y',
-        });
         new Picker.Date($$('#date'), {
             timePicker: false,
             positionOffset: {x: 5, y: 0},
@@ -564,9 +562,46 @@ function EnquiryController($scope, $http) {
             format:'%d/%m/%Y',
         });
     }
+    $scope.add_follow_up = function(follow_up){
+        var i = $scope.enquiry.follow_up.indexOf(follow_up);
+        for(var i = 0; i < $scope.enquiry.follow_up.length; i++){
+            if($scope.enquiry.follow_up[i].hide_button == false){
+                $scope.enquiry.follow_up[i].hide_button = true;
+            }
+        }
+        $scope.enquiry.follow_up.push({
+            'follow_up_date' : '',
+            'remarks_for_follow_up_date' : '',
+            'hide_button': false,
+            'follow_up_date_id': i,
+        })
+    }
+    $scope.attach_date_picker = function(follow_up){
+        var id_name = '#';
+        id_name = id_name + follow_up.follow_up_date_id;
+        new Picker.Date($$(id_name), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
+    }
+    $scope.remove_follow_up = function(follow_up){
+        var follow_up_id = $scope.enquiry.follow_up.indexOf(follow_up);
+        if($scope.enquiry.follow_up.length > 1){
+            $scope.enquiry.follow_up.splice(follow_up_id, 1);
+            var len = $scope.enquiry.follow_up.length;
+            $scope.enquiry.follow_up[len-1].hide_button = false;
+        }
+    }
     $scope.validate_enquiry = function() {
         $scope.validation_error = '';
-        $scope.enquiry.follow_up_date = $$('#follow_up_date')[0].get('value');
+        console.log($scope.enquiry);
+        for(var i = 0; i < $scope.enquiry.follow_up.length; i++){
+            id = '#' + $scope.enquiry.follow_up[i].follow_up_date_id;
+            $scope.enquiry.follow_up[i].follow_up_date = $$(id)[0].get('value');
+        }
         $scope.enquiry.date = $$('#date')[0].get('value');
         if($scope.enquiry.student_name == '' || $scope.enquiry.student_name == undefined) {
             $scope.validation_error = "Please Enter the Name" ;
@@ -589,16 +624,36 @@ function EnquiryController($scope, $http) {
         } else if(($scope.enquiry.email != '' && $scope.enquiry.email != undefined) && (!(validateEmail($scope.enquiry.email)))){
             $scope.validation_error = "Please enter a Valid Email Id";
             return false;
-        } else if($scope.enquiry.follow_up_date == '' || $scope.enquiry.follow_up_date == undefined) {
-            $scope.validation_error = "Please Enter follow up date";
-            return false;
         } else if($scope.enquiry.discount && !Number($scope.enquiry.discount)) {
             $scope.validation_error = "Please Enter  a avalid amount for discount";
             return false;
-        }return true;
+        }
+        for(var i = 0; i < $scope.enquiry.follow_up.length; i++){
+            if($scope.enquiry.follow_up[i].follow_up_date == ''){
+                $scope.validation_error = "Please Enter the follow up date";
+                return false;
+            }
+            var date_value = $scope.enquiry.follow_up[i].follow_up_date.split('/');
+            var start_date = new Date(date_value[2],date_value[1]-1, date_value[0]); 
+            for(var j = i+1; j < $scope.enquiry.follow_up.length; j++){
+                var date_value = $scope.enquiry.follow_up[j].follow_up_date.split('/');
+                var next_date = new Date(date_value[2],date_value[1]-1, date_value[0]);
+                if(start_date > next_date){
+                    $scope.validation_error = "Please check the follow up dates";
+                    return false;
+                }
+            }
+        }
+        return true;
     }   
     $scope.save_enquiry = function(){
         if ($scope.validate_enquiry()) {
+            for(var i = 0; i < $scope.enquiry.follow_up.length; i++){
+                if($scope.enquiry.follow_up[i].hide_button == true)
+                    $scope.enquiry.follow_up[i].hide_button = 'true';
+                else
+                    $scope.enquiry.follow_up[i].hide_button = 'false';
+            }
             params = {
                 'enquiry': angular.toJson($scope.enquiry),
                 'csrfmiddlewaretoken': $scope.csrf_token,
