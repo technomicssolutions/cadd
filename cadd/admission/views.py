@@ -13,7 +13,7 @@ from django.views.generic.base import View
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 
-from admission.models import Student, Enquiry, Installment
+from admission.models import Student, Enquiry, Installment, FollowUp
 from college.models import Course, Batch
 from datetime import datetime
 from fees.models import FeesPayment
@@ -58,6 +58,7 @@ class AddStudent(View):
                         if enquiry is not None:
                             student.enquiry = enquiry
                             enquiry.is_admitted = True;
+                            enquiry.save()
                         student.roll_number = request.POST['roll_number']
                         student.address = request.POST['address']
                         student.qualifications = request.POST['qualifications']
@@ -75,7 +76,8 @@ class AddStudent(View):
                         student.guardian_name = request.POST['guardian_name']
                         student.relationship = request.POST['relationship']
                         student.guardian_mobile_number = request.POST['guardian_mobile_number']
-                        student.fees = request.POST['fees']           
+                        student.fees = request.POST['fees'] 
+                        student.discount = request.POST['discount']          
                         student.no_installments = request.POST['no_installments']
                         installments = ast.literal_eval(request.POST['installments'])
                         for installment in installments:
@@ -253,6 +255,7 @@ class EditStudentDetails(View):
                 'relationship': student.relationship if student.relationship else '',
                 'guardian_mobile_number': student.guardian_mobile_number if student.guardian_mobile_number else '',
                 'fees': student.fees if student.fees else '',
+                'discount': student.enquiry.discount if student.enquiry else '',
                 'no_installments': student.no_installments if student.no_installments else '',
                 'installments': installment_list,
                 })
@@ -367,8 +370,14 @@ class EnquiryView(View):
                     course = Course.objects.get(id=enquiry_details['course'])
                     enquiry.course = course
                 enquiry.remarks = enquiry_details['remarks']
-                enquiry.follow_up_date = datetime.strptime(enquiry_details['follow_up_date'], '%d/%m/%Y')
-                enquiry.remarks_for_follow_up_date = enquiry_details['remarks_for_follow_up_date']
+                enquiry.save()
+                follow_up_details = enquiry_details['follow_up']
+                for follow_up in follow_up_details:
+                    follow_up_obj = FollowUp()
+                    follow_up_obj.follow_up_date = datetime.strptime(follow_up['follow_up_date'], '%d/%m/%Y')
+                    follow_up_obj.remarks_for_follow_up_date = follow_up['remarks_for_follow_up_date']
+                    follow_up_obj.save()
+                    enquiry.follow_up.add(follow_up_obj)
                 if enquiry_details['discount'] == '':
                     enquiry.discount = 0
                 else:
@@ -406,8 +415,7 @@ class EnquiryDetails(View):
                         'course' : enquiry.course.id,
                         'remarks': enquiry.remarks,
                         'saved_date':enquiry.saved_date.strftime('%d/%m/%Y') if enquiry.saved_date else '',
-                        'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
-                        'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,
+                        
                         'discount': enquiry.discount,
                         'auto_generated_num': enquiry.auto_generated_num,
                     })
@@ -425,8 +433,7 @@ class EnquiryDetails(View):
                         'course' : enquiry.course.name,
                         'remarks': enquiry.remarks,
                         'saved_date':enquiry.saved_date.strftime('%d/%m/%Y') if enquiry.saved_date else '',
-                        'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
-                        'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,
+                        
                         'discount': enquiry.discount,
                         'auto_generated_num': enquiry.auto_generated_num,
                     })
@@ -505,8 +512,6 @@ class SearchEnquiry(View):
                     'land_mark': enquiry.land_mark,
                     'course' : enquiry.course.name,
                     'remarks': enquiry.remarks,
-                    'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
-                    'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,
                     'discount': enquiry.discount,
                     'auto_generated_num': enquiry.auto_generated_num,
                     })
@@ -643,9 +648,12 @@ class AdmissionReport(View):
                 admission_list = []
                 batch_list = []
                 for admission in admissions:
+                    batch_list = []
+                    
                     if admission.batches.all().count() > 0: 
                         for batch in admission.batches.all().order_by('-id'):
                             batch_list.append(batch.name)
+                       
                     admission_list.append({
                         'student_name': admission.student_name,
                         'course' : admission.course.name,
@@ -847,12 +855,9 @@ class EnquiryToAdmission(View):
     def get(self, request, *args, **kwargs):
         enquiry_to_admission_completed = request.GET.get('completed')
         enquiry_to_admission_incompleted = request.GET.get('incompleted')
-        if request.GET.get('start_date', ''):
-            start_date = request.GET.get('start_date')
-            start_date = datetime.strptime(start_date, '%d/%m/%Y')
-        if request.GET.get('end_date', ''):
-            end_date = request.GET.get('end_date')
-            end_date = datetime.strptime(end_date, '%d/%m/%Y')
+        if request.GET.get('start_date') and request.GET.get('end_date'):
+            start_date = datetime.strptime(request.GET.get('start_date'), '%d/%m/%Y')
+            end_date = datetime.strptime(request.GET.get('end_date'), '%d/%m/%Y')
         if enquiry_to_admission_completed:
             enquiries = Enquiry.objects.filter(is_admitted=True,saved_date__gte=start_date,saved_date__lte=end_date).order_by('saved_date')
         elif enquiry_to_admission_incompleted:
@@ -885,68 +890,47 @@ class EnquiryToAdmission(View):
             else:
                response = simplejson.dumps({
                 'enquiries': [],
+                'message': 'No enquiries found'
             }) 
             return HttpResponse(response, status=200, mimetype='application/json')
         else:
             if request.GET.get('start_date') and request.GET.get('end_date'):
+                response = HttpResponse(content_type='application/pdf')
+                p = SimpleDocTemplate(response, pagesize=A4)
+                elements = []       
+                if enquiry_to_admission_completed:
+                    d = [[' Report Of Enquiries Converted To Admission']]
+                elif enquiry_to_admission_incompleted:
+                    d = [[' Report Of Enquiries That Are Not Converted To Admission']]
+                t = Table(d, colWidths=(450), rowHeights=25, style=style)
+                t.setStyle([('ALIGN',(0,0),(-1,-1),'CENTER'),
+                            ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
+                            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                            ('FONTSIZE', (0,0), (0,0), 20),
+                            ('FONTSIZE', (1,0), (-1,-1), 17),
+                            ])   
+                elements.append(t)
+                elements.append(Spacer(4, 5))
+                if enquiry_to_admission_completed:
+                    enquiries = Enquiry.objects.filter(is_admitted=True,saved_date__gte=start_date,saved_date__lte=end_date).order_by('saved_date')
+                elif enquiry_to_admission_incompleted:
+                    enquiries = Enquiry.objects.filter(is_admitted=False,saved_date__gte=start_date,saved_date__lte=end_date).order_by('saved_date')
+                data = []
+                data.append(['Date','Enquiry Number','Name','Course'])
                 if enquiries:
-                    response = HttpResponse(content_type='application/pdf')
-                    p = SimpleDocTemplate(response, pagesize=A4)
-                    elements = []       
-                    if enquiry_to_admission_completed:
-                        d = [[' Report Of Enquiries Converted To Admission']]
-                        t = Table(d, colWidths=(450), rowHeights=25, style=style)
-                        t.setStyle([('ALIGN',(0,0),(-1,-1),'CENTER'),
-                                    ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
-                                    ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-                                    ('FONTSIZE', (0,0), (0,0), 20),
-                                    ('FONTSIZE', (1,0), (-1,-1), 17),
-                                    ])   
-                        elements.append(t)
-                        elements.append(Spacer(4, 5))
-                        enquiries = Enquiry.objects.filter(is_admitted=True,saved_date__gte=start_date,saved_date__lte=end_date).order_by('saved_date')
-                        data = []
-                        data.append(['Date','Enquiry Number','Name','Course'])
-                        for enquiry in enquiries:
-                            data.append([enquiry.saved_date.strftime('%d/%m/%Y') ,enquiry.auto_generated_num,Paragraph(enquiry.student_name,para_style), Paragraph(enquiry.course.name,para_style)])
-                        table = Table(data, colWidths=(100,100,100,100),  style=style)
-                        table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
-                                    ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
-                                    ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-                                    ('BACKGROUND',(0, 0),(-1,-1),colors.white),
-                                    ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
-                                    ('BOX', (0,0), (-1,-1), 0.25, colors.black),
-                                    ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
-                                    
-                                    ])   
-                        elements.append(table)
-                    elif enquiry_to_admission_incompleted:
-                        d = [[' Report Of Enquiries That Are Not Converted To Admission']]
-                        t = Table(d, colWidths=(450), rowHeights=25, style=style)
-                        t.setStyle([('ALIGN',(0,0),(-1,-1),'CENTER'),
-                                    ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
-                                    ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-                                    ('FONTSIZE', (0,0), (0,0), 20),
-                                    ('FONTSIZE', (1,0), (-1,-1), 17),
-                                    ])   
-                        elements.append(t)
-                        elements.append(Spacer(4, 5))
-                        enquiries = Enquiry.objects.filter(is_admitted=False,saved_date__gte=start_date,saved_date__lte=end_date).order_by('saved_date')
-                        data = []
-                        data.append(['Date','Enquiry Number','Name','Course'])
-                        for enquiry in enquiries:
-                            data.append([enquiry.saved_date.strftime('%d/%m/%Y') ,enquiry.auto_generated_num,Paragraph(enquiry.student_name,para_style), Paragraph(enquiry.course.name,para_style)])
-                        table = Table(data, colWidths=(100,100,100,100),  style=style)
-                        table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
-                                    ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
-                                    ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-                                    ('BACKGROUND',(0, 0),(-1,-1),colors.white),
-                                    ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
-                                    ('BOX', (0,0), (-1,-1), 0.25, colors.black),
-                                    ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
-                                    
-                                    ])   
-                        elements.append(table)
-                    p.build(elements)        
-                    return response
+                    for enquiry in enquiries:
+                        data.append([enquiry.saved_date.strftime('%d/%m/%Y') ,enquiry.auto_generated_num,Paragraph(enquiry.student_name,para_style), Paragraph(enquiry.course.name,para_style)])
+                table = Table(data, colWidths=(100,100,100,100),  style=style)
+                table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
+                            ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
+                            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                            ('BACKGROUND',(0, 0),(-1,-1),colors.white),
+                            ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+                            ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+                            ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
+                            
+                            ])   
+                elements.append(table)
+                p.build(elements)        
+                return response
         return render(request, 'enquiry_to_admission.html', {})

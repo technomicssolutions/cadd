@@ -45,7 +45,8 @@ function save_new_student($http, $scope) {
             'guardian_name': $scope.guardian_name,
             'relationship': $scope.relationship,
             'guardian_mobile_number': $scope.guardian_mobile_number,
-            'fees': $scope.fees,
+            'fees': $scope.fees_after_discount,
+            'discount': $scope.discount,
             'installments': angular.toJson($scope.installments),
             'no_installments': $scope.no_installments,
             "csrfmiddlewaretoken" : $scope.csrf_token
@@ -164,7 +165,7 @@ validate_new_student = function($scope) {
     } else if ($scope.no_installments == '' || $scope.no_installments == undefined) {
         $scope.validation_error = "Please enter no of installments";
         return false;
-    } else if ($scope.fees != total) {
+    } else if ($scope.fees_after_discount != total) {
         $scope.validation_error = 'Please check the installment amount with the total';
         return false;
     } else if ($scope.installments.length > 0) {
@@ -223,6 +224,7 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
             'relationship': '',
             'guardian_mobile_number': '',            
             'fees': '',
+            'discount': '',
             'no_installments': '',
         }
         $scope.photo_img = {};
@@ -535,21 +537,19 @@ function EnquiryController($scope, $http) {
         'land_mark' : '',
         'course' : '',
         'remarks': '',
-        'follow_up_date' : '',
-        'remarks_for_follow_up_date' : '',
         'discount' : '',
         'date': '',
+        'follow_up': [],
     }
+    $scope.enquiry.follow_up.push({
+        'follow_up_date' : '',
+        'remarks_for_follow_up_date' : '',
+        'hide_button': false,
+        'follow_up_date_id': 0,
+    })
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
         get_course_list($scope, $http);
-        new Picker.Date($$('#follow_up_date'), {
-            timePicker: false,
-            positionOffset: {x: 5, y: 0},
-            pickerClass: 'datepicker_bootstrap',
-            useFadeInOut: !Browser.ie,
-            format:'%d/%m/%Y',
-        });
         new Picker.Date($$('#date'), {
             timePicker: false,
             positionOffset: {x: 5, y: 0},
@@ -558,9 +558,46 @@ function EnquiryController($scope, $http) {
             format:'%d/%m/%Y',
         });
     }
+    $scope.add_follow_up = function(follow_up){
+        var i = $scope.enquiry.follow_up.indexOf(follow_up);
+        for(var i = 0; i < $scope.enquiry.follow_up.length; i++){
+            if($scope.enquiry.follow_up[i].hide_button == false){
+                $scope.enquiry.follow_up[i].hide_button = true;
+            }
+        }
+        $scope.enquiry.follow_up.push({
+            'follow_up_date' : '',
+            'remarks_for_follow_up_date' : '',
+            'hide_button': false,
+            'follow_up_date_id': i,
+        })
+    }
+    $scope.attach_date_picker = function(follow_up){
+        var id_name = '#';
+        id_name = id_name + follow_up.follow_up_date_id;
+        new Picker.Date($$(id_name), {
+            timePicker: false,
+            positionOffset: {x: 5, y: 0},
+            pickerClass: 'datepicker_bootstrap',
+            useFadeInOut: !Browser.ie,
+            format:'%d/%m/%Y',
+        });
+    }
+    $scope.remove_follow_up = function(follow_up){
+        var follow_up_id = $scope.enquiry.follow_up.indexOf(follow_up);
+        if($scope.enquiry.follow_up.length > 1){
+            $scope.enquiry.follow_up.splice(follow_up_id, 1);
+            var len = $scope.enquiry.follow_up.length;
+            $scope.enquiry.follow_up[len-1].hide_button = false;
+        }
+    }
     $scope.validate_enquiry = function() {
         $scope.validation_error = '';
-        $scope.enquiry.follow_up_date = $$('#follow_up_date')[0].get('value');
+        console.log($scope.enquiry);
+        for(var i = 0; i < $scope.enquiry.follow_up.length; i++){
+            id = '#' + $scope.enquiry.follow_up[i].follow_up_date_id;
+            $scope.enquiry.follow_up[i].follow_up_date = $$(id)[0].get('value');
+        }
         $scope.enquiry.date = $$('#date')[0].get('value');
         if($scope.enquiry.student_name == '' || $scope.enquiry.student_name == undefined) {
             $scope.validation_error = "Please Enter the Name" ;
@@ -583,16 +620,36 @@ function EnquiryController($scope, $http) {
         } else if(($scope.enquiry.email != '' && $scope.enquiry.email != undefined) && (!(validateEmail($scope.enquiry.email)))){
             $scope.validation_error = "Please enter a Valid Email Id";
             return false;
-        } else if($scope.enquiry.follow_up_date == '' || $scope.enquiry.follow_up_date == undefined) {
-            $scope.validation_error = "Please Enter follow up date";
-            return false;
         } else if($scope.enquiry.discount && !Number($scope.enquiry.discount)) {
             $scope.validation_error = "Please Enter  a avalid amount for discount";
             return false;
-        }return true;
+        }
+        for(var i = 0; i < $scope.enquiry.follow_up.length; i++){
+            if($scope.enquiry.follow_up[i].follow_up_date == ''){
+                $scope.validation_error = "Please Enter the follow up date";
+                return false;
+            }
+            var date_value = $scope.enquiry.follow_up[i].follow_up_date.split('/');
+            var start_date = new Date(date_value[2],date_value[1]-1, date_value[0]); 
+            for(var j = i+1; j < $scope.enquiry.follow_up.length; j++){
+                var date_value = $scope.enquiry.follow_up[j].follow_up_date.split('/');
+                var next_date = new Date(date_value[2],date_value[1]-1, date_value[0]);
+                if(start_date > next_date){
+                    $scope.validation_error = "Please check the follow up dates";
+                    return false;
+                }
+            }
+        }
+        return true;
     }   
     $scope.save_enquiry = function(){
         if ($scope.validate_enquiry()) {
+            for(var i = 0; i < $scope.enquiry.follow_up.length; i++){
+                if($scope.enquiry.follow_up[i].hide_button == true)
+                    $scope.enquiry.follow_up[i].hide_button = 'true';
+                else
+                    $scope.enquiry.follow_up[i].hide_button = 'false';
+            }
             params = {
                 'enquiry': angular.toJson($scope.enquiry),
                 'csrfmiddlewaretoken': $scope.csrf_token,
@@ -642,6 +699,7 @@ function AdmissionController($scope, $http) {
     $scope.guardian_name = '';
     $scope.relationship = '';
     $scope.photo_img = {};
+    $scope.fees_after_discount = 0;
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
         $scope.no_enquiries = false;
@@ -668,10 +726,17 @@ function AdmissionController($scope, $http) {
         {
             $scope.enquiries = data.enquiries; 
             $scope.count = data.count;
+            if($scope.count == 0){
+                $scope.no_count_msg  = '';
+                
+            }else{
+                $scope.no_count_msg = $scope.count+'enquiry(s) found.';
+            }
             if(data.enquiries.length == 0){
-                $scope.no_enquiries = true;
-            } else {
-                $scope.no_enquiries = false;
+                $scope.no_enquiry_msg = 'No Enquiries found for this Student.';
+                
+            } else{
+                $scope.no_enquiry_msg = '';
             }
         }).error(function(data, status)
         {
@@ -686,13 +751,18 @@ function AdmissionController($scope, $http) {
         }
     }
     $scope.get_enquiry_details = function(){
+
         var url = '/admission/enquiry_details/?enquiry_num='+$scope.enquiry_num;
         $http.get(url).success(function(data)
         {   
             $scope.no_enquiry_msg = '';
+            $scope.no_enquiry_msg = '';
+            $scope.enquiries = '';
+            $scope.search.student_name = '';
             if (data.enquiry.length == 0)
                 $scope.no_enquiry_msg = 'No such enquiry';
             else {
+                $scope.no_count_msg  = '';
                 $scope.student_name = data.enquiry[0].student_name;
                 $scope.course = data.enquiry[0].course;
                 $scope.address = data.enquiry[0].address;
@@ -700,7 +770,9 @@ function AdmissionController($scope, $http) {
                 $scope.email = data.enquiry[0].email;
                 $scope.mobile_number = data.enquiry[0].mobile_number;
                 $scope.enquiry = data.enquiry[0].id;
+                $scope.discount = data.enquiry[0].discount;
                 $scope.get_fees();
+                
             }
         }).error(function(data, status)
         {
@@ -745,10 +817,14 @@ function AdmissionController($scope, $http) {
             format:'%d/%m/%Y',
         });
     }
+    $scope.calculate_actual_fees = function(){
+        $scope.fees_after_discount = $scope.fees - $scope.discount;
+    }
     $scope.get_fees = function() {
         for(var i=0; i<$scope.courses.length; i++) {
             if ($scope.course == $scope.courses[i].id) {
                 $scope.fees = $scope.courses[i].amount;
+                $scope.calculate_actual_fees();
             }
         }
     }
@@ -1090,11 +1166,12 @@ function EnquiryToAdmissionController($scope, $http) {
     $scope.validate = function(){
         $scope.start_date = $$('#start_date')[0].get('value');
         $scope.end_date = $$('#end_date')[0].get('value');
+        $scope.no_enquiry_msg = '';
         if($scope.start_date == ''){
-            $scope.validate_error_msg = 'Please select the start date';
+            $scope.no_enquiry_msg = 'Please select the start date';
             return false;
         } else if($scope.end_date == ''){
-            $scope.validate_error_msg = 'Please select the end date';
+            $scope.no_enquiry_msg = 'Please select the end date';
             return false;
         } return true;
     }
