@@ -226,6 +226,7 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
             'relationship': '',
             'guardian_mobile_number': '',            
             'fees': '',
+            'fees_after_discount': '',
             'discount': '',
             'no_installments': '',
         }
@@ -255,6 +256,9 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
                 $scope.student.fees = $scope.courses[i].amount;
             }
         }
+    }
+    $scope.calculate_actual_fees = function(){
+        $scope.student.fees_after_discount = parseFloat($scope.student.fees) -  parseFloat($scope.student.discount);
     }
     $scope.get_student_details  = function(student_id){
         $scope.url = '/admission/edit_student_details/' + student_id+ '/';
@@ -373,10 +377,13 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         } else if ($scope.student.no_installments == '' || $scope.student.no_installments == undefined) {
             $scope.validation_error = "Please enter no of installments";
             return false;
-        } else if ($scope.student.fees != total) {
+        } else if ($scope.student.fees_after_discount != total) {
             $scope.validation_error = 'Please check the installment amount with the total';
             return false;
-        } else if ($scope.installments.length > 0) {
+        }  else if ($scope.student.fees_after_discount > $scope.student.fees) {
+            $scope.validation_error = 'Please check the fees with actual fees';
+            return false;
+        }else if ($scope.installments.length > 0) {
             for(var i = 0; i < $scope.installments.length; i++){
                 id_name = '#'+$scope.installments[i].due_date_id;
                 $scope.installments[i].due_date = $$(id_name)[0].get('value');
@@ -1097,6 +1104,7 @@ function FollowUpReportController($scope, $http) {
         {
             console.log(data || "Request failed");
         });
+
         $('#enquiry_details_view')[0].setStyle('display', 'block');
         
         $scope.popup = new DialogueModelWindow({                
