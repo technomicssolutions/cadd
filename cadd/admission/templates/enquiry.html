@@ -9,7 +9,6 @@
         <h4>Enquiry Form</h4>
     </div>
 </div>
-<div>
 	<div class="section_1">
 		<div class="formrow">
 			
@@ -95,21 +94,28 @@
 			<div class="forminput">
 				<textarea name="remarks" value="" ng-model="enquiry.remarks"> </textarea>
 			</div>
-			<div ng-repeat="follow_up in enquiry.follow_up">
-				<div class="formtext">
-					<label>Follow Up Date</label>
+			<div class="follow_up_div">
+				<div ng-repeat="follow_up in enquiry.follow_up" >
+					<div>
+						<div class="formtext">
+							<label>Follow Up Date</label>
+						</div>
+						<div class="forminput">
+							<input type="text"name="follow_up_date" value="" ng-model="follow_up.follow_up_date" id="[[follow_up.follow_up_date_id]]" ng-click="attach_date_picker(follow_up)">
+						</div>
+						<div class="close_button_followup">
+							<a href="" ng-click="remove_follow_up(follow_up)"><input class="btn" type="button" value="X" ng-hide="enquiry.follow_up.length == 1"></a>
+						</div>
+						<div class="formtext">
+							<label>Remarks To Follow Up Date </label>
+						</div>
+						<div class="forminput">
+							<textarea name="remarks_for_follow_up_date" value="" ng-model="follow_up.remarks_for_follow_up_date"> </textarea>
+						</div>
+					</div>
 				</div>
-				<div class="forminput">
-					<input type="text"name="follow_up_date" value="" ng-model="follow_up.follow_up_date" id="[[follow_up.follow_up_date_id]]" ng-click="attach_date_picker(follow_up)">
-					<a href="" ng-click="add_follow_up(follow_up)"><input class="btn btn-info" type="button" value="+" ng-hide="follow_up.hide_button"></a>
-					<a href="" ng-click="remove_follow_up(follow_up)"><input class="btn btn-info" type="button" value="X" ng-hide="follow_up.hide_button"></a>
-				</div>
-				<div class="formtext">
-					<label>Remarks To Follow Up Date </label>
-				</div>
-				<div class="forminput">
-					<textarea name="remarks_for_follow_up_date" value="" ng-model="follow_up.remarks_for_follow_up_date"> </textarea>
-				</div>
+				<div class="add_button_followup"><a href="" ng-click="add_follow_up(follow_up)"><input class="btn " type="button" value="+" ng-hide="follow_up.hide_button"></a></div>
+				
 			</div>
 		<div class="button_control">
 			<p class="error_message">[[validation_error]]</p>
