@@ -25,7 +25,7 @@
 			</div>
 			<div class="control">
 				<label> Student</label>
-				<select name="student" ng-model="payment_installment.student" ng-change="get_installment()" ng-options="student.id as student.student for student in students">
+				<select name="student" ng-model="student" ng-change="get_installment()" ng-options="student as student.student for student in students">
 					<option value="">Select</option>
 					
 				</select>
@@ -42,44 +42,55 @@
 				</select>
 			</div>
 			<div class="control">
-				<label>Fees Amount</label>
-				<input type="text" name="amount" id="fee_amount" ng-model="payment_installment.amount"  readonly/> 
-			</div>
-			<div class="control">
 				<label>Due Date</label>
 				<input type="text" name="date" id="due_date" ng-model="payment_installment.due_date" readonly/> 
+			</div>
+			<div class="control">
+				<label>Total Fee Amount</label>
+				<input type="text" name="amount" ng-model="payment_installment.student_fee_amount"  readonly/>
+			</div>
+			<div class="control">
+				<label>Installment Amount</label>
+				<input type="text" name="amount" id="fee_amount" ng-model="payment_installment.amount"  readonly/>
 			</div>
 			<div class="control">
 				<label>Fine</label>
 				<input type="text" name="fine" id="fine_amount" ng-model="payment_installment.fine" readonly /> 
 			</div>
 			<div class="control">
+				<label>Installment + Fine</label>
+				<input type="text" name="total_amount" id="total_fee_amount" ng-model="payment_installment.total_amount" readonly/> 
+			</div>
+			 <div class="control">
 				<label>Paid Date</label>
 				<input type="text" name="paid_date" id="paid_date" value="{{current_date}}" onSelect="calculate_total_amount()"/> 
 			</div>
 			<div class="control">
 				<label>Paid Installment Amount</label>
 				<input type="text" name="paid_amount" ng-model="payment_installment.paid_installment_amount" readonly/> 
-			</div>
-			<div class="control">
-				<label>Balance Amount</label>
-				<input type="text" name="paid_amount" id="balance" ng-model="payment_installment.balance" readonly/> 
-			</div>
+			</div> 
+			<!-- 
 			<div class="control">
 				<label>Total amount to pay</label>
 				<input type="text" name="total_amount" id="total_fee_amount" ng-model="payment_installment.total_amount" readonly/> 
-			</div>
+			</div> -->
 			<div class="control">
-				<label>Paid Amount</label>
+				<label>Paying Amount</label>
 				<input type="text" name="paid_amount" ng-model="payment_installment.paid_amount"/> 
 			</div>
-			<!-- <div  align="Center"> -->
+			<div class="control">
+				<label>Installment Balance</label>
+				<input type="text" name="installment_balance" ng-model="payment_installment.installment_balance" readonly/>
+			</div>
+			<div class="control">
+				<label>Total Balance</label>
+				<input type="text" name="total_balance" ng-model="payment_installment.total_balance" readonly/> 
+			</div>
 			<div class="control buttons">
 				<p class="error_message"> [[validation_error]] </p>
 				<input type="button" class="btn btn-info" value="Cancel" onClick="document.location.href = '/'">
 				<input type="submit" value="Submit" ng-click="save_fees_payment()" class="btn btn-info">
 			</div>
-			<!-- </div> -->
 		</form>
 	</div>	
 
