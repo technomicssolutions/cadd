@@ -26,6 +26,7 @@ class FollowUp(models.Model):
 
 class Enquiry(models.Model):
 
+	mode = models.CharField('Enquiry Mode', null=True, blank=True, max_length=200)
 	student_name = models.CharField('Student Name', null=True, blank=True, max_length=200)
 	address = address= models.TextField('Student Address',null=True, blank=True)
 	mobile_number= models.CharField('Mobile Number',null=True, blank=True, max_length=200)
