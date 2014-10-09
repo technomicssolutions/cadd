@@ -946,4 +946,15 @@ a:hover , a:focus{
 #certificate .search_batch{
 	margin-top: 2% !important;
 }
-
+.follow_up_div {
+	border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    padding: 10px;
+    width: 50%;
+}
+.close_button_followup {
+	float: right;
+}
+.add_button_followup {
+	text-align: center;
+}

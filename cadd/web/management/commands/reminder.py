@@ -32,6 +32,7 @@ class Command(BaseCommand):
                         'enquiry_no': enquiry.auto_generated_num,
                         'date': enquiry.saved_date.strftime('%d/%m/%Y'),
                         'mobile': enquiry.mobile_number,
+                        'email': enquiry.email,
                     })
             subject = "Today's Follow Ups"
             
