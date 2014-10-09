@@ -28,13 +28,13 @@
                 <input class="form-control" type="text" name="student_name" ng-model="search.student_name" id="student_name" ng-change="enquiry_search()" autocomplete="off"/>
                 <p  class="error_message">[[error_message]]</p> 
                 <div class="enquiry_list">
-                    <p class="error_message" ng-show="count">[[ count ]] enquiry(s) found.</p>
                     <div class="enquiry" ng-repeat="enquiry in enquiries">
                         <span> [[enquiry.student_name]] - [[enquiry.auto_generated_num]]</span>
                     </div>
                 </div>
-                <div class="not_found" ng-show="no_enquiries">
-                    <p class="error_message">No Enquiries found for this Student. </p>
+                <div class="not_found" >
+                    <p class="error_message">[[no_enquiry_msg]] </p>
+                    <p class="error_message">[[no_count_msg]] </p>
                 </div>  
             </div>
 

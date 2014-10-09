@@ -729,10 +729,17 @@ function AdmissionController($scope, $http) {
         {
             $scope.enquiries = data.enquiries; 
             $scope.count = data.count;
+            if($scope.count == 0){
+                $scope.no_count_msg  = '';
+                
+            }else{
+                $scope.no_count_msg = $scope.count+'enquiry(s) found.';
+            }
             if(data.enquiries.length == 0){
-                $scope.no_enquiries = true;
-            } else {
-                $scope.no_enquiries = false;
+                $scope.no_enquiry_msg = 'No Enquiries found for this Student.';
+                
+            } else{
+                $scope.no_enquiry_msg = '';
             }
         }).error(function(data, status)
         {
@@ -747,13 +754,18 @@ function AdmissionController($scope, $http) {
         }
     }
     $scope.get_enquiry_details = function(){
+
         var url = '/admission/enquiry_details/?enquiry_num='+$scope.enquiry_num;
         $http.get(url).success(function(data)
         {   
             $scope.no_enquiry_msg = '';
+            $scope.no_enquiry_msg = '';
+            $scope.enquiries = '';
+            $scope.search.student_name = '';
             if (data.enquiry.length == 0)
                 $scope.no_enquiry_msg = 'No such enquiry';
             else {
+                $scope.no_count_msg  = '';
                 $scope.student_name = data.enquiry[0].student_name;
                 $scope.course = data.enquiry[0].course;
                 $scope.address = data.enquiry[0].address;
