@@ -67,24 +67,25 @@
 			</div>
 			<div class="control">
 				<label>Paid Installment Amount</label>
-				<input type="text" name="paid_amount" ng-model="payment_installment.paid_installment_amount" readonly/> 
+				<input type="text" name="paid_amount" ng-model="payment_installment.paid_installment_amount" readonly id="paid_installment_amount"/> 
 			</div> 
-			<!-- 
-			<div class="control">
-				<label>Total amount to pay</label>
-				<input type="text" name="total_amount" id="total_fee_amount" ng-model="payment_installment.total_amount" readonly/> 
-			</div> -->
 			<div class="control">
 				<label>Paying Amount</label>
-				<input type="text" name="paid_amount" ng-model="payment_installment.paid_amount"/> 
+				<input type="text" name="paid_amount" ng-model="payment_installment.paid_amount" ng-change="calculate_balance()"/> 
+			</div>
+			<div class="control">
+				<label>Paying Fine Amount</label>
+				<input type="text" name="paid_amount" ng-model="payment_installment.paid_fine_amount" ng-change="calculate_balance()"/> 
 			</div>
 			<div class="control">
 				<label>Installment Balance</label>
-				<input type="text" name="installment_balance" ng-model="payment_installment.installment_balance" readonly/>
+				<input type="text" name="installment_balance" ng-model="payment_installment.installment_balance" readonly id="installment_balance"/>
+				<input type="text" name="installment_balance" ng-model="payment_installment.installment_balance" readonly id="installment_balance_amount"/>
 			</div>
 			<div class="control">
 				<label>Total Balance</label>
-				<input type="text" name="total_balance" ng-model="payment_installment.total_balance" readonly/> 
+				<input type="text" name="total_balance" ng-model="payment_installment.total_balance" readonly id="total_balance"/> 
+				<input type="hidden" name="total_balance" ng-model="payment_installment.total_balance_amount"/> 
 			</div>
 			<div class="control buttons">
 				<p class="error_message"> [[validation_error]] </p>

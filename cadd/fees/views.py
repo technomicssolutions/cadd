@@ -46,7 +46,7 @@ class CreateFeesStructure(View):
                     'result': 'error',
                     'message': 'Fees Structure already existing'
                 }
-            except Exception:
+            except Exception as ex:
                 fee_structure = FeesStructure.objects.create(course=course,batch=batch)
                 fee_head_details = fees_structure_details['fees_head_details']
                 for fee_head in fee_head_details:
@@ -300,7 +300,6 @@ class FeesPaymentSave(View):
             status_code = 200 
             try:
                 fees_payment_details = ast.literal_eval(request.POST['fees_payment'])
-                print fees_payment_details
                 student = Student.objects.get(id=fees_payment_details['student'])
                 if student.is_rolled:
                     student.is_rolled = False
@@ -308,19 +307,28 @@ class FeesPaymentSave(View):
                 installment = Installment.objects.get(id=fees_payment_details['installment_id'])
                 fee_payment_installment, installment_created = FeesPaymentInstallment.objects.get_or_create(installment=installment, student=student)
                 fee_payment_installment.installment_amount = installment.amount
-                fee_payment_installment.installment_fine = installment.fine_amount
+                
                 if installment_created:
                     fee_payment_installment.paid_amount = fees_payment_details['paid_amount']
+                    fee_payment_installment.installment_fine = fees_payment_details['paid_fine_amount']
                 else:
                     fee_payment_installment.paid_amount = float(fee_payment_installment.paid_amount) + float(fees_payment_details['paid_amount'])
-                fee_payment_installment.paid_date = datetime.strptime(fees_payment_details['paid_date'], '%d/%m/%Y')
+                    fee_payment_installment.installment_fine = float(fee_payment_installment.installment_fine) + float(fees_payment_details['paid_fine_amount'])
+                # fee_payment_installment.paid_date = datetime.strptime(fees_payment_details['paid_date'], '%d/%m/%Y')
                 fee_payment_installment.total_amount = fees_payment_details['total_amount']
                 fee_payment_installment.save()
+                fees_paid = FeesPaid()
+                fees_paid.paid_date = datetime.strptime(fees_payment_details['paid_date'], '%d/%m/%Y')
+                fees_paid.fees_payment_installment = fee_payment_installment
+                fees_paid.paid_amount = fees_payment_details['paid_amount']
+                fees_paid.paid_fine_amount = fees_payment_details['paid_fine_amount']
+                fees_paid.save()
                 fees_payment.payment_installment.add(fee_payment_installment)
                 res = {
                     'result': 'ok',
                 }
             except Exception as Ex:
+                print "exception == ", str(Ex)
                 res = {
                     'result': 'error: '+str(Ex),
                     'message': 'Already Paid',
@@ -429,7 +437,7 @@ class GetOutStandingFeesDetails(View):
                                     'fine_amount': installment.fine_amount,
                                     'name':'installment'+str(i + 1),
                                     'paid_installment_amount': fees_payment_installments[0].installment_amount,
-                                    'balance': float(installment.amount) - float(fees_payment_installments[0].installment_amount),
+                                    'balance': float(installment.amount) - float(fees_payment_installments[0].paid_amount),
                                 })
                         elif fees_payment_installments.count() == 0:
                             is_not_paid = True

@@ -764,11 +764,13 @@ class GetInstallmentDetails(View):
         student = Student.objects.get(id=request.GET.get('student', ''))
         ctx_installments = []
         i = 0
+        total_amount_paid = 0
         for installment in student.installments.all():
             try:
                 fees_payment = FeesPayment.objects.get(student__id=student.id)
                 fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
                 if fees_payment_installments.count() > 0:
+                    total_amount_paid = float(total_amount_paid) + float(fees_payment_installments[0].paid_amount)
                     if fees_payment_installments[0].paid_amount < installment.amount:
                         ctx_installments.append({
                             'id': installment.id,
@@ -801,6 +803,11 @@ class GetInstallmentDetails(View):
                     'balance': float(installment.amount),
                 })
             i = i + 1
+        for installment in ctx_installments:
+            installment.update({
+                'total_amount_paid': total_amount_paid,
+                'course_balance': float(student.fees) - float(total_amount_paid),
+            })
         res = {
             'result': 'ok',
             'installments': ctx_installments,

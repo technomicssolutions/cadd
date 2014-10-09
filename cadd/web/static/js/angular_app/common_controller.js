@@ -165,9 +165,12 @@ function calculate_total_fee_amount() {
             fine = parseFloat($('#fine_amount').val())*diff;
             $('#total_fee_amount').val(parseFloat($('#fee_amount').val()) + parseFloat(fine));
             $('#balance').val(parseFloat($('#fee_amount').val()) + parseFloat(fine));
+            var installment_balance = parseFloat($('#installment_balance_amount').val()) + parseFloat(fine);
+            $('#installment_balance').val(installment_balance);
         } else {
             $('#total_fee_amount').val(parseFloat($$('#fee_amount')[0].get('value')));
             $('#balance').val(parseFloat($$('#fee_amount')[0].get('value')));
+            $('#installment_balance').val($('#installment_balance_amount').val());
         }
     }
 }

@@ -11,7 +11,8 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
         'paid_amount': '',
         'paid_installment_amount': '',
         'balance': '',
-        'student_fee_amount': ''
+        'student_fee_amount': '',
+        'paid_fine_amount': 0,
     }
     $scope.course = '';
     $scope.payment_installment.student = '';
@@ -80,14 +81,27 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
         $scope.payment_installment.fine = installment.fine_amount;
         $scope.payment_installment.paid_installment_amount = installment.paid_installment_amount;
         $scope.payment_installment.balance = installment.balance;
+        $scope.payment_installment.total_amount_paid = installment.total_amount_paid;
+        // $scope.payment_installment.installment_balance = $scope.payment_installment.amount - $scope.payment_installment.paid_installment_amount;
         $('#due_date').val(installment.due_date);
         $('#fine_amount').val(installment.fine_amount);
         $('#fee_amount').val(installment.amount);
         $('#balance').val(installment.balance);
+        $('#installment_balance').val($scope.payment_installment.amount - $scope.payment_installment.paid_installment_amount);
+        $('#installment_balance_amount').val($scope.payment_installment.amount - $scope.payment_installment.paid_installment_amount);
+        $scope.payment_installment.total_balance = installment.course_balance;
+        $scope.payment_installment.total_balance_amount = installment.course_balance;
         calculate_total_fee_amount();
+    }
+    $scope.calculate_balance = function() {
+        $('#installment_balance').val(parseFloat($('#total_fee_amount').val()) - (parseFloat($scope.payment_installment.paid_amount) + parseFloat($scope.payment_installment.paid_installment_amount) + parseFloat($scope.payment_installment.paid_fine_amount)));
+        $scope.payment_installment.total_balance = parseFloat($scope.payment_installment.total_balance_amount) - (parseFloat($scope.payment_installment.paid_amount));
     }
     $scope.validate_fees_payment = function() {
         $scope.validation_error = '';
+
+        var fine_balance = parseFloat($('#total_fee_amount').val()) - parseFloat($scope.payment_installment.student_fee_amount);
+        console.log(fine_balance);
         if($scope.course == '' || $scope.course == undefined) {
             $scope.validation_error = "Please Select a course " ;
             return false
@@ -106,6 +120,12 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
         } else if ($scope.payment_installment.paid_amount != Number($scope.payment_installment.paid_amount)) {
             $scope.validation_error = "Please enter valid paid amount" ;
             return false;
+        } else if (fine_balance < $scope.payment_installment.paid_fine_amount ) {
+            $scope.validation_error = "Please check the Paying Fine amount";
+            return false;
+        } else if ($scope.payment_installment.installment_balance < 0 ) {
+            $scope.validation_error = "Please check the Paying amount";
+            return false;
         } return true; 
         // else if ($scope.payment_installment.paid_amount != $scope.payment_installment.balance) {
         //     $scope.validation_error = "Please check the balance amount with paid amount" ;
@@ -119,7 +139,7 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
         $scope.payment_installment.paid_date = $$('#paid_date')[0].get('value');
         // $scope.payment_installment.total_amount = $$('#total_fee_amount')[0].get('value');
         $scope.payment_installment.total_amount = $$('#fee_amount')[0].get('value');
-        // $scope.payment_installment.balance = $$('#balance')[0].get('value');
+        $scope.payment_installment.installment_balance = $$('#installment_balance')[0].get('value');
         if($scope.validate_fees_payment()) {
             params = { 
                 'fees_payment': angular.toJson($scope.payment_installment),
