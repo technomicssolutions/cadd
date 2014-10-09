@@ -380,7 +380,10 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         } else if ($scope.student.fees_after_discount != total) {
             $scope.validation_error = 'Please check the installment amount with the total';
             return false;
-        } else if ($scope.installments.length > 0) {
+        }  else if ($scope.student.fees_after_discount > $scope.student.fees) {
+            $scope.validation_error = 'Please check the fees with actual fees';
+            return false;
+        }else if ($scope.installments.length > 0) {
             for(var i = 0; i < $scope.installments.length; i++){
                 id_name = '#'+$scope.installments[i].due_date_id;
                 $scope.installments[i].due_date = $$(id_name)[0].get('value');
