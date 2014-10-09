@@ -882,8 +882,10 @@ class EnquiryToAdmission(View):
                     'enquiries': enquiry_list,
                 }) 
             else:
+                
                response = simplejson.dumps({
                 'enquiries': [],
+                'message': 'No enquiries found'
             }) 
             return HttpResponse(response, status=200, mimetype='application/json')
         else:
