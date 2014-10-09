@@ -1096,11 +1096,12 @@ function EnquiryToAdmissionController($scope, $http) {
     $scope.validate = function(){
         $scope.start_date = $$('#start_date')[0].get('value');
         $scope.end_date = $$('#end_date')[0].get('value');
+        $scope.no_enquiry_msg = '';
         if($scope.start_date == ''){
-            $scope.validate_error_msg = 'Please select the start date';
+            $scope.no_enquiry_msg = 'Please select the start date';
             return false;
         } else if($scope.end_date == ''){
-            $scope.validate_error_msg = 'Please select the end date';
+            $scope.no_enquiry_msg = 'Please select the end date';
             return false;
         } return true;
     }
