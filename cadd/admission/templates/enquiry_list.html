@@ -12,8 +12,7 @@
             <h4>Enquiry List</h4>
         </div>
     </div>
-    
-<table ng-show="enquiries.length > 0" class="table list_table">
+	<table ng-show="enquiries.length > 0" class="table list_table">
 		<tr>
 			<th>#</th>
 			<th>Date</th>
@@ -23,7 +22,6 @@
 			<th>Follow Up Details</th>
 			<th></th>
 			<th></th>
-			
 		</tr>
 		<tr ng-repeat="enquiry in enquiries">
 			<td>[[$index+1]]</td>
@@ -35,7 +33,6 @@
 			<td><a href=""ng-click="display_enquiry_details(enquiry)"><img src="/static/images/view.png"></a></td>
 			<td><a href="/admission/delete_enquiry/[[enquiry.id]]/"><img src="/static/images/delete.png"></a></td>
 		</tr>
-		
-</table>
+	</table>
 {% include 'pagination_div.html' %}
 {% endblock content %}
