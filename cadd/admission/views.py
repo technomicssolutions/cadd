@@ -58,6 +58,7 @@ class AddStudent(View):
                         if enquiry is not None:
                             student.enquiry = enquiry
                             enquiry.is_admitted = True;
+                            enquiry.save()
                         student.roll_number = request.POST['roll_number']
                         student.address = request.POST['address']
                         student.qualifications = request.POST['qualifications']
@@ -642,9 +643,12 @@ class AdmissionReport(View):
                 admission_list = []
                 batch_list = []
                 for admission in admissions:
+                    batch_list = []
+                    
                     if admission.batches.all().count() > 0: 
                         for batch in admission.batches.all().order_by('-id'):
                             batch_list.append(batch.name)
+                       
                     admission_list.append({
                         'student_name': admission.student_name,
                         'course' : admission.course.name,
@@ -882,7 +886,7 @@ class EnquiryToAdmission(View):
                     'enquiries': enquiry_list,
                 }) 
             else:
-                
+
                response = simplejson.dumps({
                 'enquiries': [],
                 'message': 'No enquiries found'
