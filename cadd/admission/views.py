@@ -255,7 +255,7 @@ class EditStudentDetails(View):
                 'relationship': student.relationship if student.relationship else '',
                 'guardian_mobile_number': student.guardian_mobile_number if student.guardian_mobile_number else '',
                 'fees': student.fees if student.fees else '',
-                'discount': student.enquiry.discount if student.enquiry else '',
+                'discount': student.discount if student.discount else '',
                 'no_installments': student.no_installments if student.no_installments else '',
                 'installments': installment_list,
                 })
@@ -359,6 +359,7 @@ class EnquiryView(View):
             enquiry_details = ast.literal_eval(request.POST['enquiry'])
             if enquiry_details:
                 enquiry = Enquiry()
+                enquiry.mode = enquiry_details['mode']
                 enquiry.student_name = enquiry_details['student_name']
                 enquiry.address = enquiry_details['address']
                 enquiry.mobile_number = enquiry_details['mobile_number']

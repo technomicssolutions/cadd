@@ -528,6 +528,7 @@ function StudentListController($scope, $http, $element, $location, $timeout) {
 }
 function EnquiryController($scope, $http) {
     $scope.enquiry = {
+        'mode': '',
         'student_name' : '',
         'address' :'',
         'mobile_number' : '',
