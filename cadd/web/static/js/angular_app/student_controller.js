@@ -46,6 +46,7 @@ function save_new_student($http, $scope) {
             'relationship': $scope.relationship,
             'guardian_mobile_number': $scope.guardian_mobile_number,
             'fees': $scope.fees_after_discount,
+            'discount': $scope.discount,
             'installments': angular.toJson($scope.installments),
             'no_installments': $scope.no_installments,
             "csrfmiddlewaretoken" : $scope.csrf_token
@@ -229,6 +230,7 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
             'relationship': '',
             'guardian_mobile_number': '',            
             'fees': '',
+            'discount': '',
             'no_installments': '',
         }
         $scope.photo_img = {};

@@ -76,7 +76,8 @@ class AddStudent(View):
                         student.guardian_name = request.POST['guardian_name']
                         student.relationship = request.POST['relationship']
                         student.guardian_mobile_number = request.POST['guardian_mobile_number']
-                        student.fees = request.POST['fees']           
+                        student.fees = request.POST['fees'] 
+                        student.discount = request.POST['discount']          
                         student.no_installments = request.POST['no_installments']
                         installments = ast.literal_eval(request.POST['installments'])
                         for installment in installments:
