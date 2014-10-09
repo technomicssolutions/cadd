@@ -78,6 +78,7 @@ function save_new_student($http, $scope) {
 }
 
 function reset_student($scope) {
+
     $scope.student_name = '';
     $scope.roll_number = '';
     $scope.cadd_registration_no = '';
@@ -202,6 +203,7 @@ validate_new_student = function($scope) {
     } return true;
 }   
 function EditStudentController($scope, $http, $element, $location, $timeout) {
+
     $scope.init = function(csrf_token, student_id){
         $scope.csrf_token = csrf_token;
         $scope.student_id = student_id;
@@ -527,6 +529,7 @@ function StudentListController($scope, $http, $element, $location, $timeout) {
     }
 }
 function EnquiryController($scope, $http) {
+
     $scope.enquiry = {
         'mode': '',
         'student_name' : '',
@@ -674,6 +677,7 @@ function EnquiryController($scope, $http) {
     }
 }
 function AdmissionController($scope, $http) {
+
     $scope.show_enquiry_search =  false;
     $scope.admission_type = 'Admission';
     $scope.photo_img = {};
@@ -831,6 +835,7 @@ function AdmissionController($scope, $http) {
     }
 }
 function EnquiryReportController($scope, $http) {
+
     $scope.start_date = '';
     $scope.end_date = '';
     $scope.init = function(csrf_token){
@@ -889,6 +894,7 @@ function EnquiryReportController($scope, $http) {
     } 
 }
 function AdmissionReportController($scope, $http) {
+
     $scope.start_date = '';
     $scope.end_date = '';
     $scope.init = function(csrf_token){
@@ -947,6 +953,7 @@ function AdmissionReportController($scope, $http) {
     }  
 }
 function EnquiryListController($scope, $http) {
+
     $scope.start_date = '';
     $scope.end_date = '';
     $scope.init = function(csrf_token){
@@ -990,8 +997,6 @@ function EnquiryListController($scope, $http) {
         {
             console.log(data || "Request failed");
         });
-
-
         $('#enquiry_details_view')[0].setStyle('display', 'block');
         
         $scope.popup = new DialogueModelWindow({                
@@ -1016,6 +1021,7 @@ function EnquiryListController($scope, $http) {
     
 }
 function FollowUpReportController($scope, $http) {
+
     $scope.start_date = '';
     $scope.end_date = '';
     $scope.init = function(csrf_token){
@@ -1076,8 +1082,6 @@ function FollowUpReportController($scope, $http) {
         {
             console.log(data || "Request failed");
         });
-
-
         $('#enquiry_details_view')[0].setStyle('display', 'block');
         
         $scope.popup = new DialogueModelWindow({                

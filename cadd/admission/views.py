@@ -172,7 +172,6 @@ class ViewStudentDetails(View):
         if request.is_ajax():
             try:
                 student = Student.objects.get(id = student_id)
-               
                 ctx_student_data.append({
                 'student_name': student.student_name if student.student_name else '',
                 'roll_number': student.roll_number if student.roll_number else '',
@@ -551,7 +550,6 @@ class EnquiryReport(View):
             res = {
                     'result': 'error',
                 }
-
         if enquiries:
             if request.is_ajax():
                 enquiry_list = []
@@ -581,7 +579,6 @@ class EnquiryReport(View):
 
         if request.GET.get('report_type',''):
             if enquiries:
-                
                 response = HttpResponse(content_type='application/pdf')
                 p = SimpleDocTemplate(response, pagesize=A4)
                 elements = []        
@@ -594,7 +591,6 @@ class EnquiryReport(View):
                             ('FONTSIZE', (1,0), (-1,-1), 17),
                             ])   
                 elements.append(t)
-                
                 elements.append(Spacer(4, 5))
                 data = []
                 data_list = []
@@ -609,15 +605,11 @@ class EnquiryReport(View):
                             ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
                             ('BOX', (0,0), (-1,-1), 0.25, colors.black),
                             ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
-                            
                             ])   
                 elements.append(table)
-                
-                
                 p.build(elements)        
                 return response
             else:
-
                 return render(request, 'enquiry_report.html',{'message':'No enquiries founds'})
         else:
             return render(request, 'enquiry_report.html',{})
@@ -643,7 +635,6 @@ class AdmissionReport(View):
             res = {
                     'result': 'error',
                 }
-
         if admissions:
             if request.is_ajax():
                 admission_list = []
@@ -667,7 +658,6 @@ class AdmissionReport(View):
                     }
                 response = simplejson.dumps(res)
                 return HttpResponse(response, status=200, mimetype='application/json')
-
         if request.GET.get('report_type',''):
             if admissions:
                 
@@ -683,7 +673,6 @@ class AdmissionReport(View):
                             ('FONTSIZE', (1,0), (-1,-1), 17),
                             ])   
                 elements.append(t)
-                
                 elements.append(Spacer(4, 5))
                 data = []
                 data_list = []
@@ -702,15 +691,11 @@ class AdmissionReport(View):
                             ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
                             ('BOX', (0,0), (-1,-1), 0.25, colors.black),
                             ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
-                            
                             ])   
                 elements.append(table)
-                
-                
                 p.build(elements)        
                 return response
             else:
-
                 return render(request, 'admission_report.html',{'message':'No admissions founds'})
         else:
             return render(request, 'admission_report.html',{})
@@ -742,7 +727,6 @@ class StudentSearch(View):
                         'name': student.student_name,
                         'roll_number': student.roll_number,
                     })
-
             elif student_name:
                 students = Student.objects.filter(student_name__istartswith=student_name)
                 for student in students:
@@ -850,8 +834,6 @@ class FollowUpReport(View):
                         'discount': enquiry.discount,
                         'auto_generated_num': enquiry.auto_generated_num,
                     })
-                
-            
             response = simplejson.dumps({
                 'enquiries': enquiry_list,
             })    
