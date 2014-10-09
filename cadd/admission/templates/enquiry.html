@@ -80,19 +80,22 @@
 			<div class="forminput">
 				<textarea name="remarks" value="" ng-model="remarks"> </textarea>
 			</div>
-			<div class="formtext">
-				<label>Follow Up Date</label>
+			<div ng-repeat="follow_up in enquiry.follow_up">
+				<div class="formtext">
+					<label>Follow Up Date</label>
+				</div>
+				<div class="forminput">
+					<input type="text"name="follow_up_date" value="" ng-model="follow_up.follow_up_date" id="[[follow_up.follow_up_date_id]]" ng-click="attach_date_picker(follow_up)">
+					<a href="" ng-click="add_follow_up()"><input class="btn btn-info" type="button" value="+" ng-hide="follow_up.hide_button"></a>
+					<a href="" ng-click="remove_follow_up(follow_up)"><input class="btn btn-info" type="button" value="X" ng-hide="follow_up.hide_button"></a>
+				</div>
+				<div class="formtext">
+					<label>Remarks To Follow Up Date </label>
+				</div>
+				<div class="forminput">
+					<textarea name="remarks_for_follow_up_date" value="" ng-model="follow_up.remarks_for_follow_up_date"> </textarea>
+				</div>
 			</div>
-			<div class="forminput">
-				<input type="text"name="follow_up_date" value="" ng-model="enquiry.follow_up_date" id="follow_up_date">						
-			</div>
-			<div class="formtext">
-				<label>Remarks To Follow Up Date </label>
-			</div>
-			<div class="forminput">
-				<textarea name="remarks_for_follow_up_date" value="" ng-model="remarks_for_follow_up_date"> </textarea>
-			</div>
-		</div>
 		<div class="button_control">
 			<p class="error_message">[[validation_error]]</p>
 			<input  type="button" value="Save" ng-click="save_enquiry()">

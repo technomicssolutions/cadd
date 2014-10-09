@@ -17,6 +17,13 @@ class Installment(models.Model):
 
 		verbose_name_plural = 'Installment'
 
+		
+class FollowUp(models.Model):
+
+	follow_up_date = models.DateField('Next follow up date',null=True, blank=True)
+	remarks_for_follow_up_date =   models.TextField('Remark for Next follow up date',null=True, blank=True)
+
+
 class Enquiry(models.Model):
 
 	student_name = models.CharField('Student Name', null=True, blank=True, max_length=200)
@@ -28,12 +35,11 @@ class Enquiry(models.Model):
 	land_mark = models.CharField('Nearest land mark',null=True, blank=True, max_length=200)
 	course = models.ForeignKey(Course,null=True, blank=True)
 	remarks = models.TextField('Remark',null=True, blank=True)
-	follow_up_date = models.DateField('Next follow up date',null=True, blank=True)
-	remarks_for_follow_up_date =   models.TextField('Remark for Next follow up date',null=True, blank=True)
 	auto_generated_num = models.CharField('Auto generated number',null=True, blank=True, max_length=200)
 	discount = models.IntegerField('Discount', default=0, null=True, blank=True)
 	saved_date = models.DateField('Saved Date',null=True, blank=True)
 	is_admitted = models.BooleanField('Is Admitted',default=False)
+	follow_up = models.ManyToManyField(FollowUp, null=True, blank=True)
 	def __unicode__(self):
 		return str(self.student_name)
 
