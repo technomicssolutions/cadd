@@ -1,4 +1,5 @@
 # Django settings for cadd project.
+import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -6,6 +7,9 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+fillpath = lambda x: os.path.join(os.path.dirname(__file__), x)
 
 MANAGERS = ADMINS
 
@@ -50,12 +54,12 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = fillpath('media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://example.com/media/", "http://media.example.com/"
-MEDIA_URL = ''
+MEDIA_URL = '/site_media/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -165,3 +169,13 @@ try:
     from local_settings import *
 except:
     pass
+
+# include this in Local settings
+# EMAIL_HOST = ''
+# EMAIL_PORT = 25
+# EMAIL_USE_TLS = True
+
+# EMAIL_HOST_USER = ''
+# EMAIL_HOST_PASSWORD = ''
+# DEFAULT_FROM_EMAIL = ''
+# FOLLOW_UP_MAIL_ID = ''
