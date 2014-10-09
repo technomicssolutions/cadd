@@ -452,7 +452,13 @@ class AllEnquiries(View):
             enquiry_list = []
             enquiries = Enquiry.objects.all()
             for enquiry in enquiries:
+                follow_up_details = []
                 if not enquiry.is_admitted:
+                    for follow_up in enquiry.follow_up.all():
+                        follow_up_details.append({
+                            'date': follow_up.follow_up_date.strftime('%d/%m/%Y'),
+                            'remark': follow_up.remarks_for_follow_up_date
+                        })
                     enquiry_list.append({
                         'id': enquiry.id,
                         'student_name': enquiry.student_name,
@@ -466,8 +472,7 @@ class AllEnquiries(View):
                         'course' : enquiry.course.id,
                         'course_name':enquiry.course.name,
                         'remarks': enquiry.remarks,
-                        'follow_up_date': enquiry.follow_up_date.strftime('%d/%m/%Y') if enquiry.follow_up_date else '',
-                        'remarks_for_follow_up_date': enquiry.remarks_for_follow_up_date,
+                        'follow_ups': follow_up_details,
                         'discount': enquiry.discount,
                         'auto_generated_num': enquiry.auto_generated_num,
                     })

@@ -1018,6 +1018,21 @@ function EnquiryListController($scope, $http) {
     $scope.range = function(n) {
         return new Array(n);
     }
+    $scope.display_followup_details = function(enquiry) {
+        $scope.followups = [];
+        $scope.followups = enquiry.follow_ups;
+        $scope.popup = new DialogueModelWindow({                
+            'dialogue_popup_width': '78%',
+            'message_padding': '0px',
+            'left': '28%',
+            'top': '182px',
+            'height': 'auto',
+            'content_div': '#followup_details_view'
+        });
+        var height = $(document).height();
+        $scope.popup.set_overlay_height(height);
+        $scope.popup.show_content();
+    }
     
 }
 function FollowUpReportController($scope, $http) {
