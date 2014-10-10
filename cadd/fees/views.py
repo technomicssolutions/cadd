@@ -71,7 +71,6 @@ class FeesPaymentSave(View):
                     'result': 'ok',
                 }
             except Exception as Ex:
-                print "exception == ", str(Ex)
                 res = {
                     'result': 'error: '+str(Ex),
                     'message': 'Already Paid',
@@ -271,8 +270,6 @@ class PrintOutstandingFeesReport(View):
                         'balance': float(installment.amount),
                     })
             except Exception as ex:
-                print str(ex)
-
                 if current_date >= installment.due_date:
                     is_not_paid = True
                     data_list.append({
