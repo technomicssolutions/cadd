@@ -4,7 +4,7 @@
 {% block controller %} ng-controller="FollowUpReportController" ng-init="init('{{csrf_token}}')"{% endblock controller %}
 {% block dialogue_popup %}
 	{% include 'view_enquiry_details.html' %} 
-	           	
+	{% include 'followup_details_view.html' %}          	
 {% endblock %}
 {% block content %}
  	<div id="main-title">
@@ -31,7 +31,7 @@
 			<th>Enquiry Number</th>
 			<th>Name</th>
 			<th>Course</th>
-			<th>Follow Up Date</th>
+			<th>Follow Up Details</th>
 			<th>View</th>
 			<th></th>
 			
@@ -42,7 +42,7 @@
 			<td>[[enquiry.auto_generated_num]]</td>
 			<td>[[enquiry.student_name]]</td>
 			<td>[[enquiry.course_name]]</td>
-			<td>[[enquiry.follow_up_date]]</td>
+			<td><a href=""ng-click="display_followup_details(enquiry)"><img src="/static/images/view.png"></a></td>
 			<td><a href=""ng-click="display_enquiry_details(enquiry)"><img src="/static/images/view.png"></a></td>
 		</tr>
 		

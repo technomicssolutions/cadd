@@ -1072,6 +1072,21 @@ function FollowUpReportController($scope, $http) {
         });
         
     }
+    $scope.display_followup_details = function(enquiry) {
+        $scope.followups = [];
+        $scope.followups = enquiry.follow_ups;
+        $scope.popup = new DialogueModelWindow({                
+            'dialogue_popup_width': '78%',
+            'message_padding': '0px',
+            'left': '28%',
+            'top': '182px',
+            'height': 'auto',
+            'content_div': '#followup_details_view'
+        });
+        var height = $(document).height();
+        $scope.popup.set_overlay_height(height);
+        $scope.popup.show_content();
+    }
     $scope.view_follow_ups = function(){
         $scope.start_date = $$('#start_date')[0].get('value');
         $scope.end_date = $$('#end_date')[0].get('value');
@@ -1142,6 +1157,21 @@ function EnquiryToAdmissionController($scope, $http) {
             useFadeInOut: !Browser.ie,
             format:'%d/%m/%Y',
         });
+    }
+    $scope.display_followup_details = function(enquiry) {
+        $scope.followups = [];
+        $scope.followups = enquiry.follow_ups;
+        $scope.popup = new DialogueModelWindow({                
+            'dialogue_popup_width': '78%',
+            'message_padding': '0px',
+            'left': '28%',
+            'top': '182px',
+            'height': 'auto',
+            'content_div': '#followup_details_view'
+        });
+        var height = $(document).height();
+        $scope.popup.set_overlay_height(height);
+        $scope.popup.show_content();
     }
     $scope.view_enquiry_to_admission = function(){
         $scope.start_date = $$('#start_date')[0].get('value');
