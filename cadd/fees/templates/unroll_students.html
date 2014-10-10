@@ -7,17 +7,19 @@
 {% block content %}
 <div class="main-title">
 	<div class="alert alert-info" align="Center">Unroll Students</div>
-	<div class="form_container">		
-		<div class="control">
-			<select name="course" ng-model="course" ng-change="get_outstanding_student()" ng-options="course.id as course.course_name for course in courses">
-				<option value="">Course</option>
-			</select>
-		</div>
+	<div class="form_container single_column_container">
+			<form name="permission_form">		
+			<div class="control">
+				<select name="course" ng-model="course" ng-change="get_outstanding_student()" ng-options="course.id as course.course_name for course in courses">
+					<option value="">Course</option>
+				</select>
+			</div>
+		</form>
 	</div>
 </div>
 <div class="section_1">
 	<div class="search_staff">
-		<table id="list" class="table striped" ng-show="fees_details.student_details.length > 0">
+		<table id="list" class="table striped" ng-show="fees_details.student_details.length > 0"style="width:90%;margin:auto">
 			<tr class="success" style="font-size: 12px" style="width:auto">
 				<th>Name</th>
 				<th>Roll no</th>
