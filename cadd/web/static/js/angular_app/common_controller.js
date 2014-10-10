@@ -37,57 +37,6 @@ function select_page(page, list, $scope, page_interval) {
     $scope.current_page = page;
 }
 
-function get_semester_list($scope, $http) {
-    $http.get('/college/list_semester/').success(function(data)
-    {
-        $scope.semesters = data.semesters;
-    }).error(function(data, status)
-    {
-        console.log(data || "Request failed");
-    });
-}
-function get_branch_list($scope, $http) {
-    $http.get('/college/branch_list/').success(function(data)
-    {
-        $scope.branch_list = data.branch_list;
-    }).error(function(data, status)
-    {
-        console.log(data || "Request failed");
-    });
-}
-
-function add_new_branch($scope, $http) {
-    if ($scope.branch_name == '' || $scope.branch_name == undefined) {
-        $scope.validation_error = 'Please enter the Branch Name';
-    } else {
-        $scope.validation_error = '';
-        params = {
-            'csrfmiddlewaretoken': $scope.csrf_token,
-            'branch_name': $scope.branch_name,
-            'branch_id': $scope.branch_id,
-        }
-        show_spinner();
-        $http({
-            method: 'post',
-            url: "/college/save_new_branch/",
-            data: $.param(params),
-            headers: {
-                'Content-Type' : 'application/x-www-form-urlencoded'
-            }
-        }).success(function(data, status) {
-            hide_spinner();
-            if (data.result == 'error'){
-                $scope.validation_error = data.message;
-            } else {
-                if ($scope.popup)
-                    $scope.popup.hide_popup();
-                document.location.href ='/college/branch_list/';
-            }
-        }).error(function(data, success){
-            
-        }); 
-    }
-}
 function validateEmail(email) { 
     var re = /\S+@\S+\.\S+/;
     return re.test(email);
@@ -175,13 +124,6 @@ function calculate_total_fee_amount() {
     }
 }
 
-function get_fees_head_details($scope, $http, fees_head_id) {
-    $http.get('/fees/edit_fees_head/'+fees_head_id+'/').success(function(data){
-        $scope.fee_head = data.fees_head[0];
-    }).error(function(data, status){
-        console.log(data || 'Request failed');
-    });
-}
 
 
 /************************** End Common JS Functions *****************************/
