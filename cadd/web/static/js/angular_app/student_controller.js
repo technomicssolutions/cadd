@@ -888,7 +888,7 @@ function EnquiryReportController($scope, $http) {
         if($scope.validate()){
             $http.get('/admission/enquiry_report?start_date='+$scope.start_date+'&end_date='+$scope.end_date).success(function(data){
                 if(data.result=='ok'){
-                    
+                    $scope.validate_error_msg =  '';
                     $scope.enquiries = data.enquiries;
                     paginate(data.enquiries, $scope);
                 }else{
@@ -947,7 +947,7 @@ function AdmissionReportController($scope, $http) {
         if($scope.validate()){
             $http.get('/admission/admission_report?start_date='+$scope.start_date+'&end_date='+$scope.end_date).success(function(data){
                 if(data.result=='ok'){
-                    
+                    $scope.validate_error_msg = '';
                     $scope.admissions = data.admissions;
                     paginate(data.admissions, $scope);
                 }else{
