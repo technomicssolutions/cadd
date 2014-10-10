@@ -126,12 +126,12 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'south',
-    'web',
-    'admission',
-    'attendance',
     'college',
-    'fees',
+    'admission',
     'staff',
+    'web',
+    'attendance',
+    'fees',
     'expense',
 )
 
