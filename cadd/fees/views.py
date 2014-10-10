@@ -3,7 +3,6 @@ import simplejson
 import ast
 import datetime as dt
 
-from reportlab.pdfgen import canvas
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import Paragraph, Table, TableStyle, SimpleDocTemplate, Spacer
 from reportlab.lib import colors
@@ -320,7 +319,6 @@ class FeepaymentReport(View):
                         ('FONTSIZE', (1,0), (-1,-1), 17),
                         ])   
             elements.append(t)
-            
             elements.append(Spacer(4, 5))
             data = []
             data.append(['Student' , 'Installment','Installment Amount','Paid date','Paid Amount'])
@@ -447,4 +445,3 @@ class RollStudent(View):
                 response = simplejson.dumps(res)
                 return HttpResponse(response, status=status, mimetype='application/json')
         return render(request, 'unroll_students.html',{})  
-            
