@@ -312,7 +312,11 @@ function UnRollController($scope, $http, $element) {
             if (data.result == 'ok') {
                 if (data.fees_details.length > 0) {
                     $scope.fees_details = data.fees_details[0];
+                    if ($scope.fees_details.student_details.length == 0) {
+                        $scope.no_student_error = "No students"
+                    }
                     for(i=0;i<$scope.fees_details.student_details.length;i++){
+                        $scope.no_student_error = '';
                         if($scope.fees_details.student_details[i].is_rolled == 'false'){
                             $scope.fees_details.student_details[i].is_rolled = false;
                             $scope.fees_details.student_details[i].is_unrolled = true;
@@ -327,6 +331,7 @@ function UnRollController($scope, $http, $element) {
                     //     paginate($scope.fees_details.students, $scope, 2);
                 } else {
                     $scope.fees_details = [];
+                    $scope.no_student_error = "No students"
                 }
             } else {
                 $scope.no_student_error = data.message;
