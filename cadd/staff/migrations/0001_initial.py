@@ -8,52 +8,39 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'Designation'
-        db.create_table(u'staff_designation', (
+        # Adding model 'Permission'
+        db.create_table(u'staff_permission', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('designation', self.gf('django.db.models.fields.CharField')(max_length=200, unique=True, null=True, blank=True)),
+            ('attendance_module', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('student_module', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('master_module', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('fees_module', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('register_module', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('expense_module', self.gf('django.db.models.fields.BooleanField')(default=False)),
         ))
-        db.send_create_signal(u'staff', ['Designation'])
+        db.send_create_signal(u'staff', ['Permission'])
 
         # Adding model 'Staff'
         db.create_table(u'staff_staff', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], null=True, blank=True)),
-            ('staff_id', self.gf('django.db.models.fields.CharField')(unique=True, max_length=200)),
+            ('permission', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['staff.Permission'], null=True, blank=True)),
             ('dob', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
-            ('address', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
+            ('address', self.gf('django.db.models.fields.TextField')(max_length=200, null=True, blank=True)),
             ('mobile_number', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
             ('land_number', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
             ('blood_group', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
             ('doj', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
-            ('designation', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['staff.Designation'], null=True, blank=True)),
-            ('qualifications', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
-            ('experiance', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
+            ('qualifications', self.gf('django.db.models.fields.TextField')(max_length=200, null=True, blank=True)),
+            ('experience', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
             ('photo', self.gf('django.db.models.fields.files.ImageField')(max_length=100, null=True, blank=True)),
             ('role', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
-            ('certificates_submitted', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
-            ('certificates_remarks', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
-            ('certificates_file', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
-            ('id_proofs_submitted', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
-            ('id_proofs_remarks', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
-            ('id_proofs_file', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
-            ('guardian_name', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
-            ('guardian_address', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
-            ('relationship', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
-            ('guardian_mobile_number', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
-            ('guardian_land_number', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
-            ('guardian_email', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
-            ('reference_name', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
-            ('reference_address', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
-            ('reference_mobile_number', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
-            ('reference_land_number', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
-            ('reference_email', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
         ))
         db.send_create_signal(u'staff', ['Staff'])
 
     def backwards(self, orm):
-        # Deleting model 'Designation'
-        db.delete_table(u'staff_designation')
+        # Deleting model 'Permission'
+        db.delete_table(u'staff_permission')
 
         # Deleting model 'Staff'
         db.delete_table(u'staff_staff')
@@ -95,43 +82,30 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        u'staff.designation': {
-            'Meta': {'object_name': 'Designation'},
-            'designation': ('django.db.models.fields.CharField', [], {'max_length': '200', 'unique': 'True', 'null': 'True', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
+        u'staff.permission': {
+            'Meta': {'object_name': 'Permission'},
+            'attendance_module': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'expense_module': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'fees_module': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'master_module': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'register_module': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'student_module': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
         },
         u'staff.staff': {
             'Meta': {'object_name': 'Staff'},
-            'address': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
+            'address': ('django.db.models.fields.TextField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
             'blood_group': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
-            'certificates_file': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
-            'certificates_remarks': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
-            'certificates_submitted': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
-            'designation': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['staff.Designation']", 'null': 'True', 'blank': 'True'}),
             'dob': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             'doj': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
-            'experiance': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
-            'guardian_address': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
-            'guardian_email': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
-            'guardian_land_number': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
-            'guardian_mobile_number': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
-            'guardian_name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
+            'experience': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'id_proofs_file': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
-            'id_proofs_remarks': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
-            'id_proofs_submitted': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
             'land_number': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
             'mobile_number': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
+            'permission': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['staff.Permission']", 'null': 'True', 'blank': 'True'}),
             'photo': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
-            'qualifications': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
-            'reference_address': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
-            'reference_email': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
-            'reference_land_number': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
-            'reference_mobile_number': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
-            'reference_name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
-            'relationship': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
+            'qualifications': ('django.db.models.fields.TextField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
             'role': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
-            'staff_id': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '200'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'null': 'True', 'blank': 'True'})
         }
     }

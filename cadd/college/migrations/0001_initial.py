@@ -18,9 +18,10 @@ class Migration(SchemaMigration):
         # Adding model 'Course'
         db.create_table(u'college_course', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=200, unique=True, null=True, blank=True)),
             ('amount', self.gf('django.db.models.fields.DecimalField')(null=True, max_digits=10, decimal_places=2, blank=True)),
-            ('duration', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
+            ('duration', self.gf('django.db.models.fields.IntegerField')(max_length=200, null=True, blank=True)),
+            ('duration_unit', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
         ))
         db.send_create_signal(u'college', ['Course'])
 
@@ -35,11 +36,12 @@ class Migration(SchemaMigration):
         # Adding model 'Batch'
         db.create_table(u'college_batch', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
             ('software', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['college.Software'])),
             ('start_time', self.gf('django.db.models.fields.TimeField')(null=True, blank=True)),
             ('end_time', self.gf('django.db.models.fields.TimeField')(null=True, blank=True)),
-            ('no_of_students', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-            ('allowed_students', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
+            ('no_of_students', self.gf('django.db.models.fields.IntegerField')(default=0, null=True, blank=True)),
+            ('allowed_students', self.gf('django.db.models.fields.IntegerField')(default=0, null=True, blank=True)),
         ))
         db.send_create_signal(u'college', ['Batch'])
 
@@ -59,19 +61,21 @@ class Migration(SchemaMigration):
     models = {
         u'college.batch': {
             'Meta': {'object_name': 'Batch'},
-            'allowed_students': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'allowed_students': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
             'end_time': ('django.db.models.fields.TimeField', [], {'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'no_of_students': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
+            'no_of_students': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
             'software': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['college.Software']"}),
             'start_time': ('django.db.models.fields.TimeField', [], {'null': 'True', 'blank': 'True'})
         },
         u'college.course': {
             'Meta': {'object_name': 'Course'},
             'amount': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '10', 'decimal_places': '2', 'blank': 'True'}),
-            'duration': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
+            'duration': ('django.db.models.fields.IntegerField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
+            'duration_unit': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'unique': 'True', 'null': 'True', 'blank': 'True'}),
             'software': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['college.Software']", 'symmetrical': 'False'})
         },
         u'college.software': {

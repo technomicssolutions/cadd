@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class ExpenseHead(models.Model):
-	expense_head = models.CharField('Expense Head', max_length=500, unique=True)
+	expense_head = models.CharField('Expense Head', max_length=200, unique=True)
 
 	class Meta:
 		verbose_name = 'Expense Head'
