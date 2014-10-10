@@ -106,7 +106,6 @@ class Courses(View):
                     'duration': course.duration,
                     'duration_unit': course.duration_unit,
                     'amount': course.amount,
-                    'fine': course.fine,
                     'softwares': software_list,
                     'course_name': course.name + str(' - ') +str(course.duration) + ' ' + str(course.duration_unit)
                 })
@@ -131,7 +130,6 @@ class Courses(View):
                 course.amount = course_details['amount']
                 course.duration = course_details['duration']
                 course.duration_unit = course_details['duration_unit']
-                course.fine = course_details['fine']
                 course.save()
                 if course.software:
                     course.software.clear()

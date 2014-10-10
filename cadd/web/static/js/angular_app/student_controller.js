@@ -569,18 +569,15 @@ function EnquiryController($scope, $http) {
             format:'%d/%m/%Y',
         });
     }
-    $scope.add_follow_up = function(follow_up){
-        var i = $scope.enquiry.follow_up.indexOf(follow_up);
-        for(var i = 0; i < $scope.enquiry.follow_up.length; i++){
-            if($scope.enquiry.follow_up[i].hide_button == false){
-                $scope.enquiry.follow_up[i].hide_button = true;
-            }
-        }
+    $scope.add_follow_up = function(){
+        var i = $scope.enquiry.follow_up.length;
+        var enquiry = $scope.enquiry.follow_up[i-1];
+        i = enquiry['follow_up_date_id'] ;
         $scope.enquiry.follow_up.push({
             'follow_up_date' : '',
             'remarks_for_follow_up_date' : '',
             'hide_button': false,
-            'follow_up_date_id': i,
+            'follow_up_date_id': i+1,
         })
     }
     $scope.attach_date_picker = function(follow_up){
@@ -604,7 +601,6 @@ function EnquiryController($scope, $http) {
     }
     $scope.validate_enquiry = function() {
         $scope.validation_error = '';
-        console.log($scope.enquiry);
         for(var i = 0; i < $scope.enquiry.follow_up.length; i++){
             id = '#' + $scope.enquiry.follow_up[i].follow_up_date_id;
             $scope.enquiry.follow_up[i].follow_up_date = $$(id)[0].get('value');

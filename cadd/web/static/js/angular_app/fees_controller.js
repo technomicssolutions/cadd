@@ -100,7 +100,8 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
     $scope.validate_fees_payment = function() {
         $scope.validation_error = '';
 
-        var fine_balance = parseFloat($('#total_fee_amount').val()) - parseFloat($scope.payment_installment.student_fee_amount);
+        var fine_balance = parseFloat($('#total_fee_amount').val()) - parseFloat($scope.payment_installment.amount);
+        console.log(fine_balance);
         if($scope.course == '' || $scope.course == undefined) {
             $scope.validation_error = "Please Select a course " ;
             return false

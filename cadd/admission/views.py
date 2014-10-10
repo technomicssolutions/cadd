@@ -61,13 +61,15 @@ class AddStudent(View):
                             enquiry.save()
                         student.roll_number = request.POST['roll_number']
                         student.address = request.POST['address']
-                        student.qualifications = request.POST['qualifications']
+                        if request.POST['qualifications'] != 'undefined':
+                            student.qualifications = request.POST['qualifications']
                         student.course=course
                         student.batch=batch
                         student.dob = datetime.strptime(request.POST['dob'], '%d/%m/%Y')
                         student.address = request.POST['address']
                         student.mobile_number = request.POST['mobile_number']
-                        student.email = request.POST['email']
+                        if request.POST['email'] != 'undefined':
+                            student.email = request.POST['email']
                         student.blood_group = request.POST['blood_group']
                         student.doj = datetime.strptime(request.POST['doj'], '%d/%m/%Y')
                         student.photo = request.FILES.get('photo_img', '')                       

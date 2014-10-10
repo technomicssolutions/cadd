@@ -244,12 +244,6 @@ function CollegeController($scope, $element, $http, $timeout, share, $location)
         } else if($scope.course.amount !== '' && !Number($scope.course.amount)){
             $scope.validation_error = 'Please enter a valid amount';
             return false;
-        } else if($scope.course.fine == ''){
-            $scope.validation_error = 'Please enter fine of the course';
-            return false;
-        } else if($scope.course.fine != 0 && !Number($scope.course.fine)){
-            $scope.validation_error = 'Please enter a valid fine';
-            return false;
         } return true;
     }
     $scope.edit_course = function(course){
@@ -258,7 +252,6 @@ function CollegeController($scope, $element, $http, $timeout, share, $location)
         $scope.course.duration = course.duration;
         $scope.course.amount = course.amount;
         $scope.course.duration_unit = course.duration_unit;
-        $scope.course.fine = course.fine;
         $scope.url = '/college/softwares/';
         $http.get($scope.url).success(function(data)
         {        
