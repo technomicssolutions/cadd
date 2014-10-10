@@ -227,7 +227,7 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
             'guardian_mobile_number': '',            
             'fees': '',
             'fees_after_discount': '',
-            'discount': '',
+            'discount': 0,
             'no_installments': '',
         }
         $scope.photo_img = {};
@@ -548,7 +548,8 @@ function EnquiryController($scope, $http) {
         'land_mark' : '',
         'course' : '',
         'remarks': '',
-        'discount' : '',
+        'fess': '',
+        'discount' : 0,
         'date': '',
         'follow_up': [],
     }
@@ -579,6 +580,16 @@ function EnquiryController($scope, $http) {
             'hide_button': false,
             'follow_up_date_id': i+1,
         })
+    }
+    $scope.get_fees = function() {
+        console.log($scope.enquiry.course, $scope.courses);
+
+        for(var i=0; i<$scope.courses.length; i++) {
+            if ($scope.enquiry.course == $scope.courses[i].id) {
+                $scope.enquiry.fees = $scope.courses[i].amount;
+               
+            }
+        }
     }
     $scope.attach_date_picker = function(follow_up){
         var id_name = '#';
@@ -629,6 +640,9 @@ function EnquiryController($scope, $http) {
             return false;
         } else if($scope.enquiry.discount && !Number($scope.enquiry.discount)) {
             $scope.validation_error = "Please Enter  a avalid amount for discount";
+            return false;
+        }else if($scope.enquiry.discount > $scope.enquiry.fees) {
+            $scope.validation_error = "Please Check with the Fees Amount";
             return false;
         }
         for(var i = 0; i < $scope.enquiry.follow_up.length; i++){
@@ -708,6 +722,7 @@ function AdmissionController($scope, $http) {
     $scope.relationship = '';
     $scope.photo_img = {};
     $scope.fees_after_discount = 0;
+    $scope.discount = 0;
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
         $scope.no_enquiries = false;

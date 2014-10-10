@@ -13,6 +13,7 @@
 				<select name="course" ng-model="course" ng-change="get_outstanding_student()" ng-options="course.id as course.course_name for course in courses">
 					<option value="">Course</option>
 				</select>
+				<p class="error_message">[[no_student_error]]</p>
 			</div>
 		</form>
 	</div>
