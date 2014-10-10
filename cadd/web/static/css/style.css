@@ -788,7 +788,11 @@ a:hover , a:focus{
 	text-align: center;
 }
 #fee_collected_report .search_list {
-	width: 100%;
+	margin-right: 15px;
+    margin-top: 30px;
+    width: 51%;
+    font-weight: normal;
+    font-size: 14px;
 }
 #staff_permission .search_list {
 	margin-right: 15px;

@@ -348,8 +348,8 @@ class FeepaymentReport(View):
                             
                             ])   
                 elements.append(table)  
-                p.build(elements)      
-                return response
+            p.build(elements)      
+            return response
         elif report_type == 'student_wise':
             student_id = request.GET.get('student_id')
             student = Student.objects.get(id=student_id)
