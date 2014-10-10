@@ -718,18 +718,18 @@ class FeepaymentReport(View):
             
             elements.append(Spacer(4, 5))
             data = []
-            data.append(['Installment','Installment Amount','Paid date','Paid Amount'])
+            data.append(['Student' , 'Installment','Installment Amount','Paid date','Paid Amount'])
             for student in students:
                 try:
                     fees_payment = FeesPayment.objects.get(student=student)
                     
                     if fees_payment.payment_installment.count > 0 :
-                        for fee_payment_installment in fees_payment.payment_installment.all().order_by('id'):
+                        for fee_payment_installment in fees_payment.payment_installment.all().order_by('-id'):
                             for payment in fee_payment_installment.feespaid_set.all():
-                                data.append(['Installment' +str(fee_payment_installment.installment.id), fee_payment_installment.total_amount,payment.paid_date.strftime('%d/%m/%Y'), payment.paid_amount])
+                                data.append([Paragraph(student.student_name, para_style), 'Installment' +str(fee_payment_installment.installment.id), fee_payment_installment.total_amount,payment.paid_date.strftime('%d/%m/%Y'), payment.paid_amount])
                 except Exception as ex:
                     print str(ex)
-                table = Table(data, colWidths=(100, 150,100,100),  style=style)
+                table = Table(data, colWidths=(100, 100, 150,100,100),  style=style)
                 table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
                             ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
                             ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
@@ -743,7 +743,6 @@ class FeepaymentReport(View):
                 p.build(elements)      
                 return response
         elif report_type == 'student_wise':
-
             student_id = request.GET.get('student_id')
             student = Student.objects.get(id=student_id)
             response = HttpResponse(content_type='application/pdf')
@@ -759,38 +758,38 @@ class FeepaymentReport(View):
                         ('FONTSIZE', (1,0), (-1,-1), 17),
                         ])   
             elements.append(t)
-            
+            elements.append(Spacer(4, 5))
+            d = [['Student: '+student.student_name], ['Course: '+student.course.name]]
+            t = Table(d, colWidths=(450), style=style)
+            t.setStyle([('ALIGN',(0,0),(-1,-1),'CENTER'),
+                        ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
+                        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                        ('FONTSIZE', (0,0), (-1,-1), 12),
+                        ])   
+            elements.append(t)
             elements.append(Spacer(4, 5))
             try:
                 fees_payment = FeesPayment.objects.get(student=student)
+                data = []
+                data.append(['Installment' ,'Installment Amount','Paid date','Paid Amount'])
                 if fees_payment.payment_installment.count > 0 :
                     for fee_payment_installment in fees_payment.payment_installment.all().order_by('-id'):
-                        data = []
-                        data_list = []
-                        batches_name = ''
-                        data.append(['Name','Course','Paid date','Total Amount','Paid Amount'])
-                       
-                        data.append([Paragraph(fee_payment_installment.student.student_name,para_style),Paragraph(fee_payment_installment.student.course.name,para_style),fee_payment_installment.paid_date.strftime('%d/%m/%Y'),fee_payment_installment.total_amount,fee_payment_installment.paid_amount])
-                        table = Table(data, colWidths=(100,100,100,100,100),  style=style)
-                        table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
-                                    ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
-                                    ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-                                    ('BACKGROUND',(0, 0),(-1,-1),colors.white),
-                                    ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
-                                    ('BOX', (0,0), (-1,-1), 0.25, colors.black),
-                                    ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
-                                    
-                                    ])   
-                        elements.append(table)
+                        for payment in fee_payment_installment.feespaid_set.all():
+                            data.append(['Installment'+str(fee_payment_installment.installment.id), fee_payment_installment.total_amount,payment.paid_date.strftime('%d/%m/%Y'),payment.paid_amount])
+                table = Table(data, colWidths=(100,150,100,100),  style=style)
+                table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
+                            ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
+                            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                            ('BACKGROUND',(0, 0),(-1,-1),colors.white),
+                            ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+                            ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+                            ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
+                            
+                        ])   
+                elements.append(table)
             except Exception as ex:
                 print str(ex) 
-                # res = {
-                #     'result': 'error',
-                #     'message': 'No fee payment done by this student',
-                # }
-                # status = 200
-                # response = simplejson.dumps(res)
-                # return HttpResponse(response, status=status, mimetype='application/json')
+                
             p.build(elements)        
             return response           
         else:
