@@ -106,7 +106,6 @@ class AttendanceDetails(View):
                         staff_obj = Staff.objects.get(user=attendance.user)
                         staff = staff_obj.user.first_name + " " + staff_obj.user.last_name
                 except Exception as ex:
-                    print str(ex)
                     attendance = Attendance()
                     staff = ''
                 for student in students:
@@ -197,7 +196,6 @@ class BatchStudents(View):
                 staff_obj = Staff.objects.get(user=attendance.user)
                 staff = staff_obj.user.first_name + " " + staff_obj.user.last_name
         except Exception as ex:
-            print str(ex)
             attendance = Attendance()
             staff = ''
         for student in students:

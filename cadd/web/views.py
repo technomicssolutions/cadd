@@ -81,7 +81,6 @@ class Letters(View):
                     'result': 'ok',
                     }
             except Exception as ex:
-                print str(ex)
                 res = {
                     'result': 'error',
                     'message': 'Failed',
@@ -172,7 +171,6 @@ class AddCertificate(View):
                     'result': 'ok',
                     }
             except Exception as ex:
-                print str(ex)
                 res = {
                     'result': 'error',
                     'message': 'Failed',
@@ -188,35 +186,6 @@ class DeleteCertificate(View):
         certificate = Certificate.objects.get(id=certificate_id)
         certificate.delete()
         return render(request, 'certificates.html', {})
-
-
-# class EditCertificate(View):
-
-#     def get(self, request, *args, **kwargs):
-#         certificate_id = kwargs['certificate_id']
-#         context = {
-#             'certificate_id': certificate_id,
-#         }
-#         certificate_data = []
-#         certificate = Certificate.objects.get(id=certificate_id)
-#         if request.is_ajax():
-#             certificate_data.append({
-#                 'id': certificate.id,
-#                 'name': certificate.certificate_name,
-#                 'date': certificate.date.strftime('%d/%m/%Y'),
-#                 'student': certificate.student.student_name,
-#                 'course': certificate.course.name,
-#                 'issued_authority': certificate.issued_authority,
-#             }) 
-#             res = {
-#                 'result': 'ok',
-#                 'certificate': certificate_data,
-#             }
-#             status = 200
-#             response = simplejson.dumps(res)
-#             return HttpResponse(response, status=status, mimetype='application/json')
-#         return render(request, 'edit_certificate.html',context)
-
 
 class DeleteLetter(View):
     def get(self,request,*args,**kwargs):

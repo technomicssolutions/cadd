@@ -92,7 +92,6 @@ class AddStudent(View):
                             student.installments.add(installmet)
                             student.save()
                     except Exception as ex:
-                        print str(ex)
                         res = {
                             'result': 'error',
                             'message': str(ex)
@@ -102,7 +101,6 @@ class AddStudent(View):
                         'result': 'ok',
                     }                     
             except Exception as ex:
-                print ex
                 res = {
                     'result': 'error',
                     'message': str(ex)
@@ -442,7 +440,6 @@ class EnquiryDetails(View):
                         'auto_generated_num': enquiry.auto_generated_num,
                     })
             except Exception as ex:
-                print str(ex), 'Exception'
                 enquiry_list = []
             
             response = simplejson.dumps({
@@ -555,7 +552,7 @@ class EnquiryReport(View):
         try:
             enquiries = Enquiry.objects.filter( saved_date__gte=start_date,saved_date__lte=end_date).order_by('saved_date')
         except Exception as ex:
-            print str(ex), 'Exception'
+            
             res = {
                     'result': 'error',
                 }
@@ -645,7 +642,6 @@ class AdmissionReport(View):
         try:
             admissions = Student.objects.filter( doj__gte=start_date,doj__lte=end_date).order_by('doj')
         except Exception as ex:
-            print str(ex), 'Exception'
             res = {
                     'result': 'error',
                 }
@@ -791,7 +787,6 @@ class GetInstallmentDetails(View):
                         'balance': float(installment.amount),
                     })
             except Exception as ex:
-                print str(ex)
                 ctx_installments.append({
                     'id': installment.id,
                     'amount':installment.amount,
@@ -882,8 +877,6 @@ class FollowUpReport(View):
                             'discount': enquiry.discount,
                             'auto_generated_num': enquiry.auto_generated_num,
                         })
-
-                        print enquiries
                 except Exception as ex:
                     print str(ex)
             response = simplejson.dumps({

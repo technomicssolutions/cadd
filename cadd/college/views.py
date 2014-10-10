@@ -47,7 +47,6 @@ class Softwares(View):
                     'result': 'ok',
                     }
             except Exception as ex:
-                print str(ex)
                 res = {
                     'result': 'error',
                     'message': 'Software Already Exists',
@@ -142,7 +141,6 @@ class Courses(View):
                     'result': 'ok',
                     }
             except Exception as ex:
-                print str(ex)
                 res = {
                     'result': 'error',
                     'message': 'Course Already Exists',
@@ -252,7 +250,6 @@ class Batches(View):
                     'message': 'Batch /Added Successfully',
                 }  
             except Exception as ex:
-                print str(ex)
                 res = {
                     'result': 'error',
                     'message': 'Batch Already Exists',
