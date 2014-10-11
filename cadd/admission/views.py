@@ -289,12 +289,10 @@ class EditStudentDetails(View):
                     batch_obj.no_of_students = batch_obj.no_of_students + 1
                 batch_obj.save()
                 student.batches.add(batch_obj)
-
             student.dob = datetime.strptime(student_data['dob'], '%d/%m/%Y')
             student.address = student_data['address']
             student.mobile_number = student_data['mobile_number']
             student.cadd_registration_no = student_data['cadd_registration_no']
-            
             student.email = student_data['email']
             student.blood_group = student_data['blood_group']
             student.doj = datetime.strptime(student_data['doj'], '%d/%m/%Y')
@@ -436,7 +434,6 @@ class EnquiryDetails(View):
                         'course' : enquiry.course.name,
                         'remarks': enquiry.remarks,
                         'saved_date':enquiry.saved_date.strftime('%d/%m/%Y') if enquiry.saved_date else '',
-                        
                         'discount': enquiry.discount,
                         'auto_generated_num': enquiry.auto_generated_num,
                     })
@@ -478,8 +475,6 @@ class AllEnquiries(View):
                         'discount': enquiry.discount,
                         'auto_generated_num': enquiry.auto_generated_num,
                     })
-                
-            
             response = simplejson.dumps({
                 'enquiry': enquiry_list,
             })    
@@ -523,7 +518,6 @@ class SearchEnquiry(View):
                     'auto_generated_num': enquiry.auto_generated_num,
                     })
         if request.is_ajax():
-            
             response = simplejson.dumps({
                 'enquiries': enquiry_list,
                 'count': count,
@@ -553,7 +547,6 @@ class EnquiryReport(View):
         try:
             enquiries = Enquiry.objects.filter( saved_date__gte=start_date,saved_date__lte=end_date).order_by('saved_date')
         except Exception as ex:
-            
             res = {
                     'result': 'error',
                 }
@@ -652,7 +645,6 @@ class AdmissionReport(View):
                 batch_list = []
                 for admission in admissions:
                     batch_list = []
-                    
                     if admission.batches.all().count() > 0: 
                         for batch in admission.batches.all().order_by('-id'):
                             batch_list.append(batch.name)
@@ -671,7 +663,6 @@ class AdmissionReport(View):
                 return HttpResponse(response, status=200, mimetype='application/json')
         if request.GET.get('report_type',''):
             if admissions:
-                
                 response = HttpResponse(content_type='application/pdf')
                 p = SimpleDocTemplate(response, pagesize=A4)
                 elements = []        
@@ -852,7 +843,6 @@ class FollowUpReport(View):
                         })
                     except Exception as ex:
                         pass
-
             else:
                 try:
                     follow_ups = FollowUp.objects.filter(follow_up_date__year=current_date.year, follow_up_date__month=current_date.month, follow_up_date__day=current_date.day)
