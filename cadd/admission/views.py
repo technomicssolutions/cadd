@@ -306,7 +306,8 @@ class EditStudentDetails(View):
             student.relationship = student_data['relationship']
             student.guardian_mobile_number = student_data['guardian_mobile_number']
             student.fees = student_data['fees']
-            student.discount = student['discount']
+            if student_data['discount']:
+                student.discount = student_data['discount']
             student.no_installments = student_data['no_installments']
             installments = student_data['installments']
             for installment in installments:
