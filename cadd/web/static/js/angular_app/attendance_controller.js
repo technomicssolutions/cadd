@@ -574,8 +574,10 @@ function TopicsController($scope, $http, $element){
         $scope.no_staff_msg = "";
         var url = '/attendance/topics_covered/?staff='+staff.id;
         $http.get(url).success(function(data)
-        {            
-            $scope.topics = data.topics;
+        {   if(data.topics == '')
+                $scope.no_staff_msg = 'No topics covered by the staff selected';
+            else        
+                $scope.topics = data.topics;
         }).error(function(data, status)
         {
             $('#overlay').css('height', '0px');

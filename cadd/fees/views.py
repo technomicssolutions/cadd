@@ -78,7 +78,6 @@ class FeesPaymentSave(View):
                     'result': 'error: '+str(Ex),
                     'message': 'Already Paid',
                 }
-
             response = simplejson.dumps(res)
             return HttpResponse(response, status = status_code, mimetype="application/json")
 
@@ -218,7 +217,6 @@ class GetOutStandingFeesDetails(View):
                     'result':'ok',
                     'fees_details': fees_details,
                 }
-            
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')
 
@@ -310,7 +308,6 @@ class FeepaymentReport(View):
         if report_type == 'course_wise' :
             course =  request.GET.get('course')
             students = Student.objects.filter(course=course)
-            print students
             response = HttpResponse(content_type='application/pdf')
             p = SimpleDocTemplate(response, pagesize=A4)
             elements = []        
@@ -324,14 +321,12 @@ class FeepaymentReport(View):
                         ('FONTSIZE', (1,0), (-1,-1), 17),
                         ])   
             elements.append(t)
-            
             elements.append(Spacer(4, 5))
             data = []
             data.append(['Student' , 'Installment','Installment Amount','Paid date','Paid Amount'])
             for student in students:
                 try:
                     fees_payment = FeesPayment.objects.get(student=student)
-                    print fees_payment
                     if fees_payment.payment_installment.count > 0 :
                         for fee_payment_installment in fees_payment.payment_installment.all().order_by('-id'):
                             for payment in fee_payment_installment.feespaid_set.all():
@@ -346,7 +341,6 @@ class FeepaymentReport(View):
                         ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
                         ('BOX', (0,0), (-1,-1), 0.25, colors.black),
                         ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
-                        
                         ])   
             elements.append(table)  
             p.build(elements)      
@@ -362,7 +356,6 @@ class FeepaymentReport(View):
             t.setStyle([('ALIGN',(0,0),(-1,-1),'CENTER'),
                         ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
                         ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-                        
                         ('FONTSIZE', (0,0), (0,0), 20),
                         ('FONTSIZE', (1,0), (-1,-1), 17),
                         ])   
@@ -393,12 +386,10 @@ class FeepaymentReport(View):
                             ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
                             ('BOX', (0,0), (-1,-1), 0.25, colors.black),
                             ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
-                            
                         ])   
                 elements.append(table)
             except Exception as ex:
                 print str(ex) 
-                
             p.build(elements)        
             return response           
         else:
