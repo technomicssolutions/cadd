@@ -54,9 +54,11 @@ class FeesPaymentSave(View):
                 if installment_created:
                     fee_payment_installment.paid_amount = fees_payment_details['paid_amount']
                     fee_payment_installment.installment_fine = fees_payment_details['paid_fine_amount']
+                    fee_payment_installment.fee_waiver_amount = fees_payment_details['fee_waiver']
                 else:
                     fee_payment_installment.paid_amount = float(fee_payment_installment.paid_amount) + float(fees_payment_details['paid_amount'])
                     fee_payment_installment.installment_fine = float(fee_payment_installment.installment_fine) + float(fees_payment_details['paid_fine_amount'])
+                    fee_payment_installment.fee_waiver_amount = float(fee_payment_installment.fee_waiver_amount)  + float(fees_payment_details['fee_waiver'])
                 # fee_payment_installment.paid_date = datetime.strptime(fees_payment_details['paid_date'], '%d/%m/%Y')
                 fee_payment_installment.total_amount = fees_payment_details['total_amount']
                 fee_payment_installment.save()
@@ -64,6 +66,7 @@ class FeesPaymentSave(View):
                 fees_paid.paid_date = datetime.strptime(fees_payment_details['paid_date'], '%d/%m/%Y')
                 fees_paid.fees_payment_installment = fee_payment_installment
                 fees_paid.paid_amount = fees_payment_details['paid_amount']
+                #fees_paid.fee_waiver_amount = fees_payment_details['fee_waiver']
                 fees_paid.paid_fine_amount = fees_payment_details['paid_fine_amount']
                 fees_paid.save()
                 fees_payment.payment_installment.add(fee_payment_installment)
@@ -102,7 +105,7 @@ class GetOutStandingFeesDetails(View):
                     try:
                         fees_payment = FeesPayment.objects.get(student__id=student_id)
                         fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
-                        if fees_payment_installments.count() > 0:
+                        if (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)) < installment.amount:
                             if fees_payment_installments[0].paid_amount < installment.amount:
                                 is_not_paid = True
                                 ctx_installments.append({
@@ -112,7 +115,7 @@ class GetOutStandingFeesDetails(View):
                                     'fine_amount': installment.fine_amount,
                                     'name':'installment'+str(i + 1),
                                     'paid_installment_amount': fees_payment_installments[0].paid_amount,
-                                    'balance': float(installment.amount) - float(fees_payment_installments[0].paid_amount),
+                                    'balance': float(installment.amount) - (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)),
                                 })
                         elif fees_payment_installments.count() == 0:
                             is_not_paid = True
@@ -163,7 +166,7 @@ class GetOutStandingFeesDetails(View):
                             fees_payment = FeesPayment.objects.get(student__id=student.id)
                             fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
                             if fees_payment_installments.count() > 0:
-                                if fees_payment_installments[0].paid_amount < installment.amount:
+                                if (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)) < installment.amount:
                                     is_not_paid = True
                                     ctx_installments.append({
                                         'id': installment.id,
@@ -172,7 +175,7 @@ class GetOutStandingFeesDetails(View):
                                         'fine_amount': installment.fine_amount,
                                         'name':'installment'+str(i + 1),
                                         'paid_installment_amount': fees_payment_installments[0].paid_amount,
-                                        'balance': float(installment.amount) - float(fees_payment_installments[0].paid_amount),
+                                        'balance': float(installment.amount) - (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)),
                                     })
                             elif fees_payment_installments.count() == 0:
                                 is_not_paid = True
@@ -247,7 +250,7 @@ class PrintOutstandingFeesReport(View):
                 fees_payment = FeesPayment.objects.get(student__id=student.id)
                 fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
                 if fees_payment_installments.count() > 0:
-                    if fees_payment_installments[0].paid_amount < installment.amount:
+                    if (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)) < installment.amount:
                         is_not_paid = True
                         data_list.append({
                             'id': installment.id,
@@ -256,7 +259,7 @@ class PrintOutstandingFeesReport(View):
                             'fine_amount': installment.fine_amount,
                             'name':'installment'+str(i + 1),
                             'paid_installment_amount': fees_payment_installments[0].paid_amount,
-                            'balance': float(installment.amount) - float(fees_payment_installments[0].paid_amount),
+                            'balance': float(installment.amount) - (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)),
                         })
                 elif fees_payment_installments.count() == 0:
                     is_not_paid = True
