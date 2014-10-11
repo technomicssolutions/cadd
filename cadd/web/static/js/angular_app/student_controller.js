@@ -570,7 +570,8 @@ function EnquiryController($scope, $http) {
         });
     }
     $scope.add_follow_up = function(follow_up){
-        var i = $scope.enquiry.follow_up.indexOf(follow_up);
+        console.log(follow_up);
+        var i = follow_up.follow_up_date_id;
         for(var i = 0; i < $scope.enquiry.follow_up.length; i++){
             if($scope.enquiry.follow_up[i].hide_button == false){
                 $scope.enquiry.follow_up[i].hide_button = true;
@@ -580,7 +581,7 @@ function EnquiryController($scope, $http) {
             'follow_up_date' : '',
             'remarks_for_follow_up_date' : '',
             'hide_button': false,
-            'follow_up_date_id': i,
+            'follow_up_date_id': i+1,
         })
     }
     $scope.attach_date_picker = function(follow_up){
@@ -651,7 +652,7 @@ function EnquiryController($scope, $http) {
                 }
             }
         }
-        return true;
+        //return true;
     }   
     $scope.save_enquiry = function(){
         if ($scope.validate_enquiry()) {
