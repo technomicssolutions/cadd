@@ -824,30 +824,34 @@ class FollowUpReport(View):
                 follow_ups = FollowUp.objects.filter(follow_up_date__gte=start_date,follow_up_date__lte=end_date).order_by('follow_up_date')
                 enquiry_list = []
                 for follow_up in follow_ups:
-                    enquiry = follow_up.enquiry_set.get(is_admitted=False)
-                    follow_up_details = []
-                    for follow_up in enquiry.follow_up.all():
-                        follow_up_details.append({
-                            'date': follow_up.follow_up_date.strftime('%d/%m/%Y'),
-                            'remark': follow_up.remarks_for_follow_up_date
+                    try:
+                        enquiry = follow_up.enquiry_set.get(is_admitted=False)
+                        follow_up_details = []
+                        for follow_up in enquiry.follow_up.all():
+                            follow_up_details.append({
+                                'date': follow_up.follow_up_date.strftime('%d/%m/%Y'),
+                                'remark': follow_up.remarks_for_follow_up_date
+                            })
+                        enquiry_list.append({
+                            'id': enquiry.id,
+                            'student_name': enquiry.student_name,
+                            'address': enquiry.address,
+                            'mobile_number' : enquiry.mobile_number,
+                            'email' : enquiry.email,
+                            'details_about_clients_enquiry' : enquiry.details_about_clients_enquiry,
+                            'educational_qualification': enquiry.educational_qualification,
+                            'land_mark': enquiry.land_mark,
+                            'saved_date':enquiry.saved_date.strftime('%d/%m/%Y') if enquiry.saved_date else '',
+                            'course' : enquiry.course.id,
+                            'course_name':enquiry.course.name,
+                            'remarks': enquiry.remarks,
+                            'follow_ups': follow_up_details,
+                            'discount': enquiry.discount,
+                            'auto_generated_num': enquiry.auto_generated_num,
                         })
-                    enquiry_list.append({
-                        'id': enquiry.id,
-                        'student_name': enquiry.student_name,
-                        'address': enquiry.address,
-                        'mobile_number' : enquiry.mobile_number,
-                        'email' : enquiry.email,
-                        'details_about_clients_enquiry' : enquiry.details_about_clients_enquiry,
-                        'educational_qualification': enquiry.educational_qualification,
-                        'land_mark': enquiry.land_mark,
-                        'saved_date':enquiry.saved_date.strftime('%d/%m/%Y') if enquiry.saved_date else '',
-                        'course' : enquiry.course.id,
-                        'course_name':enquiry.course.name,
-                        'remarks': enquiry.remarks,
-                        'follow_ups': follow_up_details,
-                        'discount': enquiry.discount,
-                        'auto_generated_num': enquiry.auto_generated_num,
-                    })
+                    except Exception as ex:
+                        pass
+
             else:
                 try:
                     follow_ups = FollowUp.objects.filter(follow_up_date__year=current_date.year, follow_up_date__month=current_date.month, follow_up_date__day=current_date.day)
