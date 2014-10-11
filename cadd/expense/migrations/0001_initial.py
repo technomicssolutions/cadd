@@ -11,7 +11,7 @@ class Migration(SchemaMigration):
         # Adding model 'ExpenseHead'
         db.create_table(u'expense_expensehead', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('expense_head', self.gf('django.db.models.fields.CharField')(unique=True, max_length=500)),
+            ('expense_head', self.gf('django.db.models.fields.CharField')(unique=True, max_length=200)),
         ))
         db.send_create_signal(u'expense', ['ExpenseHead'])
 
@@ -93,7 +93,7 @@ class Migration(SchemaMigration):
         },
         u'expense.expensehead': {
             'Meta': {'object_name': 'ExpenseHead'},
-            'expense_head': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '500'}),
+            'expense_head': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '200'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         }
     }

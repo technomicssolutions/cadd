@@ -6,12 +6,6 @@
 	.form_container {
 		min-width: 417px;
 	}
-	.search_purchase {
-		min-width: 861px;
-	}
-	.purchase_items_list {
-		min-width: 1025px;
-	}
 }
 
 @media (min-width: 951px) and (max-width:1020px) { 
@@ -21,12 +15,6 @@
  	.form_container {
 		min-width: 417px;
 	}
-	.search_purchase {
-		min-width: 861px;
-	}
-	.purchase_items_list {
-		min-width: 1025px;
-	}
  }
 @media (min-width: 700px) and (max-width:950px) {
 	.login {
@@ -34,12 +22,6 @@
 	}
  	.form_container {
 		min-width: 417px;
-	}
-	.search_purchase {
-		min-width: 861px;
-	}
-	.purchase_items_list {
-		min-width: 1025px;
 	}
 }
 
@@ -50,9 +32,6 @@
  	.form_container {
 		min-width: 417px;
 	}
-	.purchase_items_list {
-		min-width: 1025px;
-	}
 }
 
 @media (min-width: 400px) and (max-width:587px) {
@@ -62,14 +41,8 @@
  	.form_container {
 		min-width: 417px;
 	}
-	.purchase_items_list {
-		min-width: 1025px;
-	}
 }
 @media (min-width: 100px) and (max-width:399px) { 
-	.purchase_items_list {
-		min-width: 1025px;
-	}
 }
 
 .login {
@@ -81,11 +54,6 @@
 	margin-left: 6px;
 }
 /******************** responsive styling end ************/
-/*table {                                         
-     margin: auto;                              
-     width: 80% !important;    
-
-} */
 body {
 	width: 100%;
 	height: 100%;
@@ -127,8 +95,6 @@ body {
 	min-width: 150px;
 	display: none;
 }
-
-
 .menu_div ul li a{
 	color: #FFFFFF;
 }
@@ -232,8 +198,6 @@ footer {
 .align{
 	width: 45% !important;
 }
-
-
 textarea{
     height: 32px;
     padding-left: 3px;
@@ -326,58 +290,6 @@ form {
     width: 98%;
 
 }
-
-/*************************** Edit fee structure ************************/
-
-.edit_fee_struicture_form_container {
-	margin: auto;
-    min-height: 540px;
-    width: 90%;
-}
-#edit_fee_structure form {
-	margin: auto;
-    min-height: 540px;
-    width: 100%;
-}
-
-#edit_fee_structure .section_1 {
-    float: right;
-    margin: auto;
-    width: 100%;
-}
-
-.edit_fee_struicture_form_container .control {
-	width: 50%;
-	height: 30px;
-	float: left;
-	padding: 10px;
-}
-.edit_fee_struicture_form_container label{
-	display: block !important;
-    float: left;
-    width: 45%;
-}
-
-.edit_fee_struicture_form_container input[type="text"]{
-	float: left;
-	display: block;
-	width: 50%;
-}
-.edit_fee_struicture_form_container .section_1 .buttons {
-	width: 100% !important;
-}
-#edit_fee_structure .formrow {
-    float: left;
-    min-height: 40px;
-    width: 100%;
-}
-
-#edit_fee_structure table {
-    float: left;
-    margin: auto;
-}
-
-
 /****************************Staff Module*******************************/
 
 .staff_form_container {
@@ -388,20 +300,6 @@ form {
 	float: left;
 	width: 100%;
 	margin-top: 30px; 
-}
-.search_staff{
-	width: 100%;
-	height: 100%;
-	padding-bottom: 30px;
-	float: left;
-	margin-top: 50px;
-}
-
-.search_staff .control {
-	/*background-color: #ADD8E6;*/
-    float: left;
-    padding: 13px;
-    width: 30%;
 }
 .sec{
 	width: 100%;
@@ -417,8 +315,6 @@ form {
   position: absolute;
   width: 100%;
 }
-
-
 #dialogue_popup_container {
   z-index: 2;
   position: absolute;
@@ -496,33 +392,22 @@ form {
 }
 .form_text_attendance {
 	float: left;
-
     width: 248px;
-
 }
 .form_input_attendance {
 	float: left;
-}
-.flag_label{
-
 }
 .view_flags{
 	float: right;
 	width: 10%;
 }
-.red_box{
-height: 20px;
-width:  20px; 
-background-color: red; 
-}
 .blue_box{
-height: 20px;
-width:  20px; 
-background-color: #336699; 
+	height: 20px;
+	width:  20px; 
+	background-color: #336699; 
 }
 #attendance .days, #attendance_details .days {
 	width:3%;
-/*	border: 1px solid;*/
 }
 .allign_center{
 	text-align: center !important;
@@ -530,7 +415,6 @@ background-color: #336699;
 #attendance .days input, #attendance_details .days input {
 	width:3%;
 }
-
 #attendance_details table #attendance table {
 	width: 100% !important;
 }
@@ -572,12 +456,6 @@ td input {
 .red_color {
 	background-color: #FF0000 !important;
 }
-#clear_batch_details_message label, #clear_holiday_message label {
-	width: 100% !important;
-}
-.current_date{
-
-}
 .add_attendance_label{
 	display: inline;
 	margin-right: 3%;
@@ -613,14 +491,12 @@ th.no_border_top{
 	border-top: none;
 	white-space: nowrap;	
 }
-
 td.no_border_top{
 	border-top: none;
 }
 td.allign_center{
 	text-align: center;
 	width: 50px;
-
 }
 th.exam_tab{
 	border-top: none;
@@ -647,50 +523,15 @@ label.block{
 	color: red;
 	font-weight: bold;
 }
-
 .bold_font{
 	font-weight: bold;
 }
-
-
-#fee_head .control,#edit_fee_head .control {
-
-	height: auto !important;
-}
-#fee_structure .form_container {
-	width: 100%;
-}
-
-#fee_structure .section_1 {
-	/*float: left !important;*/
-	width: 80% !important;
-	border: 1px solid #FFFFFF;
-}
-#fee_structure .control {
-	width: 50% !important;
-}
-#fee_structure table {
-	width: 95% !important;
-}
-/*#fee_structure table td input[type="text"] {
-	width: 25% !important;
-}*/
 .align_right {
 	float: right;
 }
 .align_left {
 	float: left;
 }
-
-
-/************* Edit exam styles *****************/
-#edit_exam_schedule input[type="text"] {
-	width: 150px !important;
-	display: block;
-}
-
-/************** end edit exam styles **********/
-
 /************ Common styles ***********/
 
 .new_button input[type="button"] {
@@ -733,13 +574,6 @@ label.block{
 .personal_details .control, .student_detail_section .control {
 	float: right !important;
 	width: 75% !important;
-}
-#staff_details_view h3, #student_details_view h3 {
-	color: #3A87AD;
-}
-#staff_details_view label, #student_details_view label {
-	display: block;
-	width: 25% !important;
 }
 .page {
 	width: 100%;
@@ -831,7 +665,6 @@ label.block{
     margin-right: 34%;
     float: left;
 }
-
 .search_list_item {
 	border-bottom: 1px solid #C3C3C3;
     padding: 5px;
@@ -876,7 +709,6 @@ label.block{
 .datepicker_bootstrap .time .separator,
 .datepicker_bootstrap .time .minutes {
   background: #ffffff;
-  /*border: 0px;*/
   width: 50px;
   font-size: 32px;
   color: #000000;
@@ -928,14 +760,11 @@ label.block{
 }
 a:hover , a:focus{
 	color: #33CCFF !important;
-	/*99CCFF*/
 }
-
 #attendance textarea{
 	height: 75px;
     padding-left: 21px;
 }
-
 #search_box {
 	border: 1px solid #336699;
     border-radius: 5px;
@@ -957,4 +786,24 @@ a:hover , a:focus{
 }
 .add_button_followup {
 	text-align: center;
+}
+#fee_collected_report .search_list {
+	margin-right: 15px;
+    margin-top: 30px;
+    width: 51%;
+    font-weight: normal;
+    font-size: 14px;
+}
+#staff_permission .search_list {
+	margin-right: 15px;
+    margin-top: 30px;
+    width: 51%;
+}
+
+ .search_staff{
+	width: 100%;
+	height: 100%;
+	padding-bottom: 30px;
+	float: left;
+	margin-top: 50px;
 }

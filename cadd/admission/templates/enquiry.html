@@ -46,10 +46,8 @@
 				<label> Course</label>  
 			</div>
 			<div class="forminput">
-				<select name="course" ng-model="enquiry.course">
+				<select name="course" ng-model="enquiry.course" ng-options="course.id as course.course_name for course in courses" ng-change="get_fees()">
 					<option value="">Select</option>
-					<option ng-repeat="course in courses" value="[[course.id]]" >[[course.name]]
-					</option>
 				</select>
 			</div>
 			
@@ -89,6 +87,12 @@
 				<textarea name="details_about_clients_enquiry" value="" ng-model="enquiry.details_about_clients_enquiry"> </textarea>
 			</div>
 			<div class="formtext">
+				<label>Fees</label>			
+			</div>
+			<div class="forminput">
+				<input type="text" name="fees" value="" ng-model="enquiry.fees" readonly>
+			</div>
+			<div class="formtext">
 				<label>Discount</label>			
 			</div>
 			<div class="forminput">
@@ -101,6 +105,7 @@
 				<textarea name="remarks" value="" ng-model="enquiry.remarks"> </textarea>
 			</div>
 			<div class="follow_up_div">
+				<h5 style="text-align:center">Follow Up Details</h5>
 				<div ng-repeat="follow_up in enquiry.follow_up" >
 					<div>
 						<div class="formtext">
@@ -120,7 +125,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="add_button_followup"><a href="" ng-click="add_follow_up(follow_up)"><input class="btn " type="button" value="+" ng-hide="follow_up.hide_button"></a></div>
+				<div class="add_button_followup"><a href="" ng-click="add_follow_up()"><input class="btn " type="button" value="+"></a></div>
 				
 			</div>
 		<div class="button_control">

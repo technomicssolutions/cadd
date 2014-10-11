@@ -26,263 +26,6 @@ para_style = ParagraphStyle('fancy')
 para_style.fontSize = 12
 para_style.fontName = 'Helvetica'
 
-# Fees structure start
-
-class CreateFeesStructure(View):
-
-    def get(self, request, *args, **kwargs):
-
-        return render(request, 'fees/fees_structure.html', {})
-
-    def post(self, request, *args, **kwargs):
-        status_code = 200
-        if request.is_ajax():
-            fees_structure_details = ast.literal_eval(request.POST['fee_structure'])
-            course = Course.objects.get(id = fees_structure_details['course'])
-            batch = Batch.objects.get(id = fees_structure_details['batch'])
-            try:
-                fee_structure = FeesStructure.objects.get(course=course,batch=batch)
-                res = {
-                    'result': 'error',
-                    'message': 'Fees Structure already existing'
-                }
-            except Exception as ex:
-                fee_structure = FeesStructure.objects.create(course=course,batch=batch)
-                fee_head_details = fees_structure_details['fees_head_details']
-                for fee_head in fee_head_details:
-                    fee_structure_head = FeesStructureHead()
-                    fee_structure_head.name = fee_head['head']
-                    fee_structure_head.amount = fee_head['amount']
-                    fee_structure_head.no_installments = fee_head['no_installment']
-                    fee_structure_head.save()
-                    for installment_details in fee_head['installments']:
-                        installment = Installment()
-                        installment.due_date = datetime.strptime(installment_details['due_date'], '%d/%m/%Y')
-                        installment.amount = installment_details['amount']
-                        installment.fine_amount = installment_details['fine_amount']
-                        installment.save()
-                        fee_structure_head.installments.add(installment)
-                    fee_structure.head.add(fee_structure_head)
-
-                res = {
-                    'result': 'ok',
-                }
-            response = simplejson.dumps(res)
-            return HttpResponse(response, status = status_code, mimetype="application/json")
-
-class EditFeesStructure(View):
-   
-    def get(self, request, *args, **kwargs):
-        
-        fees_structure_id = kwargs['fees_structure_id']
-        ctx_fees_structure = []
-        ctx_fees_head = []
-        status = 200
-        if request.is_ajax():
-            fees = FeesStructure.objects.get(id = fees_structure_id)
-            heads = fees.head.all()
-            i = 0
-            for head in heads:
-                ctx_installments = []
-                j  = 0
-                for installment in head.installments.all():
-                    ctx_installments.append({
-                        'id': installment.id,
-                        'due_date': installment.due_date.strftime('%d/%m/%Y') if installment.due_date else '',
-                        'amount': installment.amount,
-                        'fine_amount': installment.fine_amount,
-                        'due_date_id': 'due_date'+str(i)+str(j),
-                    })
-                    j = j + 1
-
-                ctx_fees_head.append({
-                    'id': head.id,
-                    'head': head.name,
-                    'amount': head.amount,
-                    'no_installments': head.no_installments,
-                    'installment_no': head.no_installments,
-                    'installments': ctx_installments,
-                    'shrink': False,
-                    'removed_installments': []
-                })
-                i = i + 1
-            ctx_fees_structure.append({
-                'course': fees.course.course,
-                'batch': fees.batch.branch.branch if fees.batch.branch else '' + ' ' + fees.batch.start_date + '-' + fees.batch.end_date,           
-                'fees_head': ctx_fees_head,
-            })
-            res = {
-                'result': 'ok',
-                'fees_structure': ctx_fees_structure,
-            }
-            response = simplejson.dumps(res)
-            return HttpResponse(response, status=status, mimetype='application/json')
-        context = {
-            'fee_structure_id': fees_structure_id,
-        }
-        return render(request, 'fees/edit_fees_structure_details.html', context)
-
-    def post(self, request, *args, **kwargs):
-
-        status = 200
-        fees_structure_id = kwargs['fees_structure_id']
-        fee_structure = FeesStructure.objects.get(id=fees_structure_id)
-        fees_structure_details = ast.literal_eval(request.POST['fee_structure'])
-        removed_heads = fees_structure_details['removed_heads']
-        for head in removed_heads:
-            fees_head = FeesStructureHead.objects.get(id=head['id'])
-            fees_head.delete()
-        fee_head_details = fees_structure_details['fees_head']
-        for fee_head in fee_head_details:
-            try:
-                fee_structure_head = FeesStructureHead.objects.get(id=fee_head['id'])
-            except:
-                fee_structure_head = FeesStructureHead()
-            fee_structure_head.name = fee_head['head']
-            fee_structure_head.amount = fee_head['amount']
-            fee_structure_head.no_installments = fee_head['no_installments']
-            fee_structure_head.save()
-            removed_installments = fee_head['removed_installments']
-            for installment in removed_installments:
-                installment_obj = Installment.objects.get(id=installment['id'])
-                installment_obj.delete()
-            for installment_details in fee_head['installments']:
-                try:
-                    installment = Installment.objects.get(id=installment_details['id'])
-                except:
-                    installment = Installment()
-                installment.due_date = datetime.strptime(installment_details['due_date'], '%d/%m/%Y')
-                installment.amount = installment_details['amount']
-                installment.fine_amount = installment_details['fine_amount']
-                installment.save()
-                fee_structure_head.installments.add(installment)
-            fee_structure.head.add(fee_structure_head)
-        res = {
-            'result': 'ok',
-        }
-        response = simplejson.dumps(res)
-        return HttpResponse(response, status=status, mimetype='application/json')
-
-class DeleteFeesStructure(View):
-    def get(self, request, *args, **kwargs):
-
-        fees_structure_id = kwargs['fees_structure_id']       
-        fees = FeesStructure.objects.get(id=fees_structure_id)                          
-        fees.delete()
-        return HttpResponseRedirect(reverse('list_fees_structure'))
-
-class ListFeesStructure(View):
-    def get(self, request, *args, **kwargs):
-        course = request.GET.get('course', '')
-        batch = request.GET.get('batch', '')
-        if course and batch:
-            fees_structures = FeesStructure.objects.filter(course__id=course, batch__id=batch)  
-        else:
-            fees_structures = FeesStructure.objects.all()  
-        if request.is_ajax():
-            structure_list = []
-            for fees_structure in fees_structures:
-                structure_list.append({
-                    'course': fees_structure.course.course,
-                    'batch': str(fees_structure.batch.start_date) + ' - ' + str(fees_structure.batch.end_date) +( ' - ' + fees_structure.batch.branch.branch if fees_structure.batch and fees_structure.batch.branch else ''),
-                    'id': fees_structure.id
-                })
-            res = {
-                'result': 'ok',
-                'fees_structures': structure_list
-            }
-            response = simplejson.dumps(res)
-            return HttpResponse(response, status=200, mimetype='application/json')
-
-        ctx = {
-            'fees_structures': fees_structures
-        }
-        return render(request, 'list_fees_structure.html',ctx)
-# Fees structure end
-
-# Fees head start
-class AddFeesHead(View):
-    def get(self, request, *args, **kwargs):
-        ctx = {}
-        return render(request, 'fees/add_fees_head.html',ctx)
-
-    def post(self, request, *args, **kwargs):
-        status_code = 200
-        if request.is_ajax():
-            fee_head_details = ast.literal_eval(request.POST['fee_head_details'])
-            try:
-                fees_head_id = request.POST['fees_head_id']
-                fees_head = FeesHead.objects.get(id=fees_head_id)
-                fees_head.amount = fee_head_details['amount']
-                fees_head.name = fee_head_details['head']
-                fees_head.save()
-                res = {
-                    'result': 'ok',
-                }
-            except Exception as ex:
-                try:
-                    head = FeesHead.objects.get(name=fee_head_details['head'])
-                    res = {
-                        'result': 'error: ' + str(ex),
-                        'message': 'Head Already Existing'
-                    }
-                except Exception:
-                    head = FeesHead.objects.create(name=fee_head_details['head'], amount=fee_head_details['amount'])
-                    res = {
-                        'result': 'ok',
-                    }
-            response = simplejson.dumps(res)
-            return HttpResponse(response, status = status_code, mimetype="application/json")
-
-class EditFeesHead(View):
-    def get(self, request, *args, **kwargs):
-        status = 200
-        fees_head = FeesHead.objects.get(id=kwargs['fees_head_id'])
-        ctx_fees_head = []
-        if request.is_ajax():
-            ctx_fees_head.append({
-                'id': fees_head.id,
-                'head': fees_head.name,
-                'amount': fees_head.amount,
-            })
-            res = {
-                'result': 'ok',
-                'fees_head': ctx_fees_head,
-            }
-            response = simplejson.dumps(res)
-            return HttpResponse(response, status=status, mimetype='application/json')
-        return render(request, 'fees/edit_fees_head.html', {'fees_head_id': kwargs['fees_head_id']})
-
-class DeleteFeesHead(View):
-    def get(self, request, *args, **kwargs):
-        fees_head = FeesHead.objects.get(id=kwargs['fees_head_id'])
-        fees_head.delete()
-        return HttpResponseRedirect(reverse('fees_heads'))
-
-
-class FeesHeadList(View):
-    def get(self, request, *args, **kwargs):
-
-        heads = FeesHead.objects.all()
-        if request.is_ajax():
-            head_list = []
-            for head in heads:
-                head_list.append({
-                    'id': head.id,
-                    'name': head.name,
-                    'amount': head.amount
-                })
-            res = {
-                    'result': 'Ok',
-                    'fees_heads': head_list
-                }
-            response = simplejson.dumps(res)
-            return HttpResponse(response, status = 200, mimetype="application/json")
-        context = {
-            'heads': heads
-        }
-        return render(request, 'fees/fee_head_list.html', context)
-
 class FeesPaymentSave(View):
 
     def get(self, request, *args, **kwargs):
@@ -328,7 +71,6 @@ class FeesPaymentSave(View):
                     'result': 'ok',
                 }
             except Exception as Ex:
-                print "exception == ", str(Ex)
                 res = {
                     'result': 'error: '+str(Ex),
                     'message': 'Already Paid',
@@ -336,73 +78,6 @@ class FeesPaymentSave(View):
 
             response = simplejson.dumps(res)
             return HttpResponse(response, status = status_code, mimetype="application/json")
-
-class GetFeeStructureHeadList(View):
-
-    def get(self, request, *args, **kwargs):
-
-        course_id = kwargs['course_id']
-        batch_id = kwargs['batch_id']
-        student_id = kwargs['student_id']
-        if request.is_ajax():
-            fee_structure = FeesStructure.objects.filter(course__id=course_id, batch__id=batch_id)
-            heads_list = []
-            if fee_structure.count() > 0:
-                heads = fee_structure[0].head.all()
-                for head in heads:
-                    ctx_installments = []
-                    i = 0
-                    for installment in head.installments.all():
-                        try:
-                            fees_payment = FeesPayment.objects.get(fee_structure=fee_structure, student__id=student_id)
-                            print "fees payment == ", fees_payment
-                            fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
-                            print "fees payment installments == ", fees_payment_installments
-                            if fees_payment_installments.count() > 0:
-                                if fees_payment_installments[0].paid_amount < installment.amount:
-                                    ctx_installments.append({
-                                        'id': installment.id,
-                                        'amount':installment.amount,
-                                        'due_date': installment.due_date.strftime('%d/%m/%Y'),
-                                        'fine_amount': installment.fine_amount,
-                                        'name':'installment'+str(i + 1),
-                                        'paid_installment_amount': fees_payment_installments[0].installment_amount,
-                                        'balance': float(installment.amount) - float(fees_payment_installments[0].installment_amount),
-                                    })
-                            elif fees_payment_installments.count() == 0:
-                                ctx_installments.append({
-                                    'id': installment.id,
-                                    'amount':installment.amount,
-                                    'due_date': installment.due_date.strftime('%d/%m/%Y'),
-                                    'fine_amount': installment.fine_amount,
-                                    'name':'installment'+str(i + 1),
-                                    'paid_installment_amount': 0,
-                                    'balance': float(installment.amount),
-                                })
-                        except Exception as ex:
-                            print "exception == ", str(ex)
-                            ctx_installments.append({
-                                'id': installment.id,
-                                'amount':installment.amount,
-                                'due_date': installment.due_date.strftime('%d/%m/%Y'),
-                                'fine_amount': installment.fine_amount,
-                                'name':'installment'+str(i + 1),
-                                'paid_installment_amount': 0,
-                                'balance': float(installment.amount),
-                            })
-                        i = i + 1
-                    heads_list.append({
-                        'head': head.name, 
-                        'id': head.id ,
-                        'installments': ctx_installments,               
-                    })
-            res = {
-                'result': 'ok',
-                'heads': heads_list,
-            }
-            status = 200
-            response = simplejson.dumps(res)
-            return HttpResponse(response, status=status, mimetype='application/json')
 
 class ListOutStandingFees(View):
     def get(self, request, *args, **kwargs):
@@ -480,7 +155,6 @@ class GetOutStandingFeesDetails(View):
                 students = Student.objects.filter(course__id=course)
                 student_details = []
                 for student in students:
-                    # 
                     i = 0
                     is_not_paid = False
                     ctx_installments = []
@@ -545,73 +219,6 @@ class GetOutStandingFeesDetails(View):
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')
 
-class CommonFeesPaymentSave(View):
-
-    def get(self, request, *args, **kwargs):
-        return render(request, 'fees/common_fees_payment.html',{'current_date': datetime.now().date().strftime('%d/%m/%Y')})
-
-    def post(self, request, *args, **kwargs):
-
-        if request.is_ajax():
-            status_code = 200 
-            try:
-                fees_payment_details = ast.literal_eval(request.POST['fees_payment']) 
-                student = Student.objects.get(id=fees_payment_details['student'])
-                head = FeesHead.objects.get(id=fees_payment_details['head_id'])
-                fees_payment, created = CommonFeesPayment.objects.get_or_create(head=head, student=student)
-                if created:
-                    fees_payment.paid_amount = fees_payment_details['paid_amount']
-                else:
-                    fees_payment.paid_amount = float(fees_payment.paid_amount) + float(fees_payment_details['paid_amount'])
-                fees_payment.paid_date = datetime.strptime(fees_payment_details['paid_date'], '%d/%m/%Y')
-                fees_payment.save()
-                res = {
-                    'result': 'ok',
-                }
-            except Exception as Ex:
-                res = {
-                    'result': 'error: '+str(Ex),
-                    'message': 'Already Paid',
-                }
-
-            response = simplejson.dumps(res)
-            return HttpResponse(response, status = status_code, mimetype="application/json")
-
-class GetFeesHeadList(View):
-
-    def get(self, request, *args, **kwargs):
-
-        student_id = kwargs['student_id']
-        if request.is_ajax():
-            heads = FeesHead.objects.all()
-            ctx_fees_head_details = []
-            for head in heads:
-                try:
-                    fees_payment = CommonFeesPayment.objects.get(head=head, student__id=student_id)
-                    if fees_payment.paid_amount < head.amount:
-                        ctx_fees_head_details.append({
-                            'id': head.id,
-                            'name': head.name,
-                            'amount': head.amount,
-                            'balance': float(head.amount) - float(fees_payment.paid_amount),
-                            'paid_head_amount': fees_payment.paid_amount,
-                        })
-                except:
-                    ctx_fees_head_details.append({
-                        'id': head.id,
-                        'name': head.name,
-                        'amount': head.amount,
-                        'balance': float(head.amount),
-                        'paid_head_amount': 0,
-                    })
-            res = {
-                'result': 'ok',
-                'heads': ctx_fees_head_details,
-            }
-            status = 200
-            response = simplejson.dumps(res)
-            return HttpResponse(response, status=status, mimetype='application/json')
-
 class PrintOutstandingFeesReport(View):
 
     def get(self, request, *args, **kwargs):
@@ -640,7 +247,7 @@ class PrintOutstandingFeesReport(View):
                 fees_payment = FeesPayment.objects.get(student__id=student.id)
                 fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
                 if fees_payment_installments.count() > 0:
-                    if fees_payment_installments[0].installment_amount < installment.amount:
+                    if fees_payment_installments[0].paid_amount < installment.amount:
                         is_not_paid = True
                         data_list.append({
                             'id': installment.id,
@@ -648,8 +255,8 @@ class PrintOutstandingFeesReport(View):
                             'due_date': installment.due_date.strftime('%d/%m/%Y'),
                             'fine_amount': installment.fine_amount,
                             'name':'installment'+str(i + 1),
-                            'paid_installment_amount': fees_payment_installments[0].installment_amount,
-                            'balance': float(installment.amount) - float(fees_payment_installments[0].installment_amount),
+                            'paid_installment_amount': fees_payment_installments[0].paid_amount,
+                            'balance': float(installment.amount) - float(fees_payment_installments[0].paid_amount),
                         })
                 elif fees_payment_installments.count() == 0:
                     is_not_paid = True
@@ -663,8 +270,6 @@ class PrintOutstandingFeesReport(View):
                         'balance': float(installment.amount),
                     })
             except Exception as ex:
-                print str(ex)
-
                 if current_date >= installment.due_date:
                     is_not_paid = True
                     data_list.append({
@@ -706,6 +311,7 @@ class FeepaymentReport(View):
             p = SimpleDocTemplate(response, pagesize=A4)
             elements = []        
             d = [['FeesPayment Report']]
+
             t = Table(d, colWidths=(450), rowHeights=25, style=style)
             t.setStyle([('ALIGN',(0,0),(-1,-1),'CENTER'),
                         ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
@@ -716,45 +322,32 @@ class FeepaymentReport(View):
             elements.append(t)
             
             elements.append(Spacer(4, 5))
+            data = []
+            data.append(['Student' , 'Installment','Installment Amount','Paid date','Paid Amount'])
             for student in students:
                 try:
                     fees_payment = FeesPayment.objects.get(student=student)
+                    
                     if fees_payment.payment_installment.count > 0 :
                         for fee_payment_installment in fees_payment.payment_installment.all().order_by('-id'):
-                           
-                            data = []
-                            data_list = []
-                            batches_name = ''
-                            data.append(['Name','Course','Paid date','Total Amount','Paid Amount'])
-                           
-                            data.append([Paragraph(fee_payment_installment.student.student_name,para_style),Paragraph(fee_payment_installment.student.course.name,para_style),fee_payment_installment.paid_date.strftime('%d/%m/%Y'),fee_payment_installment.total_amount,fee_payment_installment.paid_amount])
-                            table = Table(data, colWidths=(100,100,100,100,100),  style=style)
-                            table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
-                                        ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
-                                        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-                                        ('BACKGROUND',(0, 0),(-1,-1),colors.white),
-                                        ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
-                                        ('BOX', (0,0), (-1,-1), 0.25, colors.black),
-                                        ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
-                                        
-                                        ])   
-                            elements.append(table)
-                            
-                            
-                           
+                            for payment in fee_payment_installment.feespaid_set.all():
+                                data.append([Paragraph(student.student_name, para_style), 'Installment' +str(fee_payment_installment.installment.id), fee_payment_installment.total_amount,payment.paid_date.strftime('%d/%m/%Y'), payment.paid_amount])
                 except Exception as ex:
                     print str(ex)
-                    # res = {
-                    #     'result': 'error',
-                    #     'message': 'No fee payment done in this course',
-                    # }
-                    # status = 200
-                    # response = simplejson.dumps(res)
-                    # return HttpResponse(response, status=status, mimetype='application/json')
-                p.build(elements)        
-                return response
+                table = Table(data, colWidths=(100, 100, 150,100,100),  style=style)
+                table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
+                            ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
+                            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                            ('BACKGROUND',(0, 0),(-1,-1),colors.white),
+                            ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+                            ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+                            ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
+                            
+                            ])   
+                elements.append(table)  
+            p.build(elements)      
+            return response
         elif report_type == 'student_wise':
-
             student_id = request.GET.get('student_id')
             student = Student.objects.get(id=student_id)
             response = HttpResponse(content_type='application/pdf')
@@ -770,38 +363,38 @@ class FeepaymentReport(View):
                         ('FONTSIZE', (1,0), (-1,-1), 17),
                         ])   
             elements.append(t)
-            
+            elements.append(Spacer(4, 5))
+            d = [['Student: '+student.student_name], ['Course: '+student.course.name]]
+            t = Table(d, colWidths=(450), style=style)
+            t.setStyle([('ALIGN',(0,0),(-1,-1),'CENTER'),
+                        ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
+                        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                        ('FONTSIZE', (0,0), (-1,-1), 12),
+                        ])   
+            elements.append(t)
             elements.append(Spacer(4, 5))
             try:
                 fees_payment = FeesPayment.objects.get(student=student)
+                data = []
+                data.append(['Installment' ,'Installment Amount','Paid date','Paid Amount'])
                 if fees_payment.payment_installment.count > 0 :
                     for fee_payment_installment in fees_payment.payment_installment.all().order_by('-id'):
-                        data = []
-                        data_list = []
-                        batches_name = ''
-                        data.append(['Name','Course','Paid date','Total Amount','Paid Amount'])
-                       
-                        data.append([Paragraph(fee_payment_installment.student.student_name,para_style),Paragraph(fee_payment_installment.student.course.name,para_style),fee_payment_installment.paid_date.strftime('%d/%m/%Y'),fee_payment_installment.total_amount,fee_payment_installment.paid_amount])
-                        table = Table(data, colWidths=(100,100,100,100,100),  style=style)
-                        table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
-                                    ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
-                                    ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-                                    ('BACKGROUND',(0, 0),(-1,-1),colors.white),
-                                    ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
-                                    ('BOX', (0,0), (-1,-1), 0.25, colors.black),
-                                    ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
-                                    
-                                    ])   
-                        elements.append(table)
+                        for payment in fee_payment_installment.feespaid_set.all():
+                            data.append(['Installment'+str(fee_payment_installment.installment.id), fee_payment_installment.total_amount,payment.paid_date.strftime('%d/%m/%Y'),payment.paid_amount])
+                table = Table(data, colWidths=(100,150,100,100),  style=style)
+                table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
+                            ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
+                            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                            ('BACKGROUND',(0, 0),(-1,-1),colors.white),
+                            ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+                            ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+                            ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
+                            
+                        ])   
+                elements.append(table)
             except Exception as ex:
                 print str(ex) 
-                # res = {
-                #     'result': 'error',
-                #     'message': 'No fee payment done by this student',
-                # }
-                # status = 200
-                # response = simplejson.dumps(res)
-                # return HttpResponse(response, status=status, mimetype='application/json')
+                
             p.build(elements)        
             return response           
         else:

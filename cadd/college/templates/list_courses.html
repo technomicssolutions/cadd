@@ -19,13 +19,12 @@
 	</div>
 	<div class="form_container">
 		<div class="search_staff">
-		<table id="list" class="table table-hover" >
+		<table id="list" class="table table-hover" style="width:90%;margin:auto" >
 			<tr>
 			  <th>Course</th>
 			  <th>Softwares</th>
 			  <th>Duration</th>
 			  <th>Amount</th>
-			  <th>Fine</th>
 			  <th>Edit </th>
 			  <th>Delete</th>
 			</tr>
@@ -40,7 +39,6 @@
 				</td>
 				<td>[[course.duration]] [[course.duration_unit]]</td> 
 				<td>[[course.amount]]</td> 
-				<td>[[course.fine]]</td>
 				<td> <a href="" ng-click="edit_course(course)"><img src="/static/images/edit.png"> </td>
 				<td><a href="" ng-click="delete_course(course)"><img src="/static/images/delete.png"></td>
 			</tr>

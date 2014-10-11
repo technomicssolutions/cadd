@@ -187,7 +187,6 @@ class EditExpense(View):
                 'result': 'ok',
             }
         except Exception as ex:
-            print str(ex)
             res = {
                 'result': 'error',
                 'message': 'Voucher No already existing'
@@ -224,7 +223,6 @@ class Expenses(View):
                 'message': 'Voucher No already Existing'
             }
         except Exception as ex:
-            print str(ex)
             expense = Expense.objects.create(created_by=request.user, voucher_no=post_dict['voucher_no'])
             expense.expense_head = ExpenseHead.objects.get(id = post_dict['expense_head_id'])
             expense.date = datetime.strptime(post_dict['date'], '%d/%m/%Y')

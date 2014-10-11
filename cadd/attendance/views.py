@@ -106,7 +106,6 @@ class AttendanceDetails(View):
                         staff_obj = Staff.objects.get(user=attendance.user)
                         staff = staff_obj.user.first_name + " " + staff_obj.user.last_name
                 except Exception as ex:
-                    print str(ex)
                     attendance = Attendance()
                     staff = ''
                 for student in students:
@@ -135,7 +134,7 @@ class AttendanceDetails(View):
                     'is_future_date': "true" if datetime(int(year),int(month),int(day)) > datetime.now() else "false",
                 }            
             else:  
-                students = batch.student_set.all().order_by('student_name')
+                students = batch.student_set.filter(is_rolled=False).order_by('student_name')
                 no_of_days = calendar.monthrange(int(year), int(month))[1]            
                 calendar_days = []
                 for day in range(1, no_of_days + 1):
@@ -186,7 +185,7 @@ class BatchStudents(View):
         day = current_date.day  
         batch_id = kwargs['batch_id']
         batch = Batch.objects.get(id=batch_id)
-        students = batch.student_set.all().order_by('student_name')
+        students = batch.student_set.filter(is_rolled=False).order_by('student_name')
         students_list = []
         date = dt.date(int(year), int(month), int(day))
         try:
@@ -197,7 +196,6 @@ class BatchStudents(View):
                 staff_obj = Staff.objects.get(user=attendance.user)
                 staff = staff_obj.user.first_name + " " + staff_obj.user.last_name
         except Exception as ex:
-            print str(ex)
             attendance = Attendance()
             staff = ''
         for student in students:
@@ -340,7 +338,7 @@ class AttendanceReport(View):
                 col = col + 1
                 ws.write(row, col, date.strftime('%d/%m/%Y'))
             row = row + 1
-            students = batch.student_set.all()
+            students = batch.student_set.filter(is_rolled=False)
             for student in students:
                 col = 0
                 ws.write(row, col, student.student_name)
