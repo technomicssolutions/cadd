@@ -307,6 +307,7 @@ class FeepaymentReport(View):
         if report_type == 'course_wise' :
             course =  request.GET.get('course')
             students = Student.objects.filter(course=course)
+            print students
             response = HttpResponse(content_type='application/pdf')
             p = SimpleDocTemplate(response, pagesize=A4)
             elements = []        
@@ -327,24 +328,24 @@ class FeepaymentReport(View):
             for student in students:
                 try:
                     fees_payment = FeesPayment.objects.get(student=student)
-                    
+                    print fees_payment
                     if fees_payment.payment_installment.count > 0 :
                         for fee_payment_installment in fees_payment.payment_installment.all().order_by('-id'):
                             for payment in fee_payment_installment.feespaid_set.all():
                                 data.append([Paragraph(student.student_name, para_style), 'Installment' +str(fee_payment_installment.installment.id), fee_payment_installment.total_amount,payment.paid_date.strftime('%d/%m/%Y'), payment.paid_amount])
                 except Exception as ex:
                     print str(ex)
-                table = Table(data, colWidths=(100, 100, 150,100,100),  style=style)
-                table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
-                            ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
-                            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-                            ('BACKGROUND',(0, 0),(-1,-1),colors.white),
-                            ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
-                            ('BOX', (0,0), (-1,-1), 0.25, colors.black),
-                            ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
-                            
-                            ])   
-                elements.append(table)  
+            table = Table(data, colWidths=(100, 100, 150,100,100),  style=style)
+            table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
+                        ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
+                        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                        ('BACKGROUND',(0, 0),(-1,-1),colors.white),
+                        ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+                        ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+                        ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
+                        
+                        ])   
+            elements.append(table)  
             p.build(elements)      
             return response
         elif report_type == 'student_wise':
