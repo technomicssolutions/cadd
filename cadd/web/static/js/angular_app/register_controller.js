@@ -139,7 +139,10 @@ function LetterController($scope, $element, $http, $timeout, share, $location) {
 				document.location.href = '/letter_list/?start_date='+start_date+'&end_date='+end_date+'&letter_type='+$scope.letter_type;
 			else {
 				$http.get('/letter_list/?start_date='+start_date+'&end_date='+end_date+'&letter_type='+$scope.letter_type).success(function(data){
-					$scope.letters = data.letters;
+					if(data.letters == '')
+						$scope.error_message = 'No letters found'
+					else
+						$scope.letters = data.letters;
 				}).error(function(data, status){	
 					console.log('Request failed');
 				})
