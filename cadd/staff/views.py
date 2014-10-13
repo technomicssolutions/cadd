@@ -51,8 +51,8 @@ class AddStaff(View):
                 'student_module': 'true' if staff.permission and staff.permission.student_module else 'false',
                 'master_module': 'true' if staff.permission and staff.permission.master_module else 'false',
                 'fees_module': 'true' if staff.permission and staff.permission.fees_module else 'false',
-                'register_module': if staff.permission and staff.permission.register_module else 'false',
-                'expense_module': if staff.permission and staff.permission.expense_module else 'false',
+                'register_module': 'true' if staff.permission and staff.permission.register_module else 'false',
+                'expense_module': 'true' if staff.permission and staff.permission.expense_module else 'false',
             }
             res = {
                 'result': 'ok',
