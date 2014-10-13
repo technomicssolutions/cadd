@@ -103,8 +103,21 @@ class GetOutStandingFeesDetails(View):
                     try:
                         fees_payment = FeesPayment.objects.get(student__id=student_id)
                         fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
-                        if (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)) < installment.amount:
-                            if fees_payment_installments[0].paid_amount < installment.amount:
+                        if current_date >= installment.due_date:
+                            if (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)) < installment.amount:
+                                if fees_payment_installments[0].paid_amount < installment.amount:
+                                    is_not_paid = True
+                                    ctx_installments.append({
+                                        'id': installment.id,
+                                        'amount':installment.amount,
+                                        'due_date': installment.due_date.strftime('%d/%m/%Y'),
+                                        'fine_amount': installment.fine_amount,
+                                        'name':'installment'+str(i + 1),
+                                        'paid_installment_amount': fees_payment_installments[0].paid_amount,
+                                        'balance': float(installment.amount) - (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)),
+                                    })
+                        elif fees_payment_installments.count() == 0:
+                            if current_date >= installment.due_date:
                                 is_not_paid = True
                                 ctx_installments.append({
                                     'id': installment.id,
@@ -112,20 +125,9 @@ class GetOutStandingFeesDetails(View):
                                     'due_date': installment.due_date.strftime('%d/%m/%Y'),
                                     'fine_amount': installment.fine_amount,
                                     'name':'installment'+str(i + 1),
-                                    'paid_installment_amount': fees_payment_installments[0].paid_amount,
-                                    'balance': float(installment.amount) - (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)),
+                                    'paid_installment_amount': 0,
+                                    'balance': float(installment.amount),
                                 })
-                        elif fees_payment_installments.count() == 0:
-                            is_not_paid = True
-                            ctx_installments.append({
-                                'id': installment.id,
-                                'amount':installment.amount,
-                                'due_date': installment.due_date.strftime('%d/%m/%Y'),
-                                'fine_amount': installment.fine_amount,
-                                'name':'installment'+str(i + 1),
-                                'paid_installment_amount': 0,
-                                'balance': float(installment.amount),
-                            })
                     except Exception as ex:
                         if current_date >= installment.due_date:
                             is_not_paid = True
@@ -164,7 +166,20 @@ class GetOutStandingFeesDetails(View):
                             fees_payment = FeesPayment.objects.get(student__id=student.id)
                             fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
                             if fees_payment_installments.count() > 0:
-                                if (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)) < installment.amount:
+                                if current_date >= installment.due_date:
+                                    if (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)) < installment.amount:
+                                        is_not_paid = True
+                                        ctx_installments.append({
+                                            'id': installment.id,
+                                            'amount':installment.amount,
+                                            'due_date': installment.due_date.strftime('%d/%m/%Y'),
+                                            'fine_amount': installment.fine_amount,
+                                            'name':'installment'+str(i + 1),
+                                            'paid_installment_amount': fees_payment_installments[0].paid_amount,
+                                            'balance': float(installment.amount) - (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)),
+                                        })
+                            elif fees_payment_installments.count() == 0:
+                                if current_date >= installment.due_date:
                                     is_not_paid = True
                                     ctx_installments.append({
                                         'id': installment.id,
@@ -172,20 +187,9 @@ class GetOutStandingFeesDetails(View):
                                         'due_date': installment.due_date.strftime('%d/%m/%Y'),
                                         'fine_amount': installment.fine_amount,
                                         'name':'installment'+str(i + 1),
-                                        'paid_installment_amount': fees_payment_installments[0].paid_amount,
-                                        'balance': float(installment.amount) - (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)),
+                                        'paid_installment_amount': 0,
+                                        'balance': float(installment.amount),
                                     })
-                            elif fees_payment_installments.count() == 0:
-                                is_not_paid = True
-                                ctx_installments.append({
-                                    'id': installment.id,
-                                    'amount':installment.amount,
-                                    'due_date': installment.due_date.strftime('%d/%m/%Y'),
-                                    'fine_amount': installment.fine_amount,
-                                    'name':'installment'+str(i + 1),
-                                    'paid_installment_amount': 0,
-                                    'balance': float(installment.amount),
-                                })
                         except Exception as ex:
                             if current_date >= installment.due_date:
                                 is_not_paid = True
@@ -247,7 +251,20 @@ class PrintOutstandingFeesReport(View):
                 fees_payment = FeesPayment.objects.get(student__id=student.id)
                 fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
                 if fees_payment_installments.count() > 0:
-                    if (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)) < installment.amount:
+                    if current_date >= installment.due_date:
+                        if (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)) < installment.amount:
+                                is_not_paid = True
+                                data_list.append({
+                                    'id': installment.id,
+                                    'amount':installment.amount,
+                                    'due_date': installment.due_date.strftime('%d/%m/%Y'),
+                                    'fine_amount': installment.fine_amount,
+                                    'name':'installment'+str(i + 1),
+                                    'paid_installment_amount': fees_payment_installments[0].paid_amount,
+                                    'balance': float(installment.amount) - (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)),
+                                })
+                elif fees_payment_installments.count() == 0:
+                    if current_date >= installment.due_date:
                         is_not_paid = True
                         data_list.append({
                             'id': installment.id,
@@ -255,20 +272,9 @@ class PrintOutstandingFeesReport(View):
                             'due_date': installment.due_date.strftime('%d/%m/%Y'),
                             'fine_amount': installment.fine_amount,
                             'name':'installment'+str(i + 1),
-                            'paid_installment_amount': fees_payment_installments[0].paid_amount,
-                            'balance': float(installment.amount) - (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)),
+                            'paid_installment_amount': 0,
+                            'balance': float(installment.amount),
                         })
-                elif fees_payment_installments.count() == 0:
-                    is_not_paid = True
-                    data_list.append({
-                        'id': installment.id,
-                        'amount':installment.amount,
-                        'due_date': installment.due_date.strftime('%d/%m/%Y'),
-                        'fine_amount': installment.fine_amount,
-                        'name':'installment'+str(i + 1),
-                        'paid_installment_amount': 0,
-                        'balance': float(installment.amount),
-                    })
             except Exception as ex:
                 if current_date >= installment.due_date:
                     is_not_paid = True
