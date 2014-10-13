@@ -8,11 +8,12 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
         'head_id': '',
         'paid_date': '',
         'total_amount': '',
-        'paid_amount': '',
+        'paid_amount': 0,
         'paid_installment_amount': '',
         'balance': '',
         'student_fee_amount': '',
-        'paid_fine_amount': 0,
+        'paid_fine_amount': '0',
+        'fee_waiver': '0',
     }
     $scope.course = '';
     $scope.payment_installment.student = '';
@@ -63,6 +64,7 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
             else
                 $scope.no_installment_error = '';
             $scope.installments = data.installments;
+            console.log($scope.installments);
             $('#due_date').val('');
             $('#fine_amount').val(0);
             $('#fee_amount').val(0);
@@ -95,7 +97,9 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
     }
     $scope.calculate_balance = function() {
         $('#installment_balance').val(parseFloat($('#total_fee_amount').val()) - (parseFloat($scope.payment_installment.paid_amount) + parseFloat($scope.payment_installment.paid_installment_amount) + parseFloat($scope.payment_installment.paid_fine_amount)));
+        $('#installment_balance').val(parseFloat($('#installment_balance').val()) - parseFloat($scope.payment_installment.fee_waiver));
         $scope.payment_installment.total_balance = parseFloat($scope.payment_installment.total_balance_amount) - (parseFloat($scope.payment_installment.paid_amount));
+        $scope.payment_installment.total_balance = parseFloat($scope.payment_installment.total_balance) - parseFloat($scope.payment_installment.fee_waiver)
     }
     $scope.validate_fees_payment = function() {
         $scope.validation_error = '';
@@ -116,6 +120,9 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
         } else if ($scope.payment_installment.paid_amount == '' || $scope.payment_installment.paid_amount == undefined) {
             $scope.validation_error = "Please enter paid amount" ;
             return false;
+        } else if($scope.payment_installment.fee_waiver == ''){
+            $scope.validation_error = "Please enter a valid amount in fee waiver" ;
+            return false;
         } else if ($scope.payment_installment.paid_amount != Number($scope.payment_installment.paid_amount)) {
             $scope.validation_error = "Please enter valid paid amount" ;
             return false;
@@ -124,6 +131,9 @@ function FeesPaymentController($scope, $element, $http, $timeout, share, $locati
             return false;
         } else if ($scope.payment_installment.installment_balance < 0 ) {
             $scope.validation_error = "Please check the Paying amount";
+            return false;
+        } else if($scope.payment_installment.paid_fine_amount == ''){
+            $scope.validation_error = "Please enter a valid amount in fine amount" ;
             return false;
         } return true; 
         // else if ($scope.payment_installment.paid_amount != $scope.payment_installment.balance) {

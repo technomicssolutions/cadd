@@ -39,7 +39,6 @@ class AddExpenseHead(View):
 
         post_dict = request.POST
         status = 200
-
         try:
             if len(post_dict['head_name']) > 0 and not post_dict['head_name'].isspace():
                 expense_head, created = ExpenseHead.objects.get_or_create(expense_head = post_dict['head_name'])
@@ -59,7 +58,6 @@ class AddExpenseHead(View):
                         'result': 'error',
                         'message': 'This Head name is Already Existing',
                     }
-
             else:
                 context = {
                     'message' : 'Head name Cannot be null',
@@ -101,7 +99,6 @@ class ExpenseList(View):
 
     def get(self, request, *args, **kwargs):
         expenses = Expense.objects.all()
-
         if request.is_ajax():
             ctx_expenses = []
             status_code = 200
@@ -248,7 +245,6 @@ class ExpenseReport(View):
         start_date = request.GET.get('start_date', '')
         end_date = request.GET.get('end_date', '')
         if start_date and end_date:
-            
             expenses = Expense.objects.filter(date__gte=datetime.strptime(start_date, '%d/%m/%Y'), date__lte=datetime.strptime(end_date, '%d/%m/%Y'))
             response = HttpResponse(content_type='application/pdf')
             p = SimpleDocTemplate(response, pagesize=A4)
