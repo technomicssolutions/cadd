@@ -53,9 +53,11 @@ class FeesPaymentSave(View):
                 if installment_created:
                     fee_payment_installment.paid_amount = fees_payment_details['paid_amount']
                     fee_payment_installment.installment_fine = fees_payment_details['paid_fine_amount']
+                    fee_payment_installment.fee_waiver_amount = fees_payment_details['fee_waiver']
                 else:
                     fee_payment_installment.paid_amount = float(fee_payment_installment.paid_amount) + float(fees_payment_details['paid_amount'])
                     fee_payment_installment.installment_fine = float(fee_payment_installment.installment_fine) + float(fees_payment_details['paid_fine_amount'])
+                    fee_payment_installment.fee_waiver_amount = float(fee_payment_installment.fee_waiver_amount)  + float(fees_payment_details['fee_waiver'])
                 # fee_payment_installment.paid_date = datetime.strptime(fees_payment_details['paid_date'], '%d/%m/%Y')
                 fee_payment_installment.total_amount = fees_payment_details['total_amount']
                 fee_payment_installment.save()
@@ -63,6 +65,7 @@ class FeesPaymentSave(View):
                 fees_paid.paid_date = datetime.strptime(fees_payment_details['paid_date'], '%d/%m/%Y')
                 fees_paid.fees_payment_installment = fee_payment_installment
                 fees_paid.paid_amount = fees_payment_details['paid_amount']
+                #fees_paid.fee_waiver_amount = fees_payment_details['fee_waiver']
                 fees_paid.paid_fine_amount = fees_payment_details['paid_fine_amount']
                 fees_paid.save()
                 fees_payment.payment_installment.add(fee_payment_installment)
@@ -74,7 +77,6 @@ class FeesPaymentSave(View):
                     'result': 'error: '+str(Ex),
                     'message': 'Already Paid',
                 }
-
             response = simplejson.dumps(res)
             return HttpResponse(response, status = status_code, mimetype="application/json")
 
@@ -101,7 +103,7 @@ class GetOutStandingFeesDetails(View):
                     try:
                         fees_payment = FeesPayment.objects.get(student__id=student_id)
                         fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
-                        if fees_payment_installments.count() > 0:
+                        if (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)) < installment.amount:
                             if fees_payment_installments[0].paid_amount < installment.amount:
                                 is_not_paid = True
                                 ctx_installments.append({
@@ -111,7 +113,7 @@ class GetOutStandingFeesDetails(View):
                                     'fine_amount': installment.fine_amount,
                                     'name':'installment'+str(i + 1),
                                     'paid_installment_amount': fees_payment_installments[0].paid_amount,
-                                    'balance': float(installment.amount) - float(fees_payment_installments[0].paid_amount),
+                                    'balance': float(installment.amount) - (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)),
                                 })
                         elif fees_payment_installments.count() == 0:
                             is_not_paid = True
@@ -162,7 +164,7 @@ class GetOutStandingFeesDetails(View):
                             fees_payment = FeesPayment.objects.get(student__id=student.id)
                             fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
                             if fees_payment_installments.count() > 0:
-                                if fees_payment_installments[0].paid_amount < installment.amount:
+                                if (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)) < installment.amount:
                                     is_not_paid = True
                                     ctx_installments.append({
                                         'id': installment.id,
@@ -171,7 +173,7 @@ class GetOutStandingFeesDetails(View):
                                         'fine_amount': installment.fine_amount,
                                         'name':'installment'+str(i + 1),
                                         'paid_installment_amount': fees_payment_installments[0].paid_amount,
-                                        'balance': float(installment.amount) - float(fees_payment_installments[0].paid_amount),
+                                        'balance': float(installment.amount) - (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)),
                                     })
                             elif fees_payment_installments.count() == 0:
                                 is_not_paid = True
@@ -214,7 +216,6 @@ class GetOutStandingFeesDetails(View):
                     'result':'ok',
                     'fees_details': fees_details,
                 }
-            
             response = simplejson.dumps(res)
             return HttpResponse(response, status=status, mimetype='application/json')
 
@@ -246,7 +247,7 @@ class PrintOutstandingFeesReport(View):
                 fees_payment = FeesPayment.objects.get(student__id=student.id)
                 fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
                 if fees_payment_installments.count() > 0:
-                    if fees_payment_installments[0].paid_amount < installment.amount:
+                    if (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)) < installment.amount:
                         is_not_paid = True
                         data_list.append({
                             'id': installment.id,
@@ -255,7 +256,7 @@ class PrintOutstandingFeesReport(View):
                             'fine_amount': installment.fine_amount,
                             'name':'installment'+str(i + 1),
                             'paid_installment_amount': fees_payment_installments[0].paid_amount,
-                            'balance': float(installment.amount) - float(fees_payment_installments[0].paid_amount),
+                            'balance': float(installment.amount) - (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)),
                         })
                 elif fees_payment_installments.count() == 0:
                     is_not_paid = True
@@ -325,24 +326,22 @@ class FeepaymentReport(View):
             for student in students:
                 try:
                     fees_payment = FeesPayment.objects.get(student=student)
-                    
                     if fees_payment.payment_installment.count > 0 :
                         for fee_payment_installment in fees_payment.payment_installment.all().order_by('-id'):
                             for payment in fee_payment_installment.feespaid_set.all():
                                 data.append([Paragraph(student.student_name, para_style), 'Installment' +str(fee_payment_installment.installment.id), fee_payment_installment.total_amount,payment.paid_date.strftime('%d/%m/%Y'), payment.paid_amount])
                 except Exception as ex:
                     print str(ex)
-                table = Table(data, colWidths=(100, 100, 150,100,100),  style=style)
-                table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
-                            ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
-                            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-                            ('BACKGROUND',(0, 0),(-1,-1),colors.white),
-                            ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
-                            ('BOX', (0,0), (-1,-1), 0.25, colors.black),
-                            ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
-                            
-                            ])   
-                elements.append(table)  
+            table = Table(data, colWidths=(100, 100, 150,100,100),  style=style)
+            table.setStyle([('ALIGN',(0,-1),(0,-1),'LEFT'),
+                        ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
+                        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                        ('BACKGROUND',(0, 0),(-1,-1),colors.white),
+                        ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+                        ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+                        ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
+                        ])   
+            elements.append(table)  
             p.build(elements)      
             return response
         elif report_type == 'student_wise':
@@ -356,7 +355,6 @@ class FeepaymentReport(View):
             t.setStyle([('ALIGN',(0,0),(-1,-1),'CENTER'),
                         ('TEXTCOLOR',(0,0),(-1,-1),colors.black),
                         ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-                        
                         ('FONTSIZE', (0,0), (0,0), 20),
                         ('FONTSIZE', (1,0), (-1,-1), 17),
                         ])   
@@ -387,12 +385,10 @@ class FeepaymentReport(View):
                             ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
                             ('BOX', (0,0), (-1,-1), 0.25, colors.black),
                             ('FONTNAME', (0, -1), (-1,-1), 'Helvetica'),
-                            
                         ])   
                 elements.append(table)
             except Exception as ex:
                 print str(ex) 
-                
             p.build(elements)        
             return response           
         else:

@@ -9,6 +9,7 @@ class FeesPaymentInstallment(models.Model):
 	paid_amount = models.DecimalField('Amount', max_digits=14, decimal_places=2, default=0)
 	installment_amount = models.DecimalField('Installment Amount', max_digits=14, decimal_places=2, default=0)
 	installment_fine = models.DecimalField('Installment Fine Amount', max_digits=14, decimal_places=2, default=0)
+	fee_waiver_amount = models.DecimalField('Fee Waiver Amount', max_digits=14, decimal_places=2, default=0)
 
 	def __unicode__(self):
 

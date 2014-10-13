@@ -298,7 +298,6 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
                 }
             }   
         }
-
     }
     $scope.attach_date_picker = function(installment) {
         id_name = '#' +installment.due_date_id;
@@ -320,6 +319,7 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
                 total = parseFloat(total) + parseFloat($scope.installments[i].amount)
             }
         }
+        console.log(total);
         if($scope.student.student_name == '' || $scope.student.student_name == undefined) {
             $scope.validation_error = "Please Enter the Name" ;
             return false;
@@ -353,7 +353,7 @@ function EditStudentController($scope, $http, $element, $location, $timeout) {
         } else if($scope.student.doj == '' || $scope.student.doj == undefined) {
             $scope.validation_error = "Please Enter Date of Join";
             return false;
-        }else if($scope.student.certificates_submitted == '' || $scope.student.certificates_submitted == undefined) {
+        } else if($scope.student.certificates_submitted == '' || $scope.student.certificates_submitted == undefined) {
             $scope.validation_error = "Please enter certificates submitted";
             return false;
         } else if($scope.student.id_proofs_submitted == '' || $scope.student.id_proofs_submitted == undefined) {
@@ -888,7 +888,7 @@ function EnquiryReportController($scope, $http) {
         if($scope.validate()){
             $http.get('/admission/enquiry_report?start_date='+$scope.start_date+'&end_date='+$scope.end_date).success(function(data){
                 if(data.result=='ok'){
-                    
+                    $scope.validate_error_msg =  '';
                     $scope.enquiries = data.enquiries;
                     paginate(data.enquiries, $scope);
                 }else{
@@ -947,7 +947,7 @@ function AdmissionReportController($scope, $http) {
         if($scope.validate()){
             $http.get('/admission/admission_report?start_date='+$scope.start_date+'&end_date='+$scope.end_date).success(function(data){
                 if(data.result=='ok'){
-                    
+                    $scope.validate_error_msg = '';
                     $scope.admissions = data.admissions;
                     paginate(data.admissions, $scope);
                 }else{

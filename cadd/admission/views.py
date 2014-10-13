@@ -289,12 +289,10 @@ class EditStudentDetails(View):
                     batch_obj.no_of_students = batch_obj.no_of_students + 1
                 batch_obj.save()
                 student.batches.add(batch_obj)
-
             student.dob = datetime.strptime(student_data['dob'], '%d/%m/%Y')
             student.address = student_data['address']
             student.mobile_number = student_data['mobile_number']
             student.cadd_registration_no = student_data['cadd_registration_no']
-            
             student.email = student_data['email']
             student.blood_group = student_data['blood_group']
             student.doj = datetime.strptime(student_data['doj'], '%d/%m/%Y')
@@ -306,7 +304,8 @@ class EditStudentDetails(View):
             student.relationship = student_data['relationship']
             student.guardian_mobile_number = student_data['guardian_mobile_number']
             student.fees = student_data['fees']
-            student.discount = student['discount']
+            if student_data['discount']:
+                student.discount = student_data['discount']
             student.no_installments = student_data['no_installments']
             installments = student_data['installments']
             for installment in installments:
@@ -327,6 +326,7 @@ class EditStudentDetails(View):
             }
             status = 200
         except Exception as Ex:
+            print str(Ex)
             res = {
                 'result': 'error',
                 'message': str(Ex)
@@ -435,7 +435,6 @@ class EnquiryDetails(View):
                         'course' : enquiry.course.name,
                         'remarks': enquiry.remarks,
                         'saved_date':enquiry.saved_date.strftime('%d/%m/%Y') if enquiry.saved_date else '',
-                        
                         'discount': enquiry.discount,
                         'auto_generated_num': enquiry.auto_generated_num,
                     })
@@ -477,8 +476,6 @@ class AllEnquiries(View):
                         'discount': enquiry.discount,
                         'auto_generated_num': enquiry.auto_generated_num,
                     })
-                
-            
             response = simplejson.dumps({
                 'enquiry': enquiry_list,
             })    
@@ -522,7 +519,6 @@ class SearchEnquiry(View):
                     'auto_generated_num': enquiry.auto_generated_num,
                     })
         if request.is_ajax():
-            
             response = simplejson.dumps({
                 'enquiries': enquiry_list,
                 'count': count,
@@ -552,7 +548,6 @@ class EnquiryReport(View):
         try:
             enquiries = Enquiry.objects.filter( saved_date__gte=start_date,saved_date__lte=end_date).order_by('saved_date')
         except Exception as ex:
-            
             res = {
                     'result': 'error',
                 }
@@ -651,7 +646,6 @@ class AdmissionReport(View):
                 batch_list = []
                 for admission in admissions:
                     batch_list = []
-                    
                     if admission.batches.all().count() > 0: 
                         for batch in admission.batches.all().order_by('-id'):
                             batch_list.append(batch.name)
@@ -670,7 +664,6 @@ class AdmissionReport(View):
                 return HttpResponse(response, status=200, mimetype='application/json')
         if request.GET.get('report_type',''):
             if admissions:
-                
                 response = HttpResponse(content_type='application/pdf')
                 p = SimpleDocTemplate(response, pagesize=A4)
                 elements = []        
@@ -765,15 +758,15 @@ class GetInstallmentDetails(View):
                 fees_payment = FeesPayment.objects.get(student__id=student.id)
                 fees_payment_installments = fees_payment.payment_installment.filter(installment=installment)
                 if fees_payment_installments.count() > 0:
-                    total_amount_paid = float(total_amount_paid) + float(fees_payment_installments[0].paid_amount)
-                    if fees_payment_installments[0].paid_amount < installment.amount:
+                    total_amount_paid = float(total_amount_paid) + float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)
+                    if (float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount)) < installment.amount:
                         ctx_installments.append({
                             'id': installment.id,
                             'amount':installment.amount,
                             'due_date': installment.due_date.strftime('%d/%m/%Y'),
                             'fine_amount': installment.fine_amount,
                             'name':'installment'+str(i + 1),
-                            'paid_installment_amount': fees_payment_installments[0].paid_amount,
+                            'paid_installment_amount': float(fees_payment_installments[0].paid_amount) + float(fees_payment_installments[0].fee_waiver_amount),
                             'balance': float(installment.amount) - float(fees_payment_installments[0].paid_amount),
                         })
                 elif fees_payment_installments.count() == 0:
@@ -824,30 +817,33 @@ class FollowUpReport(View):
                 follow_ups = FollowUp.objects.filter(follow_up_date__gte=start_date,follow_up_date__lte=end_date).order_by('follow_up_date')
                 enquiry_list = []
                 for follow_up in follow_ups:
-                    enquiry = follow_up.enquiry_set.get(is_admitted=False)
-                    follow_up_details = []
-                    for follow_up in enquiry.follow_up.all():
-                        follow_up_details.append({
-                            'date': follow_up.follow_up_date.strftime('%d/%m/%Y'),
-                            'remark': follow_up.remarks_for_follow_up_date
+                    try:
+                        enquiry = follow_up.enquiry_set.get(is_admitted=False)
+                        follow_up_details = []
+                        for follow_up in enquiry.follow_up.all():
+                            follow_up_details.append({
+                                'date': follow_up.follow_up_date.strftime('%d/%m/%Y'),
+                                'remark': follow_up.remarks_for_follow_up_date
+                            })
+                        enquiry_list.append({
+                            'id': enquiry.id,
+                            'student_name': enquiry.student_name,
+                            'address': enquiry.address,
+                            'mobile_number' : enquiry.mobile_number,
+                            'email' : enquiry.email,
+                            'details_about_clients_enquiry' : enquiry.details_about_clients_enquiry,
+                            'educational_qualification': enquiry.educational_qualification,
+                            'land_mark': enquiry.land_mark,
+                            'saved_date':enquiry.saved_date.strftime('%d/%m/%Y') if enquiry.saved_date else '',
+                            'course' : enquiry.course.id,
+                            'course_name':enquiry.course.name,
+                            'remarks': enquiry.remarks,
+                            'follow_ups': follow_up_details,
+                            'discount': enquiry.discount,
+                            'auto_generated_num': enquiry.auto_generated_num,
                         })
-                    enquiry_list.append({
-                        'id': enquiry.id,
-                        'student_name': enquiry.student_name,
-                        'address': enquiry.address,
-                        'mobile_number' : enquiry.mobile_number,
-                        'email' : enquiry.email,
-                        'details_about_clients_enquiry' : enquiry.details_about_clients_enquiry,
-                        'educational_qualification': enquiry.educational_qualification,
-                        'land_mark': enquiry.land_mark,
-                        'saved_date':enquiry.saved_date.strftime('%d/%m/%Y') if enquiry.saved_date else '',
-                        'course' : enquiry.course.id,
-                        'course_name':enquiry.course.name,
-                        'remarks': enquiry.remarks,
-                        'follow_ups': follow_up_details,
-                        'discount': enquiry.discount,
-                        'auto_generated_num': enquiry.auto_generated_num,
-                    })
+                    except Exception as ex:
+                        pass
             else:
                 try:
                     follow_ups = FollowUp.objects.filter(follow_up_date__year=current_date.year, follow_up_date__month=current_date.month, follow_up_date__day=current_date.day)
